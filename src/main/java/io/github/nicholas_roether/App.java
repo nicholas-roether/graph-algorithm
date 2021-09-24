@@ -6,7 +6,6 @@ import io.github.nicholas_roether.physics_graph.PhysicsGraphNode;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
@@ -25,17 +24,17 @@ public class App extends PApplet {
 
 	@Override
 	public void setup() {
-		graph = new PhysicsGraph(new PVector(width / 2, height / 2), 100);
+		graph = new PhysicsGraph(new PVector(width / 2f, height / 2f), 100);
 		final PhysicsGraphNode nodeA = new PhysicsGraphNode("A", graph);
 		final PhysicsGraphNode nodeB = new PhysicsGraphNode("B", graph);
 		final PhysicsGraphNode nodeC = new PhysicsGraphNode("C", graph);
 		final PhysicsGraphNode nodeD = new PhysicsGraphNode("D", graph);
 		final PhysicsGraphNode nodeE = new PhysicsGraphNode("E", graph);
-		nodeA.setPosition(new PVector(width / 2 - 10, height / 2));
-		nodeB.setPosition(new PVector(width / 2 + 10, height / 2));
-		nodeC.setPosition(new PVector(width / 2, height / 2 - 10));
-		nodeD.setPosition(new PVector(width / 2, height / 2));
-		nodeE.setPosition(new PVector(width / 2 - 30, height / 2));
+		nodeA.setPosition(new PVector(width / 2f - 10, height / 2f));
+		nodeB.setPosition(new PVector(width / 2f + 10, height / 2f));
+		nodeC.setPosition(new PVector(width / 2f, height / 2f - 10));
+		nodeD.setPosition(new PVector(width / 2f, height / 2f));
+		nodeE.setPosition(new PVector(width / 2f - 30, height / 2f));
 		graph.fillWithNodes(Set.of(
 				nodeA,
 				nodeB,
@@ -89,10 +88,10 @@ public class App extends PApplet {
 	}
 
 	private PVector getNodePos(int index, int numNodes) {
-		final float radius = Math.min(width, height) / 3;
+		final float radius = Math.min(width, height) / 3f;
 		final double angle = 2 * Math.PI * ((double) index / (double) numNodes);
-		final float x = radius * (float) Math.cos(angle) + width / 2;
-		final float y = radius * (float) Math.sin(angle) + height / 2;
+		final float x = radius * (float) Math.cos(angle) + width / 2f;
+		final float y = radius * (float) Math.sin(angle) + height / 2f;
 		return new PVector(x, y);
 	}
 
