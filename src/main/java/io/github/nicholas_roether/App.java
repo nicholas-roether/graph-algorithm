@@ -6,6 +6,7 @@ import io.github.nicholas_roether.physics_graph.PhysicsGraphNode;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class App extends PApplet {
 	@Override
 	public void settings() {
 		size(800, 600);
+		pixelDensity(displayDensity());
 	}
 
 	@Override
