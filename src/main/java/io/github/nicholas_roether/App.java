@@ -13,8 +13,9 @@ import java.util.Set;
 public class App extends PApplet {
 	private PhysicsGraph<PhysicsGraphNode> graph;
 
-	public void run() {
-		runSketch();
+	public static void main(String[] args) {
+		final App app = new App();
+		app.runSketch();
 	}
 
 	@Override
