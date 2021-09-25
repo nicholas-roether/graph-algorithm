@@ -3,6 +3,7 @@ package io.github.nicholas_roether;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.physics_graph.PhysicsGraph;
 import io.github.nicholas_roether.physics_graph.PhysicsGraphNode;
+import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 public class App extends PApplet {
-	private PhysicsGraph graph;
+	private PhysicsGraph<PhysicsGraphNode> graph;
 
 	public void run() {
 		runSketch();
@@ -24,7 +25,7 @@ public class App extends PApplet {
 
 	@Override
 	public void setup() {
-		graph = new PhysicsGraph(new PVector(width / 2f, height / 2f), 100);
+		graph = new PhysicsGraph<>(new PVector(width / 2f, height / 2f), 100);
 		final PhysicsGraphNode nodeA = new PhysicsGraphNode("A", graph);
 		final PhysicsGraphNode nodeB = new PhysicsGraphNode("B", graph);
 		final PhysicsGraphNode nodeC = new PhysicsGraphNode("C", graph);
@@ -84,18 +85,10 @@ public class App extends PApplet {
 		fill(255, 255, 255);
 		textAlign(CENTER);
 		textSize(15);
-		text(Double.toString(weight), xMid, yMid - 15);
+		text(Double.toString(weight), xMid, yMid);
 	}
 
-	private PVector getNodePos(int index, int numNodes) {
-		final float radius = Math.min(width, height) / 3f;
-		final double angle = 2 * Math.PI * ((double) index / (double) numNodes);
-		final float x = radius * (float) Math.cos(angle) + width / 2f;
-		final float y = radius * (float) Math.sin(angle) + height / 2f;
-		return new PVector(x, y);
-	}
-
-	private void drawPhysicsGraph(PhysicsGraph graph) {
+	private void drawPhysicsGraph(@NotNull PhysicsGraph<PhysicsGraphNode> graph) {
 		final Set<Graph.IndependentEdge<PhysicsGraphNode>> edges = graph.getEdges();
 		for (Graph.IndependentEdge<PhysicsGraphNode> edge : edges) {
 			final PhysicsGraphNode from = edge.from;
