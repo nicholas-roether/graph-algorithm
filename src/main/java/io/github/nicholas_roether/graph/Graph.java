@@ -5,367 +5,303 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * A graph. Graphs will by default be non-directional, meaning edges will always point in both directions.
- * It is possible to specify your own class to serve as nodes, however this class has to extend GraphNode.
+ * A graph. Graphs consist of nodes, and edges that connect those nodes. Each edge has a weight
+ * associated with it; if no weight is specified it defaults to {@code 1}. Each node also has a name.
+ * <br>
+ * It is possible to associate custom data with both nodes and edges, using their constructors and
+ * type parameters.
+ * <br>
+ * Graphs are considered equal if all their nodes and edges are equal.
  *
- * @param <N> Which class should be used as nodes
+ * @param <ND> The node data type
+ * @param <ED> The edge data type
+ *
+ * @see GraphNode
+ * @see GraphEdge
  */
-public class Graph<N extends GraphNode> {
-	/**
-	 * Whether this graph is directional, meaning whether edges should distinguish in
-	 * which direction they're pointing
-	 */
-	public final boolean directional;
-
-	private final Set<N> nodes;
-
-	/**
-	 * Constructs a non-directional, empty graph.
-	 */
-	public Graph() {
-		this.nodes = new HashSet<>();
-		this.directional = false;
-	}
+public class Graph<ND, ED> {
+	private final Set<GraphNode<ND>> nodes;
+	private final List<GraphEdge<ND, ED>> edges;
 
 	/**
 	 * Constructs an empty graph.
-	 *
-	 * @param directional whether this graph is directional
 	 */
-	public Graph(boolean directional) {
+	public Graph() {
 		this.nodes = new HashSet<>();
-		this.directional = directional;
+		this.edges = new ArrayList<>();
 	}
 
 	/**
-	 * Constructs a non-directional graph filled with the provided nodes.
-	 * For convenience, in most cases it is recommended to construct an empty graph instead and
-	 * fill it with {@code Graph.fillWithNodes}.
+	 * Adds a new node with the given name and value and returns it, if that node isn't already contained.
+	 * <br>
+	 * Note that nodes are considered equal if they have the same name, so each node in the graph
+	 * needs a unique name.
 	 *
-	 * @param nodes The nodes to fill this graph with
-	 * @throws UnknownGraphNodeException if a node has an unregistered node registered as a connection.
+	 * @param name The name of the new node
+	 * @param value The value of the new node
+	 * @return the created node if it was actually added, otherwise {@code null}.
 	 *
 	 * @see GraphNode
 	 */
-	public Graph(@NotNull Set<N> nodes) throws UnknownGraphNodeException {
-		this.nodes = new HashSet<>(nodes.size());
-		for (N node : nodes) addNode(node);
-		this.directional = false;
+	public GraphNode<ND> addNode(@NotNull String name, ND value) {
+		final GraphNode<ND> node = new GraphNode<>(name, value);
+		if (addNode(node)) return node;
+		return null;
 	}
 
 	/**
-	 * Constructs a graph filled with the provided nodes.
-	 * For convenience, in most cases it is recommended to construct an empty graph instead and
-	 * fill it with {@code Graph.fillWithNodes}.
+	 * Adds a new node with the given name and returns it, if that node isn't already contained.
+	 * It will set the node's value to {@code null}.
+	 * <br>
+	 * Note that nodes are considered equal if they have the same name, so each node in the graph
+	 * needs a unique name.
 	 *
-	 * @param nodes The nodes to fill this graph with
-	 * @param directional whether this graph is directional
-	 * @throws UnknownGraphNodeException if a node has an unregistered node registered as a connection.
+	 * @param name The name of the new node
+	 * @return the created node if it was actually added, otherwise {@code null}.
 	 *
 	 * @see GraphNode
 	 */
-	public Graph(@NotNull Set<N> nodes, boolean directional) throws UnknownGraphNodeException {
-		this.nodes = new HashSet<>(nodes.size());
-		for (N node : nodes) addNode(node);
-		this.directional = directional;
+	public GraphNode<ND> addNode(@NotNull String name) {
+		return addNode(name, null);
 	}
 
 	/**
-	 * Adds a node to this graph, provided the graph doesn't already contain it.
-	 * Note that nodes are considered equal if their ids are equal.
+	 * Adds the given node to the graph, if that node isn't already contained.
+	 * <br>
+	 * Note that nodes are considered equal if they have the same name, so each node in the graph
+	 * needs a unique name.
 	 *
 	 * @param node The node to add
-	 * @return true if the node was added, false if this graph already contained the node
-	 * @throws UnknownGraphNodeException if a node has an unregistered node registered as a connection.
+	 * @return true if the node was actually added to the graph
 	 *
 	 * @see GraphNode
 	 */
-	public boolean addNode(@NotNull N node) throws UnknownGraphNodeException {
-		for (N neighbor : node.getNeighbors(new HashSet<N>())) {
-			assertKnownNode(neighbor);
-		}
+	public boolean addNode(@NotNull GraphNode<ND> node) {
 		return nodes.add(node);
 	}
 
 	/**
-	 * Checks whether this graph contains a node.
-	 * Note that nodes are considered equal if their ids are equal.
+	 * Adds all nodes from the given collection that aren't already contained.
+	 * <br>
+	 * Note that nodes are considered equal if they have the same name, so each node in the graph
+	 * needs a unique name.
 	 *
-	 * @param node The node for which to check
-	 * @return whether this graph contains the node
+	 * @param nodes The nodes to add
+	 * @return {@code true} if any nodes were added to the graph
 	 *
 	 * @see GraphNode
 	 */
-	public boolean hasNode(N node) {
-		return nodes.contains(node);
+	public boolean addNodes(@NotNull Collection<? extends GraphNode<ND>> nodes) {
+		boolean ret = false;
+		for(GraphNode<ND> node : nodes) {
+			if (addNode(node)) ret = true;
+		}
+		return ret;
 	}
 
 	/**
-	 * Returns a set of all nodes in this graph.
+	 * Gets a node out of the graph by name.
 	 *
-	 * @return a set of all nodes in this graph.
+	 * @param name The name to search for
+	 * @return The node, or {@code null} if none is found
+	 *
+	 * @see GraphNode
 	 */
-	public Set<N> getNodes() {
+	public GraphNode<ND> getNode(@NotNull String name) {
+		for (GraphNode<ND> node : nodes) {
+			if (node.name.equals(name)) return node;
+		}
+		return null;
+	}
+
+	/**
+	 * Returns all nodes in this graph.
+	 *
+	 * @return an immutable set of all nodes in this graph
+	 */
+	public Set<GraphNode<ND>> getNodes() {
 		return Collections.unmodifiableSet(nodes);
 	}
 
 	/**
-	 * Gets a node out of this graph by id.
+	 * Removes the given node from the graph if the graph contains it.
 	 *
-	 * @param id The id of the node to find
-	 * @return the node with the given id
-	 * @throws UnknownGraphNodeException if the graph doesn't contain a node with the given id
-	 *
-	 * @see GraphNode
-	 */
-	public N getNode(String id) throws UnknownGraphNodeException {
-		for (N node : nodes) {
-			if (node.id.equals(id)) return node;
-		}
-		throw new UnknownGraphNodeException(id);
-	}
-
-	/**
-	 * Gets a set of all the edges of this graph.
-	 * The edges will be returned in form of {@code IndependentEdge}-objects - this is not
-	 * the same as the {@code GraphEdge}-objects contained by nodes, as {@code IndependentEdge}s
-	 * contain both the node they originate from, and the node they go to.
-	 *
-	 * @return a set of this graph's nodes
-	 *
-	 * @see IndependentEdge
-	 */
-	public Set<IndependentEdge<N>> getEdges() {
-		final Set<IndependentEdge<N>> edges = new HashSet<>();
-		for (N node : getNodes()) {
-			for (GraphEdge<N> edge : node.getEdges(new ArrayList<GraphEdge<N>>())) {
-				final IndependentEdge<N> independentEdge =
-						new IndependentEdge<>(node, edge.neighbor, edge.weight, directional);
-				edges.add(independentEdge);
-			}
-		}
-		return edges;
-	}
-
-	/**
-	 * Adds an edge to this graph. On a non-directional graph, the order
-	 * of the {@code to} and {@code from} parameters does not matter.
-	 *
-	 * @param from The node the edge originates from
-	 * @param to The node the edge goes to
-	 * @param weight The weight of this edge
-	 * @throws UnknownGraphNodeException If nodes are to be connected that aren't contained in this graph
+	 * @param node The node to remove
+	 * @return {@code true} if the node was actually contained and has been removed
 	 *
 	 * @see GraphNode
 	 */
-	@SuppressWarnings("unchecked")
-	public void addEdge(@NotNull N from, @NotNull N to, double weight) throws UnknownGraphNodeException {
-		try {
-			from.addEdge(new GraphEdge<>(to, weight), (Graph<GraphNode>) this);
-			if (!directional)
-				to.addEdge(new GraphEdge<>(from, weight), (Graph<GraphNode>) this);
-		} catch (GraphHierarchyException e) {
-			System.out.println("Warning: Unexpected GraphHierarchyException (" + e.getMessage() + ")");
-		}
+	public boolean removeNode(@NotNull GraphNode<ND> node) {
+		return nodes.remove(node);
 	}
 
 	/**
-	 * Adds an edge with a weight of 1 to the graph. On a non-directional graph, the order
-	 * of the {@code to} and {@code from} parameters does not matter.
+	 * Adds a new edge between the two given nodes - with the given weight and data - to the graph,
+	 * and returns it.
 	 *
-	 * @param from The node the edge originates from
-	 * @param to The node the edge goes to
-	 * @throws UnknownGraphNodeException If nodes are to be connected that aren't contained in this graph
-	 */
-	public void addEdge(N from, N to) throws UnknownGraphNodeException {
-		addEdge(from, to, 1);
-	}
-
-	/**
-	 * Removes the edge between two nodes if it exists. If there are multiple edges between the nodes,
-	 * all of them will be removed. On a directional graph, only edges that go in the specified direction
-	 * will be removed.
+	 * @param node1 The first of the nodes the edge connects
+	 * @param node2 The second of the nodes the edge connects
+	 * @param weight The weight of the edge
+	 * @param data The data of the edge
+	 * @return the created edge
 	 *
-	 * @param from The node the edge to remove originates from
-	 * @param to The node the edge to remove goes to
-	 */
-	@SuppressWarnings("unchecked")
-	public void removeEdge(@NotNull N from, @NotNull N to) {
-		try {
-			for (GraphEdge<GraphNode> edge : from.getEdges())
-				if (edge.neighbor == to) from.removeEdge(edge, (Graph<GraphNode>) this);
-			if (!directional) {
-				for (GraphEdge<GraphNode> edge : to.getEdges())
-					if (edge.neighbor == from) to.removeEdge(edge, (Graph<GraphNode>) this);
-			}
-		} catch (GraphHierarchyException e) {
-			System.out.println("Warning: Unexpected GraphHierarchyException! (" + e.getMessage() + ")");
-		}
-	}
-
-	/**
-	 * Disconnects a node from the network by removing all it's edges. On a directional graph, only edges that
-	 * originate from this node will be removed.
-	 *
-	 * @param node The node to disconnect
-	 */
-	@SuppressWarnings("unchecked")
-	public void disconnect(@NotNull N node) {
-		try {
-			node.disconnect((Graph<GraphNode>) this);
-			if (!directional) {
-				for (GraphNode neighbor : node.getNeighbors()) {
-					for (GraphEdge<GraphNode> neighborEdge : neighbor.getEdges()) {
-						if (neighborEdge.neighbor == node)
-							neighbor.removeEdge(neighborEdge, (Graph<GraphNode>) this);
-					}
-				}
-			}
-		} catch (GraphHierarchyException e) {
-			System.out.println("Warning: Unexpected GraphHierarchyException! (" + e.getMessage() + ")");
-		}
-	}
-
-	/**
-	 * Fills the graph with nodes (and edges).
-	 *
-	 * @param nodes The ids of the nodes to add
-	 * @param edges The edges to add, in form of EdgeInit-Objects
-	 *
-	 * @see EdgeInit
+	 * @see GraphEdge
 	 * @see GraphNode
 	 */
-	public void fillWithNodes(
-			@NotNull Set<N> nodes,
-			@NotNull List<Graph.EdgeInit> edges
-	) {
-		try {
-			for (N node : nodes) {
-				if (node.getEdges().size() != 0)
-					throw new IllegalArgumentException("Only unconnected nodes are allowed");
-				this.addNode(node);
-			}
-		} catch (UnknownGraphNodeException e) {
-			System.out.println("Warning: Unexpected UnknownGraphNodeException! (" + e.getMessage() + ")");
-		}
-		try {
-			for (Graph.EdgeInit edge : edges) {
-				N from = getNode(edge.from);
-				N to = getNode(edge.to);
-				addEdge(from, to, edge.weight);
-			}
-		} catch (UnknownGraphNodeException e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}
-	}
-
-	private void assertKnownNode(N node) throws UnknownGraphNodeException {
-		if (!hasNode(node)) throw new UnknownGraphNodeException(node);
+	public GraphEdge<ND, ED> addEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight, ED data) {
+		final GraphEdge<ND, ED> edge = new GraphEdge<>(node1, node2, weight, data);
+		if (this.addEdge(edge)) return edge;
+		return null;
 	}
 
 	/**
-	 * Contains data for the graph to create an edge between two nodes.
-	 */
-	public static class EdgeInit {
-		/**
-		 * The node the edge should originate from.
-		 */
-		public final String from;
-
-		/**
-		 * The node the edge should go to
-		 */
-		public final String to;
-
-		/**
-		 * The weight the edge should have
-		 */
-		public final double weight;
-
-		/**
-		 * Creates an {@code EdgeInit}-object.
-		 *
-		 * @param from The node the edge should originate from
-		 * @param to The node the edge should go to
-		 * @param weight The weight the edge should have
-		 */
-		public EdgeInit(String from, String to, double weight) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		/**
-		 * Creates an {@code EdgeInit}-object for an edge with a weight of 1.
-		 *
-		 * @param from The node the edge should originate from
-		 * @param to The node the edge should go to
-		 */
-		public EdgeInit(String from, String to) {
-			this.from = from;
-			this.to = to;
-			this.weight = 1;
-		}
-	}
-
-	/**
-	 * Represents an edge in the graph, independently of any graph node. It thereby contains
-	 * the information on both nodes it is connected to.
+	 * Adds a new edge between the two given nodes - with the given weight - to the graph,
+	 * and returns it.
 	 * <br>
-	 * Note that two {@code IndependentEdge}-objects are considered equal if they have the same
-	 * weight, and they are connected to the same nodes; additionally, if the graph this edge belongs to
-	 * is directional, the edges need to have the same starting and ending node to be considered equal.
-	 * <br>
-	 * Note also that nodes are considered equal if their ids are equal.
+	 * The data of the edge will be set to {@code null}.
 	 *
+	 * @param node1 The first of the nodes the edge connects
+	 * @param node2 The second of the nodes the edge connects
+	 * @param weight The weight of the edge
+	 * @return the created edge
 	 *
-	 * @param <N> The type of node used
-	 *
-	 * @see Graph
+	 * @see GraphEdge
+	 * @see GraphNode
 	 */
-	public static class IndependentEdge<N extends GraphNode> {
-		/**
-		 * The node this edge originates from.
-		 */
-		public final N from;
+	public GraphEdge<ND, ED> addEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight) {
+		return addEdge(node1, node2, weight, null);
+	}
 
-		/**
-		 * The node this edge goes to.
-		 */
-		public final N to;
+	/**
+	 * Adds a new edge between the two given nodes to the graph and returns it.
+	 * <br>
+	 * The weight of the edge will be set to {@code 1}, and it's data to {@code null}.
+	 *
+	 * @param node1 The first of the nodes the edge connects
+	 * @param node2 The second of the nodes the edge connects
+	 * @return the created edge
+	 *
+	 * @see GraphEdge
+	 * @see GraphNode
+	 */
+	public GraphEdge<ND, ED> addEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2) {
+		return addEdge(node1, node2, 1);
+	}
 
-		/**
-		 * The weight of this node.
-		 */
-		public final double weight;
+	/**
+	 * Adds the given edge to the graph.
+	 *
+	 * @param edge The edge to add
+	 * @return {@code true}
+	 * @throws UnknownNodeException if the edge attempts to connect to a node that isn't contained in the graph
+	 *
+	 * @see GraphEdge
+	 */
+	public boolean addEdge(GraphEdge<ND, ED> edge) {
+		assertKnownNode(edge.nodes.getValue0());
+		assertKnownNode(edge.nodes.getValue1());
+		return this.edges.add(edge);
+	}
 
-		private final boolean directional;
-
-		private IndependentEdge(N from, N to, double weight, boolean directional) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-			this.directional = directional;
+	/**
+	 * Adds all the given edges to the graph.
+	 *
+	 * @param edges The edge to add.
+	 * @return {@code true}
+	 * @throws UnknownNodeException if an edge attempts to connect to a node that isn't contained in the graph
+	 *
+	 * @see GraphEdge
+	 */
+	public boolean addEdges(@NotNull Collection<? extends GraphEdge<ND, ED>> edges) {
+		boolean ret = false;
+		for(GraphEdge<ND, ED> edge : edges) {
+			if (addEdge(edge)) ret = true;
 		}
+		return ret;
+	}
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			IndependentEdge<?> that = (IndependentEdge<?>) o;
-			return Double.compare(that.weight, weight) == 0 && (
-					from.equals(that.from) && to.equals(that.to)
-							|| (!directional && to.equals(that.from) && from.equals(that.to))
-			);
-		}
+	/**
+	 * Removes the given edge from the graph, given it is a part of it.
+	 *
+	 * @param edge The edge to remove
+	 * @return {@code true} if the edge was actually a part of the graph and was removed
+	 *
+	 * @see GraphEdge
+	 */
+	public boolean removeEdge(@NotNull GraphEdge<ND, ED> edge) {
+		return edges.remove(edge);
+	}
 
-		@Override
-		public int hashCode() {
-			if (!directional) {
-				final Set<N> nodeSet = Set.of(from, to);
-				return Objects.hash(nodeSet, weight);
+	/**
+	 * Returns all edges in the graph.
+	 *
+	 * @return an immutable list of all edges in the graph.
+	 */
+	public List<GraphEdge<ND, ED>> getEdges() {
+		return Collections.unmodifiableList(edges);
+	}
+
+	/**
+	 * Gets the neighbors of a node within the graph.
+	 *
+	 * @param node The node whose neighbors to get.
+	 * @return The neighbors of the node, as {@code GraphNeighbor}-objects.
+	 * @throws UnknownNodeException if the given node isn't contained in the graph.
+	 *
+	 * @see GraphNode
+	 */
+	public List<GraphNeighbor<ND, ED>> getNeighbors(@NotNull GraphNode<ND> node) {
+		assertKnownNode(node);
+		final List<GraphNeighbor<ND, ED>> neighbors = new ArrayList<>();
+		for (GraphEdge<ND, ED> edge : edges) {
+			GraphNode<ND> neighbor = null;
+			if (edge.nodes.getValue0().equals(node)) {
+				neighbor = edge.nodes.getValue1();
+			} else if (edge.nodes.getValue1().equals(node)) {
+				neighbor = edge.nodes.getValue0();
 			}
-			return Objects.hash(from, to, weight);
+			if (neighbor != null)
+					neighbors.add(new GraphNeighbor<>(neighbor, edge.weight, edge.data()));
+		}
+		return neighbors;
+	}
+
+	/**
+	 * Checks if the graph equals the given object. For objects that aren't graphs, this
+	 * will always return {@code false}.
+	 * <br>
+	 * Two graphs are considered equal if all their nodes and edges are equal.
+	 *
+	 * @param o the object to compare the graph to
+	 * @return whether the graph and the object are considered equal
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Graph<?, ?> graph = (Graph<?, ?>) o;
+		return Objects.equals(nodes, graph.nodes) && Objects.equals(edges, graph.edges);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nodes, edges);
+	}
+
+	/**
+	 * Creates a string for this graph representation that can, for example, be printed to the console.
+	 *
+	 * @return The string representation of this graph.
+	 */
+	@Override
+	public String toString() {
+		// TODO somehow visualize graphs in the console
+		return super.toString();
+	}
+
+	private void assertKnownNode(GraphNode<ND> node) {
+		if (node == null || !nodes.contains(node)) {
+			throw new UnknownNodeException(node);
 		}
 	}
 }

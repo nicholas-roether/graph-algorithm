@@ -1,180 +1,108 @@
 package io.github.nicholas_roether.graph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
- * A node within a graph. {@code GraphNode}s keep track of the edges going out from them, and each
- * one has a unique id. Two {@code GraphNode}s are considered equal if and only if their {@code id}s
- * are equal.
+ * A node in a graph.
+ * <br>
+ * Nodes have a name, as well as optionally a value. The latter will default to {@code null}
+ * if none is provided.
+ * <br>
+ * Two nodes are considered equal
+ * if their names are equal.
  *
- * @see GraphEdge
- * @see Graph
+ * @param <D> The type of the node data.
  */
-public class GraphNode {
+public class GraphNode<D> {
 	/**
-	 * A unique identifier for this node within the graph. Two {@code GraphNode}s
-	 * are considered equal if and only if their {@code id}s are equal.
-	 *
-	 * @see Graph
+	 * The name of this node. Nodes are considered equal if their names are equal.
 	 */
-	public final String id;
-	private final List<GraphEdge<GraphNode>> edges;
+	public final String name;
 
 	/**
-	 * Creates a new node without any connections.
-	 *
-	 * @param id A unique identifier for this node
+	 * The value of this node. Will default to {@code null}.
 	 */
-	public GraphNode(String id) {
-		this.id = id;
-		this.edges = new ArrayList<>();
+	private D data;
+
+	/**
+	 * Constructs a node with the given name.
+	 * <br>
+	 * The node's value will be set to null.
+	 *
+	 * @param name The name of the node
+	 */
+	public GraphNode(@NotNull String name) {
+		this.name = name;
 	}
 
 	/**
-	 * Creates a new node.
+	 * Constructs a node with the given name and value.
 	 *
-	 * @param id A unique identifier for this node
-	 * @param edges The edges that go out from this node
+	 * @param name The name of the node
+	 * @param data The value of the node
 	 */
-	public GraphNode(String id, Collection<GraphEdge<GraphNode>> edges) {
-		this.id = id;
-		this.edges = new ArrayList<>();
-		this.edges.addAll(edges);
+	public GraphNode(@NotNull String name, D data) {
+		this.name = name;
+		this.data = data;
 	}
 
 	/**
-	 * Returns an immutable set of all neighbors this node has.
+	 * Returns the value of this node. Will be {@code null} if none was set.
 	 *
-	 * @return an immutable set of all neighbors this node has.
+	 * @return the value of this node
 	 */
-	public Set<GraphNode> getNeighbors() {
-		final Set<GraphNode> neighbors = new HashSet<>(edges.size());
-		for (GraphEdge<GraphNode> edge : edges) {
-			neighbors.add(edge.neighbor);
-		}
-		return neighbors;
+	public D getData() {
+		return data;
 	}
 
 	/**
-	 * Fills a given set with this node's neighbors, and returns it.
+	 * Sets the value of this node.
 	 *
-	 * @param set the set to fill
-	 * @param <N> the node type
-	 * @return the filled set
+	 * @param data The new value
 	 */
-	@SuppressWarnings("unchecked")
-	public <N extends GraphNode> Set<N> getNeighbors(HashSet<N> set) {
-		for (GraphEdge<GraphNode> edge : edges) {
-			final GraphNode neighbor = edge.neighbor;
-			set.add((N) neighbor);
-		}
-		return set;
+	public void setData(D data) {
+		this.data = data;
 	}
 
 	/**
-	 * Checks whether the given node is a neighbor to this node.
+	 * Creates a string for this node representation that can, for example, be printed to the console.
 	 *
-	 * @param other The node to check
-	 * @return whether the node is a neighbor
+	 * @return The string representation of this node
 	 */
-	public boolean isNeighbor(GraphNode other) {
-		for (GraphEdge<GraphNode> edge : edges) {
-			if (edge.neighbor == other) return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Returns the weight of the edge to the given node
-	 * @param other The node to which the connection weight should be checked
-	 * @return the weight of the connection
-	 * @throws UnknownGraphNodeException if this node isn't connected to the given node
-	 */
-	public double getEdgeWeightTo(GraphNode other) throws UnknownGraphNodeException {
-		for (GraphEdge<GraphNode> edge : edges) {
-			if (edge.neighbor == other) return edge.weight;
-		}
-		throw new UnknownGraphNodeException(other);
-	}
-
-	/**
-	 * Add an edge to this node. This method should not be used directly; use {@code Graph.addEdge} instead.
-	 *
-	 * @see Graph
-	 *
-	 * @param edge The edge to add
-	 * @param graph The graph this node is a part of
-	 */
-	public void addEdge(GraphEdge<GraphNode> edge, Graph<GraphNode> graph) throws UnknownGraphNodeException, GraphHierarchyException {
-		if (!graph.hasNode(this))
-			throw new GraphHierarchyException("This node is not part of the provided graph");
-		if (!graph.hasNode(edge.neighbor))
-			throw new UnknownGraphNodeException(edge.neighbor);
-		edges.add(edge);
-	}
-
-	/**
-	 * Add an edge to this node. This method should not be used directly; use {@code Graph.removeEdge} instead.
-	 *
-	 * @param edge The edge to remove
-	 * @param graph The graph this node is a part of
-	 */
-	public void removeEdge(GraphEdge<GraphNode> edge, Graph<GraphNode> graph) throws GraphHierarchyException {
-		if (!graph.hasNode(this))
-			throw new GraphHierarchyException("This node is not part of the provided graph");
-		edges.remove(edge);
-	}
-
-	/**
-	 * Removes all edges from this node. This method should not be used directly; use {@code Graph.disconnect} instead.
-	 *
-	 * @param graph The graph this node is a part of
-	 */
-	public void disconnect(Graph<GraphNode> graph) throws GraphHierarchyException {
-		if (!graph.hasNode(this))
-			throw new GraphHierarchyException("This node is not part of the provided graph");
-		this.edges.clear();
-	}
-
-	/**
-	 * Returns the edges that go out from this node.
-	 *
-	 * @return the edges that go out from this node.
-	 */
-	public List<GraphEdge<GraphNode>> getEdges() {
-		return edges;
-	}
-
-	/**
-	 * Fills a given list with this node's edges, and returns it.
-	 *
-	 * @param list the list to fill
-	 * @param <N> the node type
-	 * @return the filled list
-	 */
-	@SuppressWarnings("unchecked")
-	public <N extends GraphNode> List<GraphEdge<N>> getEdges(ArrayList<GraphEdge<N>> list) {
-		for (GraphEdge<GraphNode> edge : edges) {
-			list.add((GraphEdge<N>) edge);
-		}
-		return list;
-	}
-
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof GraphNode) {
-			GraphNode n = (GraphNode) obj;
-			return n.id.equals(id);
+	public String toString() {
+		final StringBuilder strBuilder = new StringBuilder("GraphNode (");
+		strBuilder.append(name);
+		strBuilder.append(")");
+		if (data != null) {
+			strBuilder.append(" {\n   ");
+			strBuilder.append(data);
+			strBuilder.append("\n}");
 		}
-		return false;
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Checks if the node equals the given object. For objects that aren't nodes, this
+	 * will always return {@code false}.
+	 * <br>
+	 * Two nodes are considered equal if their names are equal.
+	 *
+	 * @param o the object to compare the edge to
+	 * @return {@code true} if the node and the object are considered equal
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GraphNode<?> graphNode = (GraphNode<?>) o;
+		return Objects.equals(name, graphNode.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.id.hashCode();
+		return Objects.hash(name);
 	}
 }

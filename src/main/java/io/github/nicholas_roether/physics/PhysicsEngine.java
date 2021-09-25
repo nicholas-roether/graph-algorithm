@@ -7,27 +7,59 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A rudimentary physics engine that simulates a set of {@code PhysicsObject}s.
+ *
+ * @see PhysicsObject
+ */
 public class PhysicsEngine {
 	private final List<PhysicsObject> objects;
 
+	/**
+	 * Constructs a {@code PhysicsEngine} with no {@code PhysicsObject}s associated with it.
+	 */
 	public PhysicsEngine() {
 		objects = new ArrayList<>();
 	}
 
+	/**
+	 * Adds a new {@code PhysicsObject} to this engine.
+	 *
+	 * @param object The object to add.
+	 */
 	public void addObject(@NotNull PhysicsObject object) {
 		objects.add(object);
 	}
 
+	/**
+	 * Adds multiple new {@code PhysicsObject}s to this engine.
+	 *
+	 * @param objects The objects to add.
+	 */
 	public void addObjects(PhysicsObject @NotNull ...objects) {
 		for (PhysicsObject object : objects) {
 			addObject(object);
 		}
 	}
 
+	/**
+	 * Returns all {@code PhysicsObject}s that are associated with this engine.
+	 *
+	 * @return all {@code PhysicsObject}s that are associated with this engine.
+	 */
 	public List<PhysicsObject> getObjects() {
 		return Collections.unmodifiableList(objects);
 	}
 
+	/**
+	 * Steps the simulation forward by the specified amount of time.
+	 * <br>
+	 * It is crucial that steps occur very frequently, as the more frequent they are
+	 * the more accurate the simulation becomes. Depending on the use case, between 10 and 60
+	 * steps per second are recommended.
+	 *
+	 * @param time The step time in seconds
+	 */
 	public void step(float time) {
 		for (PhysicsObject object : objects)
 				stepObject(object, time);

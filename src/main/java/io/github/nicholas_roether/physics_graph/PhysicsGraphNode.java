@@ -1,4 +1,5 @@
 package io.github.nicholas_roether.physics_graph;
+/*
 
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
@@ -105,3 +106,4 @@ public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
 		return this.velocity.copy().mult(-FRICTION_CONSTANT);
 	}
 }
+*/
