@@ -11,13 +11,13 @@ package io.github.nicholas_roether.graph;
  * @see GraphNode
  * @see Graph
  */
-public class GraphEdge {
+public class GraphEdge<N extends GraphNode> {
 	/**
 	 * The neighboring node this edge points to.
 	 *
 	 * @see GraphNode
 	 */
-	public final GraphNode neighbor;
+	public final N neighbor;
 
 	/**
 	 * The weight of this edge. If no weight is provided in the constructor,
@@ -31,7 +31,7 @@ public class GraphEdge {
 	 *
 	 * @param neighbor The neighbor this edge points to
 	 */
-	public GraphEdge(GraphNode neighbor) {
+	public GraphEdge(N neighbor) {
 		this.neighbor = neighbor;
 		this.weight = 1;
 	}
@@ -42,7 +42,7 @@ public class GraphEdge {
 	 * @param neighbor The neighbor this edge points to
 	 * @param weight The weight of this edge
 	 */
-	public GraphEdge(GraphNode neighbor, double weight) {
+	public GraphEdge(N neighbor, double weight) {
 		this.neighbor = neighbor;
 		this.weight = weight;
 	}

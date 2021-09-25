@@ -25,18 +25,13 @@ public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
 		this.graph = graph;
 	}
 
-	public PhysicsGraphNode(String id, Graph<PhysicsGraphNode> graph, Collection<GraphEdge> edges) {
+	public PhysicsGraphNode(String id, Graph<PhysicsGraphNode> graph, Collection<GraphEdge<GraphNode>> edges) {
 		super(id, edges);
 		this.graph = graph;
 	}
 
 	public Set<PhysicsGraphNode> getNeighboringPhysicsGraphNodes() {
-		final Set<PhysicsGraphNode> physicsGraphNodes = new HashSet<>();
-		for (GraphNode neighbor : super.getNeighbors()) {
-			if (neighbor instanceof PhysicsGraphNode)
-					physicsGraphNodes.add((PhysicsGraphNode) neighbor);
-		}
-		return physicsGraphNodes;
+		return super.getNeighbors(new HashSet<>());
 	}
 
 	@Override

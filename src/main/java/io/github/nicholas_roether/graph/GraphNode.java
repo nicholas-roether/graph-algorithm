@@ -22,7 +22,7 @@ public class GraphNode {
 	 * @see Graph
 	 */
 	public final String id;
-	private final List<GraphEdge> edges;
+	private final List<GraphEdge<GraphNode>> edges;
 
 	/**
 	 * Creates a new node without any connections.
@@ -40,7 +40,7 @@ public class GraphNode {
 	 * @param id A unique identifier for this node
 	 * @param edges The edges that go out from this node
 	 */
-	public GraphNode(String id, Collection<GraphEdge> edges) {
+	public GraphNode(String id, Collection<GraphEdge<GraphNode>> edges) {
 		this.id = id;
 		this.edges = new ArrayList<>();
 		this.edges.addAll(edges);
@@ -53,10 +53,26 @@ public class GraphNode {
 	 */
 	public Set<GraphNode> getNeighbors() {
 		final Set<GraphNode> neighbors = new HashSet<>(edges.size());
-		for (GraphEdge edge : edges) {
+		for (GraphEdge<GraphNode> edge : edges) {
 			neighbors.add(edge.neighbor);
 		}
 		return neighbors;
+	}
+
+	/**
+	 * Fills a given set with this node's neighbors, and returns it.
+	 *
+	 * @param set the set to fill
+	 * @param <N> the node type
+	 * @return the filled set
+	 */
+	@SuppressWarnings("unchecked")
+	public <N extends GraphNode> Set<N> getNeighbors(HashSet<N> set) {
+		for (GraphEdge<GraphNode> edge : edges) {
+			final GraphNode neighbor = edge.neighbor;
+			set.add((N) neighbor);
+		}
+		return set;
 	}
 
 	/**
@@ -66,7 +82,7 @@ public class GraphNode {
 	 * @return whether the node is a neighbor
 	 */
 	public boolean isNeighbor(GraphNode other) {
-		for (GraphEdge edge : edges) {
+		for (GraphEdge<GraphNode> edge : edges) {
 			if (edge.neighbor == other) return true;
 		}
 		return false;
@@ -79,7 +95,7 @@ public class GraphNode {
 	 * @throws UnknownGraphNodeException if this node isn't connected to the given node
 	 */
 	public double getEdgeWeightTo(GraphNode other) throws UnknownGraphNodeException {
-		for (GraphEdge edge : edges) {
+		for (GraphEdge<GraphNode> edge : edges) {
 			if (edge.neighbor == other) return edge.weight;
 		}
 		throw new UnknownGraphNodeException(other);
@@ -93,7 +109,7 @@ public class GraphNode {
 	 * @param edge The edge to add
 	 * @param graph The graph this node is a part of
 	 */
-	public void addEdge(GraphEdge edge, Graph<GraphNode> graph) throws UnknownGraphNodeException, GraphHierarchyException {
+	public void addEdge(GraphEdge<GraphNode> edge, Graph<GraphNode> graph) throws UnknownGraphNodeException, GraphHierarchyException {
 		if (!graph.hasNode(this))
 			throw new GraphHierarchyException("This node is not part of the provided graph");
 		if (!graph.hasNode(edge.neighbor))
@@ -107,7 +123,7 @@ public class GraphNode {
 	 * @param edge The edge to remove
 	 * @param graph The graph this node is a part of
 	 */
-	public void removeEdge(GraphEdge edge, Graph<GraphNode> graph) throws GraphHierarchyException {
+	public void removeEdge(GraphEdge<GraphNode> edge, Graph<GraphNode> graph) throws GraphHierarchyException {
 		if (!graph.hasNode(this))
 			throw new GraphHierarchyException("This node is not part of the provided graph");
 		edges.remove(edge);
@@ -129,8 +145,23 @@ public class GraphNode {
 	 *
 	 * @return the edges that go out from this node.
 	 */
-	public List<GraphEdge> getEdges() {
+	public List<GraphEdge<GraphNode>> getEdges() {
 		return edges;
+	}
+
+	/**
+	 * Fills a given list with this node's edges, and returns it.
+	 *
+	 * @param list the list to fill
+	 * @param <N> the node type
+	 * @return the filled list
+	 */
+	@SuppressWarnings("unchecked")
+	public <N extends GraphNode> List<GraphEdge<N>> getEdges(ArrayList<GraphEdge<N>> list) {
+		for (GraphEdge<GraphNode> edge : edges) {
+			list.add((GraphEdge<N>) edge);
+		}
+		return list;
 	}
 
 	@Override

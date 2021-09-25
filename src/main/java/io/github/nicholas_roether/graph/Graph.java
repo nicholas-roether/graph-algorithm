@@ -81,7 +81,7 @@ public class Graph<N extends GraphNode> {
 	 * @see GraphNode
 	 */
 	public boolean addNode(@NotNull N node) throws UnknownGraphNodeException {
-		for (GraphNode neighbor : node.getNeighbors()) {
+		for (N neighbor : node.getNeighbors(new HashSet<N>())) {
 			assertKnownNode(neighbor);
 		}
 		return nodes.add(node);
@@ -135,13 +135,12 @@ public class Graph<N extends GraphNode> {
 	 *
 	 * @see IndependentEdge
 	 */
-	@SuppressWarnings("unchecked")
 	public Set<IndependentEdge<N>> getEdges() {
 		final Set<IndependentEdge<N>> edges = new HashSet<>();
 		for (N node : getNodes()) {
-			for (GraphEdge edge : node.getEdges()) {
+			for (GraphEdge<N> edge : node.getEdges(new ArrayList<GraphEdge<N>>())) {
 				final IndependentEdge<N> independentEdge =
-						new IndependentEdge<>(node, (N) edge.neighbor, edge.weight, directional);
+						new IndependentEdge<>(node, edge.neighbor, edge.weight, directional);
 				edges.add(independentEdge);
 			}
 		}
@@ -162,9 +161,9 @@ public class Graph<N extends GraphNode> {
 	@SuppressWarnings("unchecked")
 	public void addEdge(@NotNull N from, @NotNull N to, double weight) throws UnknownGraphNodeException {
 		try {
-			from.addEdge(new GraphEdge(to, weight), (Graph<GraphNode>) this);
+			from.addEdge(new GraphEdge<>(to, weight), (Graph<GraphNode>) this);
 			if (!directional)
-				to.addEdge(new GraphEdge(from, weight), (Graph<GraphNode>) this);
+				to.addEdge(new GraphEdge<>(from, weight), (Graph<GraphNode>) this);
 		} catch (GraphHierarchyException e) {
 			System.out.println("Warning: Unexpected GraphHierarchyException (" + e.getMessage() + ")");
 		}
@@ -193,10 +192,10 @@ public class Graph<N extends GraphNode> {
 	@SuppressWarnings("unchecked")
 	public void removeEdge(@NotNull N from, @NotNull N to) {
 		try {
-			for (GraphEdge edge : from.getEdges())
+			for (GraphEdge<GraphNode> edge : from.getEdges())
 				if (edge.neighbor == to) from.removeEdge(edge, (Graph<GraphNode>) this);
 			if (!directional) {
-				for (GraphEdge edge : to.getEdges())
+				for (GraphEdge<GraphNode> edge : to.getEdges())
 					if (edge.neighbor == from) to.removeEdge(edge, (Graph<GraphNode>) this);
 			}
 		} catch (GraphHierarchyException e) {
@@ -216,7 +215,7 @@ public class Graph<N extends GraphNode> {
 			node.disconnect((Graph<GraphNode>) this);
 			if (!directional) {
 				for (GraphNode neighbor : node.getNeighbors()) {
-					for (GraphEdge neighborEdge : neighbor.getEdges()) {
+					for (GraphEdge<GraphNode> neighborEdge : neighbor.getEdges()) {
 						if (neighborEdge.neighbor == node)
 							neighbor.removeEdge(neighborEdge, (Graph<GraphNode>) this);
 					}
@@ -260,9 +259,8 @@ public class Graph<N extends GraphNode> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void assertKnownNode(GraphNode node) throws UnknownGraphNodeException {
-		if (!hasNode((N) node)) throw new UnknownGraphNodeException(node);
+	private void assertKnownNode(N node) throws UnknownGraphNodeException {
+		if (!hasNode(node)) throw new UnknownGraphNodeException(node);
 	}
 
 	/**
