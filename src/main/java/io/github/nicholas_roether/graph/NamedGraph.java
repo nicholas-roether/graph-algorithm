@@ -1,6 +1,5 @@
 package io.github.nicholas_roether.graph;
 
-import java.util.List;
 import java.util.Set;
 
 /**

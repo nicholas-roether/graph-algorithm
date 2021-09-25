@@ -22,7 +22,7 @@ public class GraphNode {
 	 * @see Graph
 	 */
 	public final String id;
-	private List<GraphEdge> edges;
+	private final List<GraphEdge> edges;
 
 	/**
 	 * Creates a new node without any connections.
@@ -60,7 +60,7 @@ public class GraphNode {
 	}
 
 	/**
-	 * Checks whether or not the given node is a neighbor to this node.
+	 * Checks whether the given node is a neighbor to this node.
 	 *
 	 * @param other The node to check
 	 * @return whether the node is a neighbor
@@ -118,10 +118,10 @@ public class GraphNode {
 	 *
 	 * @param graph The graph this node is a part of
 	 */
-	public GraphNode disconnect(Graph<GraphNode> graph) throws GraphHierarchyException {
+	public void disconnect(Graph<GraphNode> graph) throws GraphHierarchyException {
 		if (!graph.hasNode(this))
 			throw new GraphHierarchyException("This node is not part of the provided graph");
-		return new GraphNode(id);
+		this.edges.clear();
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class GraphNode {
 	public boolean equals(Object obj) {
 		if (obj instanceof GraphNode) {
 			GraphNode n = (GraphNode) obj;
-			return n.id == this.id;
+			return n.id.equals(id);
 		}
 		return false;
 	}

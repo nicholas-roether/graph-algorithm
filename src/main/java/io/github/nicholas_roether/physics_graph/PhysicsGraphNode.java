@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
-	private static float REPULSION_CONSTANT = 30000;
-	private static float ATTRACTION_CONSTANT = 0.08f;
-	private static float FRICTION_CONSTANT = 0.3f;
+	private static final float REPULSION_CONSTANT = 30000;
+	private static final float ATTRACTION_CONSTANT = 0.08f;
+	private static final float FRICTION_CONSTANT = 0.3f;
 
 	private final Graph<PhysicsGraphNode> graph;
 	private PVector position = new PVector(0, 0);

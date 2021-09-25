@@ -1,7 +1,8 @@
 package io.github.nicholas_roether.graph;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * A graph. Graphs will by default be non-directional, meaning edges will always point in both directions.
@@ -11,12 +12,12 @@ import java.util.function.Function;
  */
 public class Graph<N extends GraphNode> {
 	/**
-	 * Whether or not this graph is directional, meaning whether or not edges should distinguish in
+	 * Whether this graph is directional, meaning whether edges should distinguish in
 	 * which direction they're pointing
 	 */
 	public final boolean directional;
 
-	private Set<N> nodes;
+	private final Set<N> nodes;
 
 	/**
 	 * Constructs a non-directional, empty graph.
@@ -46,7 +47,7 @@ public class Graph<N extends GraphNode> {
 	 *
 	 * @see GraphNode
 	 */
-	public Graph(Set<N> nodes) throws UnknownGraphNodeException {
+	public Graph(@NotNull Set<N> nodes) throws UnknownGraphNodeException {
 		this.nodes = new HashSet<>(nodes.size());
 		for (N node : nodes) addNode(node);
 		this.directional = false;
@@ -63,7 +64,7 @@ public class Graph<N extends GraphNode> {
 	 *
 	 * @see GraphNode
 	 */
-	public Graph(Set<N> nodes, boolean directional) throws UnknownGraphNodeException {
+	public Graph(@NotNull Set<N> nodes, boolean directional) throws UnknownGraphNodeException {
 		this.nodes = new HashSet<>(nodes.size());
 		for (N node : nodes) addNode(node);
 		this.directional = directional;
@@ -79,7 +80,7 @@ public class Graph<N extends GraphNode> {
 	 *
 	 * @see GraphNode
 	 */
-	public boolean addNode(N node) throws UnknownGraphNodeException {
+	public boolean addNode(@NotNull N node) throws UnknownGraphNodeException {
 		for (GraphNode neighbor : node.getNeighbors()) {
 			assertKnownNode(neighbor);
 		}
@@ -105,8 +106,7 @@ public class Graph<N extends GraphNode> {
 	 * @return a set of all nodes in this graph.
 	 */
 	public Set<N> getNodes() {
-		final Set<N> immutableSet = Collections.unmodifiableSet(nodes);
-		return immutableSet;
+		return Collections.unmodifiableSet(nodes);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class Graph<N extends GraphNode> {
 	 */
 	public N getNode(String id) throws UnknownGraphNodeException {
 		for (N node : nodes) {
-			if (node.id == id) return node;
+			if (node.id.equals(id)) return node;
 		}
 		throw new UnknownGraphNodeException(id);
 	}
@@ -129,18 +129,19 @@ public class Graph<N extends GraphNode> {
 	 * Gets a set of all the edges of this graph.
 	 * The edges will be returned in form of {@code IndependentEdge}-objects - this is not
 	 * the same as the {@code GraphEdge}-objects contained by nodes, as {@code IndependentEdge}s
-	 * contain both the node they originate from as well as the node they go to.
+	 * contain both the node they originate from, and the node they go to.
 	 *
 	 * @return a set of this graph's nodes
 	 *
 	 * @see IndependentEdge
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<IndependentEdge<N>> getEdges() {
 		final Set<IndependentEdge<N>> edges = new HashSet<>();
 		for (N node : getNodes()) {
 			for (GraphEdge edge : node.getEdges()) {
-				final IndependentEdge independentEdge =
-						new IndependentEdge(node, edge.neighbor, edge.weight, directional);
+				final IndependentEdge<N> independentEdge =
+						new IndependentEdge<>(node, (N) edge.neighbor, edge.weight, directional);
 				edges.add(independentEdge);
 			}
 		}
@@ -159,7 +160,7 @@ public class Graph<N extends GraphNode> {
 	 * @see GraphNode
 	 */
 	@SuppressWarnings("unchecked")
-	public void addEdge(N from, N to, double weight) throws UnknownGraphNodeException {
+	public void addEdge(@NotNull N from, @NotNull N to, double weight) throws UnknownGraphNodeException {
 		try {
 			from.addEdge(new GraphEdge(to, weight), (Graph<GraphNode>) this);
 			if (!directional)
@@ -170,7 +171,7 @@ public class Graph<N extends GraphNode> {
 	}
 
 	/**
-	 * Adds an edge with zero weight to the graph. On a non-directional graph, the order
+	 * Adds an edge with a weight of 1 to the graph. On a non-directional graph, the order
 	 * of the {@code to} and {@code from} parameters does not matter.
 	 *
 	 * @param from The node the edge originates from
@@ -178,7 +179,7 @@ public class Graph<N extends GraphNode> {
 	 * @throws UnknownGraphNodeException If nodes are to be connected that aren't contained in this graph
 	 */
 	public void addEdge(N from, N to) throws UnknownGraphNodeException {
-		addEdge(from, to, 0);
+		addEdge(from, to, 1);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class Graph<N extends GraphNode> {
 	 * @param to The node the edge to remove goes to
 	 */
 	@SuppressWarnings("unchecked")
-	public void removeEdge(N from, N to) {
+	public void removeEdge(@NotNull N from, @NotNull N to) {
 		try {
 			for (GraphEdge edge : from.getEdges())
 				if (edge.neighbor == to) from.removeEdge(edge, (Graph<GraphNode>) this);
@@ -210,7 +211,7 @@ public class Graph<N extends GraphNode> {
 	 * @param node The node to disconnect
 	 */
 	@SuppressWarnings("unchecked")
-	public void disconnect(N node) {
+	public void disconnect(@NotNull N node) {
 		try {
 			node.disconnect((Graph<GraphNode>) this);
 			if (!directional) {
@@ -236,8 +237,8 @@ public class Graph<N extends GraphNode> {
 	 * @see GraphNode
 	 */
 	public void fillWithNodes(
-			Set<N> nodes,
-			List<Graph.EdgeInit> edges
+			@NotNull Set<N> nodes,
+			@NotNull List<Graph.EdgeInit> edges
 	) {
 		try {
 			for (N node : nodes) {
@@ -297,7 +298,7 @@ public class Graph<N extends GraphNode> {
 		}
 
 		/**
-		 * Creates an {@code EdgeInit}-object for an edge with 0 weight.
+		 * Creates an {@code EdgeInit}-object for an edge with a weight of 1.
 		 *
 		 * @param from The node the edge should originate from
 		 * @param to The node the edge should go to
@@ -305,7 +306,7 @@ public class Graph<N extends GraphNode> {
 		public EdgeInit(String from, String to) {
 			this.from = from;
 			this.to = to;
-			this.weight = 0;
+			this.weight = 1;
 		}
 	}
 
@@ -314,7 +315,7 @@ public class Graph<N extends GraphNode> {
 	 * the information on both nodes it is connected to.
 	 * <br>
 	 * Note that two {@code IndependentEdge}-objects are considered equal if they have the same
-	 * weight and they are connected to the same nodes; additionally, if the graph this edge belongs to
+	 * weight, and they are connected to the same nodes; additionally, if the graph this edge belongs to
 	 * is directional, the edges need to have the same starting and ending node to be considered equal.
 	 * <br>
 	 * Note also that nodes are considered equal if their ids are equal.
