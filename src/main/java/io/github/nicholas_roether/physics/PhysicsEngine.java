@@ -12,8 +12,8 @@ import java.util.List;
  *
  * @see PhysicsObject
  */
-public class PhysicsEngine {
-	private final List<PhysicsObject> objects;
+public class PhysicsEngine<O extends PhysicsObject> {
+	private final List<O> objects;
 
 	/**
 	 * Constructs a {@code PhysicsEngine} with no {@code PhysicsObject}s associated with it.
@@ -27,7 +27,7 @@ public class PhysicsEngine {
 	 *
 	 * @param object The object to add.
 	 */
-	public void addObject(@NotNull PhysicsObject object) {
+	public void addObject(@NotNull O object) {
 		objects.add(object);
 	}
 
@@ -36,8 +36,9 @@ public class PhysicsEngine {
 	 *
 	 * @param objects The objects to add.
 	 */
-	public void addObjects(PhysicsObject @NotNull ...objects) {
-		for (PhysicsObject object : objects) {
+	@SafeVarargs
+	public final void addObjects(O @NotNull ... objects) {
+		for (O object : objects) {
 			addObject(object);
 		}
 	}
@@ -47,7 +48,7 @@ public class PhysicsEngine {
 	 *
 	 * @return all {@code PhysicsObject}s that are associated with this engine.
 	 */
-	public List<PhysicsObject> getObjects() {
+	public List<O> getObjects() {
 		return Collections.unmodifiableList(objects);
 	}
 
@@ -61,11 +62,11 @@ public class PhysicsEngine {
 	 * @param time The step time in seconds
 	 */
 	public void step(float time) {
-		for (PhysicsObject object : objects)
+		for (O object : objects)
 				stepObject(object, time);
 	}
 
-	private void stepObject(@NotNull PhysicsObject object, float time) {
+	protected void stepObject(@NotNull O object, float time) {
 		object.update();
 		final PVector deltaVel = object.getAcceleration().copy().mult(time);
 		final PVector deltaPos = object.getVelocity().copy().mult(time);

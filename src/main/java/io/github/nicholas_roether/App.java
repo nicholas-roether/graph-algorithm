@@ -34,7 +34,7 @@ public class App extends PApplet {
 		graph = new PhysicsGraph<>();
 
 		final GraphNode<PhysicsNodeData> nodeA = graph.addNode("A");
-		nodeA.setData(new PhysicsNodeData(nodeA, graph, new PVector(width / 2f - 100, height / 2f)));
+		nodeA.setData(new PhysicsNodeData(nodeA, graph, new PVector(width / 2f, height / 2f)));
 
 		final GraphNode<PhysicsNodeData> nodeB = graph.addNode("B");
 		nodeB.setData(new PhysicsNodeData(nodeB, graph, new PVector(width / 2f + 100, height / 2f)));
@@ -43,17 +43,42 @@ public class App extends PApplet {
 		nodeC.setData(new PhysicsNodeData(nodeC, graph, new PVector(width / 2f, height / 2f - 100)));
 
 		final GraphNode<PhysicsNodeData> nodeD = graph.addNode("D");
-		nodeD.setData(new PhysicsNodeData(nodeD, graph, new PVector(width / 2f, height / 2f)));
+		nodeD.setData(new PhysicsNodeData(nodeD, graph, new PVector(width / 2f, height / 2f - 69)));
 
 		final GraphNode<PhysicsNodeData> nodeE = graph.addNode("E");
 		nodeE.setData(new PhysicsNodeData(nodeE, graph, new PVector(width / 2f - 300, height / 2f)));
 
-		graph.addEdge(nodeA, nodeB, 5);
+		final GraphNode<PhysicsNodeData> nodeF = graph.addNode("F");
+		nodeF.setData(new PhysicsNodeData(nodeF, graph, new PVector(width / 2f - 100, height / 2f + 50)));
+
+		final GraphNode<PhysicsNodeData> nodeG = graph.addNode("G");
+		nodeG.setData(new PhysicsNodeData(nodeG, graph, new PVector(width / 2f + 100, height / 2f - 34)));
+
+		final GraphNode<PhysicsNodeData> nodeH = graph.addNode("H");
+		nodeH.setData(new PhysicsNodeData(nodeH, graph, new PVector(width / 2f + 32, height / 2f - 100)));
+
+		final GraphNode<PhysicsNodeData> nodeI = graph.addNode("I");
+		nodeI.setData(new PhysicsNodeData(nodeI, graph, new PVector(width / 2f - 56, height / 2f + 200)));
+
+		final GraphNode<PhysicsNodeData> nodeJ = graph.addNode("J");
+		nodeJ.setData(new PhysicsNodeData(nodeJ, graph, new PVector(width / 2f - 200, height / 2f - 14)));
+
+		graph.addEdge(nodeA, nodeB, 1);
 		graph.addEdge(nodeB, nodeC, 2);
-		graph.addEdge(nodeA, nodeC, -3);
-		graph.addEdge(nodeA, nodeD, 4);
+		graph.addEdge(nodeA, nodeC, 3);
+		graph.addEdge(nodeA, nodeD, 0.2);
 		graph.addEdge(nodeA, nodeE, 2);
 		graph.addEdge(nodeB, nodeE, 4);
+		graph.addEdge(nodeF, nodeI, 0.5);
+		graph.addEdge(nodeE, nodeG, 4);
+		graph.addEdge(nodeH, nodeA, 20);
+		graph.addEdge(nodeJ, nodeD, 0.6);
+		graph.addEdge(nodeJ, nodeF, 11);
+		graph.addEdge(nodeB, nodeH, 2);
+		graph.addEdge(nodeC, nodeI, 1);
+		graph.addEdge(nodeF, nodeI, 0.8);
+		graph.addEdge(nodeJ, nodeI, 17);
+		graph.addEdge(nodeD, nodeG, 2);
 
 		graph.addAnchor(nodeA);
 

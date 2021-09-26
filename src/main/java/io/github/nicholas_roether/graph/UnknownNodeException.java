@@ -1,7 +1,5 @@
 package io.github.nicholas_roether.graph;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * This exception indicates that a node that isn't contained in a graph was passed to
  * one of that graph's methods. This often occurs in one of the following cases:

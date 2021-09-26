@@ -10,13 +10,15 @@ import processing.core.PVector;
 public class PhysicsNodeData implements PhysicsObject {
 	private static final float REPULSION_CONSTANT = 1150000;
 	private static final float ATTRACTION_CONSTANT = 4f;
-	private static final float FRICTION_CONSTANT = 3f;
+	private static final float FRICTION_CONSTANT = 2f;
+	public static final float RADIUS = 15;
 
 	private final PhysicsGraph<PhysicsNodeData, ?> graph;
 	private final GraphNode<PhysicsNodeData> node;
 	private PVector acceleration;
 	private PVector velocity;
 	private PVector position;
+	private boolean colliding = false;
 
 	public PhysicsNodeData(
 			@NotNull GraphNode<PhysicsNodeData> node,
@@ -74,15 +76,25 @@ public class PhysicsNodeData implements PhysicsObject {
 			final float distance = getDistance(nodeData);
 			if (distance == 0) continue;
 			final PVector normal = getNormalTo(nodeData);
-			final float repulsion = getRepulsion(distance);
-			acc.add(normal.mult(-repulsion));
+
+			if (distance <= RADIUS) {
+				if (!colliding) {
+					colliding = true;
+					velocity.sub(normal.copy().mult(2 * velocity.dot(normal.mult(-1))));
+				}
+			} else {
+				colliding = false;
+				final float repulsion = getRepulsion(distance);
+				acc.add(normal.copy().mult(-repulsion));
+			}
 		}
 		for (GraphNeighbor<PhysicsNodeData, ?> neighbor : graph.getNeighbors(node)) {
 			final PhysicsNodeData neighborData = neighbor.node.getData();
 			final float distance = getDistance(neighborData);
 			if (distance == 0) continue;
 			final PVector normal = getNormalTo(neighborData);
-			final float attraction = getAttraction(distance);
+			final double minmaxedWeight = Math.min(Math.max(neighbor.edgeWeight, 1), 20);
+			final float attraction = getAttraction(distance / (float) minmaxedWeight);
 			acc.add(normal.mult(attraction));
 		}
 		acc.add(getFriction());
