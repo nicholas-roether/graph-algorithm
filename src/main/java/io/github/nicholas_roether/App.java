@@ -7,6 +7,7 @@ import io.github.nicholas_roether.physics_graph.PhysicsNodeData;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.core.PVector;
+import processing.event.MouseEvent;
 
 import javax.lang.model.type.NullType;
 import java.util.List;
@@ -93,8 +94,38 @@ public class App extends PApplet {
 		drawPhysicsGraph(graph);
 	}
 
+	@Override
+	public void mousePressed() {
+		for (GraphNode<PhysicsNodeData> node : graph.getNodes()) {
+			final PhysicsNodeData data = node.getData();
+			final PVector offset = data.getPosition().copy().sub(new PVector(mouseX, mouseY));
+			if (offset.magSq() <= PhysicsNodeData.RADIUS * PhysicsNodeData.RADIUS)
+				data.dragging = true;
+		}
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent event) {
+		for (GraphNode<PhysicsNodeData> node : graph.getNodes()) {
+			final PhysicsNodeData data = node.getData();
+			if (data.dragging) {
+				data.setAcceleration(new PVector(0, 0));
+				data.setVelocity(new PVector(0, 0));
+				data.setPosition(new PVector(mouseX, mouseY));
+			}
+		}
+	}
+
+	@Override
+	public void mouseReleased() {
+		for (GraphNode<PhysicsNodeData> node : graph.getNodes()) {
+			node.getData().dragging = false;
+		}
+	}
+
 	private void drawArrow(float x1, float y1, float x2, float y2, float headHeight, float headWidth) {
 		final PVector vector = new PVector(x2 - x1, y2 - y1);
+		//noinspection SuspiciousNameCombination
 		final PVector normal = new PVector(-vector.y, vector.x).normalize();
 
 		final PVector toHeadTop = vector.copy().add(vector.copy().normalize().mult(headHeight));
@@ -115,7 +146,7 @@ public class App extends PApplet {
 		stroke(100, 100, 100);
 		strokeWeight(3);
 		ellipseMode(CENTER);
-		ellipse(x, y, 30, 30);
+		ellipse(x, y, 2 * PhysicsNodeData.RADIUS, 2 * PhysicsNodeData.RADIUS);
 
 		final float textSize = 25;
 		fill(0, 0, 0);

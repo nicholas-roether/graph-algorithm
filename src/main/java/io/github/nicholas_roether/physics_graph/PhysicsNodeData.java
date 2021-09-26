@@ -13,6 +13,7 @@ public class PhysicsNodeData implements PhysicsObject {
 	private static final float FRICTION_CONSTANT = 2f;
 	public static final float RADIUS = 15;
 
+	public boolean dragging = false;
 	private final PhysicsGraph<PhysicsNodeData, ?> graph;
 	private final GraphNode<PhysicsNodeData> node;
 	private PVector acceleration;
@@ -69,6 +70,8 @@ public class PhysicsNodeData implements PhysicsObject {
 			setVelocity(new PVector(0, 0));
 			return;
 		}
+
+		if (dragging) return;
 
 		final PVector acc = new PVector(0, 0);
 		for (GraphNode<PhysicsNodeData> node : graph.getNodes()) {
