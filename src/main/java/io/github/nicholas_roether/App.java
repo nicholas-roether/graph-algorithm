@@ -64,6 +64,9 @@ public class App extends PApplet {
 		final GraphNode<PhysicsNodeData> nodeJ = graph.addNode("J");
 		nodeJ.setData(new PhysicsNodeData(nodeJ, graph, new PVector(width / 2f - 200, height / 2f - 14)));
 
+		final GraphNode<PhysicsNodeData> nodeK = graph.addNode("K");
+		nodeK.setData(new PhysicsNodeData(nodeK, graph, new PVector(width / 2f + 200, height / 2f + 200)));
+
 		graph.addEdge(nodeA, nodeB, 1);
 		graph.addEdge(nodeB, nodeC, 2);
 		graph.addEdge(nodeA, nodeC, 3);
