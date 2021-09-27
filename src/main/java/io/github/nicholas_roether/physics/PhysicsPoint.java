@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.physics;
 
+import org.jetbrains.annotations.NotNull;
 import processing.core.PVector;
 
 public class PhysicsPoint implements PhysicsObject {
@@ -41,17 +42,17 @@ public class PhysicsPoint implements PhysicsObject {
 	}
 
 	@Override
-	public void setAcceleration(PVector acceleration) {
+	public void setAcceleration(@NotNull PVector acceleration) {
 		this.acceleration = acceleration;
 	}
 
 	@Override
-	public void setVelocity(PVector velocity) {
+	public void setVelocity(@NotNull PVector velocity) {
 		this.velocity = velocity;
 	}
 
 	@Override
-	public void setPosition(PVector position) {
+	public void setPosition(@NotNull PVector position) {
 		System.out.println(position);
 		this.position = position;
 	}

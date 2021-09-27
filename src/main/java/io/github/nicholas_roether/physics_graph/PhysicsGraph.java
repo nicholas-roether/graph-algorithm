@@ -1,31 +1,44 @@
 package io.github.nicholas_roether.physics_graph;
 
 import io.github.nicholas_roether.graph.Graph;
-import io.github.nicholas_roether.graph.UnknownGraphNodeException;
+import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics.PhysicsEngine;
+import io.github.nicholas_roether.physics.PhysicsObject;
+import org.jetbrains.annotations.NotNull;
 import processing.core.PVector;
 
+import java.util.HashSet;
+import java.util.Set;
 
-public class PhysicsGraph extends Graph<PhysicsGraphNode> {
-	public final PVector origin;
-	public final float initialDispersion;
 
-	private final PhysicsEngine engine;
+public class PhysicsGraph<ND extends PhysicsNodeData, ED> extends Graph<ND, ED> {
+	private final PhysicsEngine<PhysicsObject> engine;
+	private final Set<GraphNode<ND>> anchors;
 
-	public PhysicsGraph(PVector origin, float initialDispersion) {
+	public PhysicsGraph() {
 		super();
-		this.origin = origin;
-		this.initialDispersion = initialDispersion;
-		this.engine = new PhysicsEngine();
+		this.engine = new PhysicsEngine<>();
+		this.anchors = new HashSet<>();
 	}
 
-	@Override
-	public boolean addNode(PhysicsGraphNode node) throws UnknownGraphNodeException {
-		this.engine.addObject(node);
-		return super.addNode(node);
+	public void initPhysicsEngine() {
+		for (GraphNode<ND> node : getNodes()) {
+			final ND data = node.getData();
+			if (data == null)
+				throw new IllegalStateException("Can't init physics engine due to improperly initialized node: " + node);
+			engine.addObject(data);
+		}
 	}
 
 	public void stepPhysicsEngine(float time) {
-		this.engine.step(time);
+		engine.step(time);
+	}
+
+	public boolean addAnchor(GraphNode<ND> node) {
+		return anchors.add(node);
+	}
+
+	public Set<GraphNode<ND>> getAnchors() {
+		return anchors;
 	}
 }

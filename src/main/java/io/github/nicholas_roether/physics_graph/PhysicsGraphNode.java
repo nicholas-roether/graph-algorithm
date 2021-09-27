@@ -1,4 +1,5 @@
 package io.github.nicholas_roether.physics_graph;
+/*
 
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
@@ -11,9 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
-	private static float REPULSION_CONSTANT = 30000;
-	private static float ATTRACTION_CONSTANT = 0.08f;
-	private static float FRICTION_CONSTANT = 0.3f;
+	private static final float REPULSION_CONSTANT = 30000;
+	private static final float ATTRACTION_CONSTANT = 0.08f;
+	private static final float FRICTION_CONSTANT = 0.3f;
 
 	private final Graph<PhysicsGraphNode> graph;
 	private PVector position = new PVector(0, 0);
@@ -25,18 +26,13 @@ public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
 		this.graph = graph;
 	}
 
-	public PhysicsGraphNode(String id, Graph<PhysicsGraphNode> graph, Collection<GraphEdge> edges) {
+	public PhysicsGraphNode(String id, Graph<PhysicsGraphNode> graph, Collection<GraphEdge<GraphNode>> edges) {
 		super(id, edges);
 		this.graph = graph;
 	}
 
 	public Set<PhysicsGraphNode> getNeighboringPhysicsGraphNodes() {
-		final Set<PhysicsGraphNode> physicsGraphNodes = new HashSet<>();
-		for (GraphNode neighbor : super.getNeighbors()) {
-			if (neighbor instanceof PhysicsGraphNode)
-					physicsGraphNodes.add((PhysicsGraphNode) neighbor);
-		}
-		return physicsGraphNodes;
+		return super.getNeighbors(new HashSet<>());
 	}
 
 	@Override
@@ -110,3 +106,4 @@ public class PhysicsGraphNode extends GraphNode implements PhysicsObject {
 		return this.velocity.copy().mult(-FRICTION_CONSTANT);
 	}
 }
+*/
