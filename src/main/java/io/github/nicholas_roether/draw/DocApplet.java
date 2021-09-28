@@ -13,79 +13,82 @@ public abstract class DocApplet extends PApplet {
 
 	protected abstract void populate();
 
+	protected void frame() {}
+
 	@Override
-	public void setup() {
+	public final void setup() {
 		document.setup(this);
 		this.populate();
 	}
 
 	@Override
-	public void draw() {
+	public final void draw() {
+		this.frame();
 		document.draw(this);
 	}
 
 	@Override
-	public void pause() {
+	public final void pause() {
 		document.pause();
 	}
 
 	@Override
-	public void resume() {
+	public final void resume() {
 		document.resume();
 	}
 
 	@Override
-	public void mousePressed(MouseEvent event) {
+	public final void mousePressed(MouseEvent event) {
 		document.mousePressed(event);
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent event) {
+	public final void mouseReleased(MouseEvent event) {
 		document.mouseReleased(event);
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent event) {
+	public final void mouseClicked(MouseEvent event) {
 		document.mouseClicked(event);
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent event) {
+	public final void mouseDragged(MouseEvent event) {
 		document.mouseDragged(event);
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent event) {
+	public final void mouseMoved(MouseEvent event) {
 		document.mouseMoved(event);
 	}
 
 	@Override
-	public void mouseWheel(MouseEvent event) {
+	public final void mouseWheel(MouseEvent event) {
 		document.mouseWheel(event);
 	}
 
 	@Override
-	public void keyPressed(KeyEvent event) {
+	public final void keyPressed(KeyEvent event) {
 		document.keyPressed(event);
 	}
 
 	@Override
-	public void keyReleased(KeyEvent event) {
+	public final void keyReleased(KeyEvent event) {
 		document.keyReleased(event);
 	}
 
 	@Override
-	public void keyTyped(KeyEvent event) {
+	public final void keyTyped(KeyEvent event) {
 		document.keyTyped(event);
 	}
 
 	@Override
-	public void focusGained() {
+	public final void focusGained() {
 		document.focusGained();
 	}
 
 	@Override
-	public void focusLost() {
+	public final void focusLost() {
 		document.focusLost();
 	}
 }

@@ -1,6 +1,7 @@
 package io.github.nicholas_roether.util;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -14,8 +15,10 @@ public class EventSource<E> {
 	}
 
 	public void on(String event, Consumer<E> listener) {
-		final Set<Consumer<E>> listeners = listenerMap.get(event);
-		if (listeners == null) return;
+		if (!events.contains(event)) return;
+		if (!listenerMap.containsKey(event))
+			listenerMap.put(event, new HashSet<>());
+		Set<Consumer<E>> listeners = listenerMap.get(event);
 		listeners.add(listener);
 	}
 

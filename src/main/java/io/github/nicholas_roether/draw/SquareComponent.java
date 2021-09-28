@@ -1,44 +1,29 @@
 package io.github.nicholas_roether.draw;
 
-public abstract class SquareComponent extends Component {
-	protected float x;
-	protected float y;
-	protected float width;
-	protected float height;
+import java.util.Collection;
 
+public abstract class SquareComponent extends Component {
 	public SquareComponent() {
 		super();
 	}
 
-	public SquareComponent(float x, float y, float width, float height) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public SquareComponent(Collection<? extends  Component> children) {
+		super(children);
 	}
 
 	@Override
 	public boolean isContained(float x, float y) {
-		final float delX = x - this.x;
-		final float delY = y - this.y;
-		return 0 <= delX && delX <= width && 0 <= delY && delY <= height;
+		final float delX = x - getX();
+		final float delY = y - getY();
+		return 0 <= delX && delX <= getWidth() && 0 <= delY && delY <= getHeight();
 	}
 
-	public float getX() {
-		return x;
-	}
+	public abstract float getX();
 
-	public float getY() {
-		return y;
-	}
+	public abstract float getY();
 
-	public float getWidth() {
-		return width;
-	}
+	public abstract float getWidth();
 
-	public float getHeight() {
-		return height;
-	}
+	public abstract float getHeight();
 
 }

@@ -49,7 +49,7 @@ public class PhysicsEngine<O extends PhysicsObject> {
 	 * @return all {@code PhysicsObject}s that are associated with this engine.
 	 */
 	public List<O> getObjects() {
-		return Collections.unmodifiableList(objects);
+		return objects;
 	}
 
 	/**

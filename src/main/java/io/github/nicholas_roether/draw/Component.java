@@ -9,6 +9,7 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -16,12 +17,14 @@ public abstract class Component implements SketchElement, PConstants {
 	protected boolean mouseHover = false;
 	protected boolean mouseDragging = false;
 	protected Component parent = null;
-	protected Component document = null;
-	protected final List<SketchElement> children;
+	protected Document document = null;
+	protected final List<Component> children;
 	protected final EventSource<MouseEvent> mouseEventSource;
 	protected final EventSource<KeyEvent> keyEventSource;
 	protected final Notifier focusNotifier;
 	protected final Notifier appNotifier;
+
+	private boolean didSetup = false;
 
 	public Component() {
 		this.children = new ArrayList<>();
@@ -42,6 +45,28 @@ public abstract class Component implements SketchElement, PConstants {
 		);
 		focusNotifier = new Notifier("gained", "lost");
 		appNotifier = new Notifier("pause", "resume");
+	}
+
+	public Component(Collection<? extends Component> children) {
+		this.children = new ArrayList<>();
+		mouseEventSource = new EventSource<>(
+				"pressed",
+				"released",
+				"clicked",
+				"dragged",
+				"moved",
+				"entered",
+				"exited",
+				"wheel"
+		);
+		keyEventSource = new EventSource<>(
+				"pressed",
+				"released",
+				"typed"
+		);
+		focusNotifier = new Notifier("gained", "lost");
+		appNotifier = new Notifier("pause", "resume");
+		appendChildren(children);
 	}
 
 	public abstract boolean isContained(float x, float y);
@@ -95,18 +120,26 @@ public abstract class Component implements SketchElement, PConstants {
 		onKey("typed", this::onKeyType);
 		onFocus("gained", this::onFocusGained);
 		onFocus("lost", this::onFocusLost);
-		for (SketchElement child : children)
+		for (Component child : children) {
+			child.setDocument(document);
 			child.setup(proc);
+		}
+		didSetup = true;
 	}
 
 	@Override
 	public final void draw(PApplet proc) {
 		render(proc);
-		for (SketchElement child : children)
+		for (Component child : children) {
+			if (!child.didSetup) {
+				child.setDocument(document);
+				child.setup(proc);
+			};
 			child.draw(proc);
+		}
 	}
 
-	public final void appendChild(SketchElement child) {
+	public final void appendChild(Component child) {
 		children.add(child);
 		onMouse("pressed", child::mousePressed);
 		onMouse("released", child::mouseReleased);
@@ -121,19 +154,16 @@ public abstract class Component implements SketchElement, PConstants {
 		onFocus("lost", child::focusLost);
 		onApp("pause", child::pause);
 		onApp("resume", child::resume);
-		if (child instanceof Component) {
-			final Component component = (Component) child;
-			component.setDocument(document);
-			component.setParent(parent);
-		}
+		child.setDocument(document);
+		child.setParent(parent);
 	}
 
-	public final void appendChildren(SketchElement @NotNull ...children) {
-		for (SketchElement child : children)
+	public final void appendChildren(Collection<? extends Component> children) {
+		for (Component child : children)
 			appendChild(child);
 	}
 
-	public final void removeChild(SketchElement child) {
+	public final void removeChild(Component child) {
 		children.remove(child);
 		removeMouseListener("pressed", child::mousePressed);
 		removeMouseListener("released", child::mouseReleased);
@@ -148,11 +178,19 @@ public abstract class Component implements SketchElement, PConstants {
 		removeFocusListener("lost", child::focusLost);
 		removeAppListener("pause", child::pause);
 		removeAppListener("resume", child::resume);
-		if (child instanceof Component) {
-			final Component component = (Component) child;
-			component.setDocument(null);
-			component.setParent(null);
-		}
+		child.setDocument(null);
+		child.setParent(null);
+	}
+
+	public final void removeChildren() {
+		for (SketchElement child : children)
+			unsubscribeChild(child);
+		children.clear();
+	}
+
+	public final void replaceChildren(Collection<? extends Component> children) {
+		removeChildren();
+		appendChildren(children);
 	}
 
 	public final void onMouse(String event, Consumer<MouseEvent> listener) {
@@ -275,7 +313,40 @@ public abstract class Component implements SketchElement, PConstants {
 		this.parent = parent;
 	}
 
-	public void setDocument(Component document) {
+	public void setDocument(Document document) {
 		this.document = document;
+		for (Component child : children)
+			child.setDocument(document);
+	}
+
+	private void unsubscribeChild(SketchElement child) {
+		removeMouseListener("pressed", child::mousePressed);
+		removeMouseListener("released", child::mouseReleased);
+		removeMouseListener("clicked", child::mouseClicked);
+		removeMouseListener("dragged", child::mouseDragged);
+		removeMouseListener("moved", child::mouseMoved);
+		removeMouseListener("wheel", child::mouseWheel);
+		removeKeyListener("pressed", child::keyPressed);
+		removeKeyListener("released", child::keyReleased);
+		removeKeyListener("typed", child::keyTyped);
+		removeFocusListener("gained", child::focusGained);
+		removeFocusListener("lost", child::focusLost);
+		removeAppListener("pause", child::pause);
+		removeAppListener("resume", child::resume);
+	}
+
+	public static void makePointable(Component component) {
+		component.onMouse("entered", event -> {
+			if (component.document == null) {
+				return;
+			}
+			component.document.setCursor(HAND);
+		});
+		component.onMouse("exited", event -> {
+			if (component.document == null) {
+				return;
+			}
+			component.document.setCursor(ARROW);
+		});
 	}
 }

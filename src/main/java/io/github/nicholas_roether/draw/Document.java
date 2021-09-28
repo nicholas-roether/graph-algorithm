@@ -4,6 +4,7 @@ import processing.core.PApplet;
 
 public class Document extends SimpleComponent {
 	private int bgColor;
+	private int cursor = ARROW;
 
 	@Override
 	public void init(PApplet proc) {
@@ -12,6 +13,11 @@ public class Document extends SimpleComponent {
 
 	@Override
 	public void render(PApplet proc) {
+		proc.cursor(cursor);
 		proc.background(bgColor);
+	}
+
+	public void setCursor(int cursor) {
+		this.cursor = cursor;
 	}
 }
