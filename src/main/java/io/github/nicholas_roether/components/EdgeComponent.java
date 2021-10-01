@@ -1,16 +1,25 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.SimpleComponent;
 import io.github.nicholas_roether.graph.GraphEdge;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class EdgeComponent extends SimpleComponent {
+import javax.lang.model.type.NullType;
+import java.util.List;
+
+public class EdgeComponent extends SimpleComponent<NullType> {
 	public final GraphEdge<PVector, ?> edge;
 
 	public EdgeComponent(GraphEdge<PVector, ?> edge) {
 		super();
 		this.edge = edge;
+	}
+
+	@Override
+	protected List<Component<?>> build(PApplet proc) {
+		return NO_CHILDREN;
 	}
 
 	@Override

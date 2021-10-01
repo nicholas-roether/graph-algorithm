@@ -12,9 +12,22 @@ import processing.core.PVector;
 import processing.event.MouseEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class GraphComponent extends SimpleComponent {
+public class GraphComponent extends SimpleComponent<GraphComponent.State> {
+	public static class State {
+		public final List<NodeComponent> nodeComponents;
+		public final List<EdgeComponent> edgeComponents;
+		public final List<String> anchors;
+
+		public State(List<NodeComponent> nodeComponents, List<EdgeComponent> edgeComponents, List<String> anchors) {
+			this.nodeComponents = Collections.unmodifiableList(nodeComponents);
+			this.edgeComponents = Collections.unmodifiableList(edgeComponents);
+			this.anchors = Collections.unmodifiableList(anchors);
+		}
+	}
+
 	public final Graph<PVector, ?> graph;
 
 	private final List<NodeComponent> nodeComponents;
@@ -32,23 +45,26 @@ public class GraphComponent extends SimpleComponent {
 	}
 
 	@Override
+	protected List<Component<?>> build(PApplet proc) {
+		final List<Component<?>> children = new ArrayList<>();
+		children.addAll(edgeComponents);
+		children.addAll(nodeComponents);
+
+		final List<Component<?>> labels = new ArrayList<>();
+		for (EdgeComponent edgeComponent : edgeComponents) {
+			final PVector edgeCenter = edgeComponent.getCenter();
+			labels.add(new Label(Double.toString(edgeComponent.edge.weight), edgeCenter.x, edgeCenter.y));
+		}
+		children.addAll(labels);
+		return children;
+	}
+
+	@Override
 	public void render(PApplet proc) {
 		if (graph.getNodes().size() != nodeComponents.size())
 			syncNodes();
 		if (graph.getEdges().size() != edgeComponents.size())
 			syncEdges();
-
-		final List<Component> labels = new ArrayList<>();
-		for (EdgeComponent edgeComponent : edgeComponents) {
-			final PVector edgeCenter = edgeComponent.getCenter();
-			labels.add(new Label(Double.toString(edgeComponent.edge.weight), edgeCenter.x, edgeCenter.y));
-		}
-
-		replaceChildren(List.of(
-			new ComponentGroup(edgeComponents),
-			new ComponentGroup(nodeComponents),
-			new ComponentGroup(labels)
-		));
 	}
 
 	public void stepPhysicsEngine(float time) {

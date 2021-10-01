@@ -4,17 +4,13 @@ import processing.core.PVector;
 
 import java.util.Collection;
 
-public abstract class CircleComponent extends Component {
+public abstract class CircleComponent<S> extends Component<S> {
 	public CircleComponent() {
 		super();
 	}
 
-	public CircleComponent(Collection<? extends Component> children) {
-		super(children);
-	}
-
 	@Override
-	public boolean isContained(float x, float y) {
+	public boolean isInBounds(float x, float y) {
 		final float distance = new PVector(getX(), getY()).dist(new PVector(x, y));
 		return distance <= getRadius();
 	}

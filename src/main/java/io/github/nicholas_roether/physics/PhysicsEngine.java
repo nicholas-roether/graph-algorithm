@@ -72,5 +72,6 @@ public class PhysicsEngine<O extends PhysicsObject> {
 		final PVector deltaPos = object.getVelocity().copy().mult(time);
 		object.getVelocity().add(deltaVel);
 		object.getPosition().add(deltaPos);
+		object.postUpdate();
 	}
 }

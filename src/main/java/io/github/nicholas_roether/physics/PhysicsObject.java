@@ -47,4 +47,9 @@ public interface PhysicsObject {
 	 * Update the state of the physics object.
 	 */
 	void update();
+
+	/**
+	 * Called after the update call
+	 */
+	default void postUpdate() {}
 }

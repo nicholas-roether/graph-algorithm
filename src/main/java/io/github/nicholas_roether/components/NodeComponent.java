@@ -2,7 +2,6 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.CircleComponent;
 import io.github.nicholas_roether.draw.Component;
-import io.github.nicholas_roether.draw.SketchElement;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNeighbor;
 import io.github.nicholas_roether.graph.GraphNode;
@@ -12,7 +11,19 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
-public class NodeComponent extends CircleComponent implements PhysicsObject {
+import java.util.List;
+
+public class NodeComponent extends CircleComponent<NodeComponent.State> implements PhysicsObject {
+	public static class State {
+		public final PVector position;
+		public final boolean hover;
+
+		public State(PVector position, boolean hover) {
+			this.position = position;
+			this.hover = hover;
+		}
+	}
+
 	private static final float REPULSION_CONSTANT = 1150000;
 	private static final float ATTRACTION_CONSTANT = 4f;
 	private static final float FRICTION_CONSTANT = 2f;
@@ -31,16 +42,19 @@ public class NodeComponent extends CircleComponent implements PhysicsObject {
 		this.node = node;
 		this.anchor = anchor;
 		this.graph = graph;
+
+		setState(new State(node.getData(), false));
 	}
 
+
 	@Override
-	public void init(PApplet proc) {
-		Component.makePointable(this);
+	public List<Component<?>> build(PApplet proc) {
+		return NO_CHILDREN;
 	}
 
 	@Override
 	public void render(PApplet proc) {
-		if (mouseHover) proc.fill(140, 245, 256);
+		if (getState().hover) proc.fill(140, 245, 256);
 		else if (anchor) proc.fill(85, 205, 244);
 		else proc.fill(255, 255, 255);
 		proc.stroke(100, 100, 100);
@@ -52,15 +66,26 @@ public class NodeComponent extends CircleComponent implements PhysicsObject {
 		proc.fill(0, 0, 0);
 		proc.textAlign(CENTER);
 		proc.textSize(textSize);
-		proc.text(node.name, getX(), getY() + textSize / 3);
+		proc.text(node.name, getState().position.x, getState().position.y + textSize / 3);
 	}
 
 	@Override
-	public void onMouseDrag(MouseEvent event) {
+	protected void onMouseEntered(MouseEvent event) {
+		setState(new State(getState().position, true));
+	}
+
+	@Override
+	protected void onMouseExited(MouseEvent event) {
+		setState(new State(getState().position, false));
+	}
+
+	@Override
+	public void onMouseDragged(MouseEvent event) {
 		System.out.println(event.getX() + "; " + event.getY());
 		velocity = new PVector(0, 0);
 		acceleration = new PVector(0, 0);
 		node.setData(new PVector(event.getX(), event.getY()));
+		setState(new State(node.getData(), getState().hover));
 	}
 
 	@Override
@@ -110,7 +135,7 @@ public class NodeComponent extends CircleComponent implements PhysicsObject {
 
 	@Override
 	public void update() {
-		if (anchor || mouseDragging) {
+		if (anchor || getState().hover) {
 			setAcceleration(new PVector(0, 0));
 			setVelocity(new PVector(0, 0));
 			return;
@@ -143,6 +168,11 @@ public class NodeComponent extends CircleComponent implements PhysicsObject {
 		}
 		acc.add(getFriction());
 		setAcceleration(acc);
+	}
+
+	@Override
+	public void postUpdate() {
+		setState(new State(node.getData(), getState().hover));
 	}
 
 	private float getDistance(@NotNull GraphNode<PVector> other) {
