@@ -81,7 +81,6 @@ public class NodeComponent extends CircularComponent {
 	public void mouseReleasedAnywhere(MouseEvent event) {
 		physics.setDisabled(anchor);
 		if (dragging && mouseVelocity != null) {
-			System.out.println(mouseVelocity);
 			physics.setVelocity(mouseVelocity.copy().mult(MOUSE_VEL_TRANSLATION));
 		}
 		dragging = false;
