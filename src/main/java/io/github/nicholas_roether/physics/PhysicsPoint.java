@@ -58,7 +58,7 @@ public class PhysicsPoint implements PhysicsObject {
 	}
 
 	@Override
-	public void update() {
+	public void update(float time) {
 		// do nothing
 	}
 }

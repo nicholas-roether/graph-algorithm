@@ -1,91 +1,66 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
-import io.github.nicholas_roether.draw.ComponentGroup;
-import io.github.nicholas_roether.draw.SimpleComponent;
+import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics.PhysicsEngine;
+import io.github.nicholas_roether.physics_graph.NodePhysics;
+import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.core.PVector;
-import processing.event.MouseEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class GraphComponent extends SimpleComponent<GraphComponent.State> {
-	public static class State {
-		public final List<NodeComponent> nodeComponents;
-		public final List<EdgeComponent> edgeComponents;
-		public final List<String> anchors;
+public class GraphComponent extends Component {
+	public final Graph<PVector, Object> graph;
+	public final List<String> anchors;
 
-		public State(List<NodeComponent> nodeComponents, List<EdgeComponent> edgeComponents, List<String> anchors) {
-			this.nodeComponents = Collections.unmodifiableList(nodeComponents);
-			this.edgeComponents = Collections.unmodifiableList(edgeComponents);
-			this.anchors = Collections.unmodifiableList(anchors);
-		}
-	}
+	private Set<GraphNode<PVector>> nodes;
+	private List<GraphEdge<PVector, Object>> edges;
+	private final PhysicsEngine<NodePhysics> physicsEngine;
 
-	public final Graph<PVector, ?> graph;
-
-	private final List<NodeComponent> nodeComponents;
-	private final List<EdgeComponent> edgeComponents;
-	private final PhysicsEngine<NodeComponent> engine;
-	private final List<String> anchors;
-
-	public GraphComponent(Graph<PVector, ?> graph, List<String> anchors) {
-		super();
-		engine = new PhysicsEngine<>();
-		nodeComponents = new ArrayList<>();
-		edgeComponents = new ArrayList<>();
+	public GraphComponent(Graph<PVector, Object> graph, List<String> anchors) {
 		this.graph = graph;
 		this.anchors = anchors;
+		this.nodes = new HashSet<>();
+		this.physicsEngine = new PhysicsEngine<>();
 	}
 
 	@Override
-	protected List<Component<?>> build(PApplet proc) {
-		final List<Component<?>> children = new ArrayList<>();
-		children.addAll(edgeComponents);
-		children.addAll(nodeComponents);
+	public void build(ComponentRegistry registry) {
+		physicsEngine.reset();
 
-		final List<Component<?>> labels = new ArrayList<>();
-		for (EdgeComponent edgeComponent : edgeComponents) {
-			final PVector edgeCenter = edgeComponent.getCenter();
-			labels.add(new Label(Double.toString(edgeComponent.edge.weight), edgeCenter.x, edgeCenter.y));
+		nodes = graph.getNodes();
+		edges = graph.getEdges();
+
+		final List<Component> components = new ArrayList<>();
+
+		for (GraphNode<PVector> node : nodes) {
+			final NodeComponent nodeComponent = new NodeComponent(node, graph, anchors.contains(node.name));
+			physicsEngine.addObject(nodeComponent.physics);
+			components.add(nodeComponent);
 		}
-		children.addAll(labels);
-		return children;
+
+		for (GraphEdge<PVector, Object> edge : edges) {
+			components.add(new EdgeComponent(edge));
+			components.add(new EdgeLabel(edge));
+		}
+
+		registry.register(components, id);
 	}
 
 	@Override
-	public void render(PApplet proc) {
-		if (graph.getNodes().size() != nodeComponents.size())
-			syncNodes();
-		if (graph.getEdges().size() != edgeComponents.size())
-			syncEdges();
+	public boolean shouldRebuild() {
+		return !nodes.equals(graph.getNodes()) || !edges.equals(graph.getEdges());
 	}
 
-	public void stepPhysicsEngine(float time) {
-		engine.step(time);
-	}
-
-	private void syncNodes() {
-		nodeComponents.clear();
-		engine.getObjects().clear();
-		for (GraphNode<PVector> node : graph.getNodes()) {
-			final NodeComponent component = new NodeComponent(node, graph, anchors.contains(node.name));
-			nodeComponents.add(component);
-			engine.addObject(component);
-		}
-	}
-
-	private void syncEdges() {
-		edgeComponents.clear();
-		for (GraphEdge<PVector, ?> edge : graph.getEdges()) {
-			final EdgeComponent component = new EdgeComponent(edge);
-			edgeComponents.add(component);
-		}
+	@Override
+	public void draw(@NotNull PApplet p) {
+		physicsEngine.step(1 / p.frameRate);
 	}
 }

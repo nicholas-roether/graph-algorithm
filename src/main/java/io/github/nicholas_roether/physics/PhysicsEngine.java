@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import processing.core.PVector;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,8 +65,15 @@ public class PhysicsEngine<O extends PhysicsObject> {
 				stepObject(object, time);
 	}
 
+	/**
+	 * Resets the physics engine, removing all registered objects.
+	 */
+	public void reset() {
+		objects.clear();
+	}
+
 	protected void stepObject(@NotNull O object, float time) {
-		object.update();
+		object.update(time);
 		final PVector deltaVel = object.getAcceleration().copy().mult(time);
 		final PVector deltaPos = object.getVelocity().copy().mult(time);
 		object.getVelocity().add(deltaVel);

@@ -1,40 +1,28 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
-import io.github.nicholas_roether.draw.SimpleComponent;
 import io.github.nicholas_roether.graph.GraphEdge;
+import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-import javax.lang.model.type.NullType;
-import java.util.List;
+public class EdgeComponent extends Component {
+	public static final int Z_INDEX = 1;
 
-public class EdgeComponent extends SimpleComponent<NullType> {
-	public final GraphEdge<PVector, ?> edge;
+	public final GraphEdge<PVector, Object> edge;
 
-	public EdgeComponent(GraphEdge<PVector, ?> edge) {
-		super();
+	public EdgeComponent(GraphEdge<PVector, Object> edge) {
+		super(Z_INDEX);
 		this.edge = edge;
 	}
 
 	@Override
-	protected List<Component<?>> build(PApplet proc) {
-		return NO_CHILDREN;
-	}
-
-	@Override
-	public void render(PApplet proc) {
+	public void draw(@NotNull PApplet p) {
 		final PVector nodePos0 = edge.nodes.getValue0().getData();
 		final PVector nodePos1 = edge.nodes.getValue1().getData();
 
-		proc.stroke(100, 100, 100);
-		proc.strokeWeight(3);
-		proc.line(nodePos0.x, nodePos0.y, nodePos1.x, nodePos1.y);
-	}
-
-	public PVector getCenter() {
-		final PVector nodePos0 = edge.nodes.getValue0().getData();
-		final PVector nodePos1 = edge.nodes.getValue1().getData();
-		return nodePos0.copy().add(nodePos1).mult(0.5f);
+		p.stroke(100, 100, 100);
+		p.strokeWeight(3);
+		p.line(nodePos0.x, nodePos0.y, nodePos1.x, nodePos1.y);
 	}
 }

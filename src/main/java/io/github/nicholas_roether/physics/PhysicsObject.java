@@ -46,7 +46,7 @@ public interface PhysicsObject {
 	/**
 	 * Update the state of the physics object.
 	 */
-	void update();
+	void update(float time);
 
 	/**
 	 * Called after the update call
