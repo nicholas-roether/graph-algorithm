@@ -13,15 +13,19 @@ import processing.event.MouseEvent;
 public class NodeComponent extends CircularComponent {
 	public static final int Z_INDEX = 2;
 	public static final float NODE_RADIUS = 15;
-	public static final float TEXT_SIZE = 25;
+
+	private static final float TEXT_SIZE = 25;
+	private static final float MOUSE_VEL_TRANSLATION = 0.3f;
 
 	public final GraphNode<PVector> node;
 	public final boolean anchor;
 
 	public final NodePhysics physics;
 
-	private boolean hover = false;
 	private boolean dragging = false;
+	private long lastMouseMove = 0;
+	private PVector lastMousePos;
+	private PVector mouseVelocity;
 
 	public NodeComponent(GraphNode<PVector> node, Graph<PVector, Object> graph, boolean anchor) {
 		super(Z_INDEX);
@@ -33,7 +37,7 @@ public class NodeComponent extends CircularComponent {
 
 	@Override
 	public void draw(@NotNull PApplet p) {
-		if (hover) p.fill(140, 245, 256);
+		if (checkInBounds(p.mouseX, p.mouseY)) p.fill(140, 245, 256);
 		else if (anchor) p.fill(85, 205, 244);
 		else p.fill(255, 255, 255);
 		p.stroke(100, 100, 100);
@@ -48,22 +52,39 @@ public class NodeComponent extends CircularComponent {
 
 	@Override
 	public void mouseMovedAnywhere(MouseEvent event) {
-		hover = checkInBounds(event.getX(), event.getY());
 		if (dragging) {
 			physics.setPosition(new PVector(event.getX(), event.getY()));
 			physics.setDisabled(true);
+
+			if (lastMouseMove != 0 && lastMousePos != null) {
+				final long duration = event.getMillis() - lastMouseMove;
+				final float durationSeconds = 0.001f * duration;
+
+				final PVector velocity = new PVector(event.getX(), event.getY());
+				velocity.sub(lastMousePos);
+				velocity.div(durationSeconds);
+
+				mouseVelocity = velocity.copy();
+			}
 		}
+		lastMouseMove = event.getMillis();
+		lastMousePos = new PVector(event.getX(), event.getY());
 	}
 
 	@Override
 	public void mousePressedInBounds(MouseEvent event) {
 		dragging = true;
+		physics.setDisabled(true);
 	}
 
 	@Override
 	public void mouseReleasedAnywhere(MouseEvent event) {
-		dragging = false;
 		physics.setDisabled(anchor);
+		if (dragging && mouseVelocity != null) {
+			System.out.println(mouseVelocity);
+			physics.setVelocity(mouseVelocity.copy().mult(MOUSE_VEL_TRANSLATION));
+		}
+		dragging = false;
 	}
 
 	@Override

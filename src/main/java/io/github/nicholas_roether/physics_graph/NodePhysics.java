@@ -59,6 +59,8 @@ public class NodePhysics implements PhysicsObject {
 
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
+		setAcceleration(new PVector(0, 0));
+		setVelocity(new PVector(0, 0));
 	}
 
 	@Override
