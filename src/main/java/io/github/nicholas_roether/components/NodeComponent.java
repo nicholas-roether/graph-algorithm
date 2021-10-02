@@ -42,7 +42,7 @@ public class NodeComponent extends CircularComponent {
 		else p.fill(255, 255, 255);
 		p.stroke(100, 100, 100);
 		p.strokeWeight(3);
-		p.ellipse(physics.getPosition().x, physics.getPosition().y, 2 * NODE_RADIUS, 2 * NODE_RADIUS);
+		p.circle(physics.getPosition().x, physics.getPosition().y, 2 * NODE_RADIUS);
 
 		p.fill(0, 0, 0);
 		p.textAlign(CENTER);
