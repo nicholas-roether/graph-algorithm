@@ -9,6 +9,9 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class NodeComponent extends CircularComponent {
 	public static final int Z_INDEX = 2;
@@ -45,9 +48,10 @@ public class NodeComponent extends CircularComponent {
 		p.circle(physics.getPosition().x, physics.getPosition().y, 2 * NODE_RADIUS);
 
 		p.fill(0, 0, 0);
-		p.textAlign(CENTER);
-		p.textSize(TEXT_SIZE);
-		p.text(node.name, physics.getPosition().x, physics.getPosition().y + TEXT_SIZE / 3);
+		p.textAlign(CENTER, CENTER);
+		p.textSize(getTextSizeForLength(node.name.length()));
+		p.textLeading(7);
+		p.text(getMessage(node.name), physics.getPosition().x, physics.getPosition().y - p.textAscent() * 0.13f);
 	}
 
 	@Override
@@ -111,5 +115,28 @@ public class NodeComponent extends CircularComponent {
 	@Override
 	public float getY() {
 		return physics.getPosition().y;
+	}
+
+	private float getTextSizeForLength(int length) {
+		return TEXT_SIZE / (0.8f * Math.min(node.name.length(), 4) + 0.2f);
+	}
+
+	private String getMessage(String name) {
+		final List<String> sections = new ArrayList<>((int) Math.ceil((double) name.length() / 4.0));
+		final StringBuilder partBuilder = new StringBuilder(4);
+		for (int i = 0; i < name.length(); i++) {
+			partBuilder.append(name.charAt(i));
+			if (i % 4 == 3 || i == name.length() - 1) {
+				sections.add(partBuilder.toString());
+				partBuilder.setLength(0);
+			}
+		}
+		final StringBuilder messageBuilder = new StringBuilder(32);
+		for (int i = 0; i < sections.size(); i++) {
+			messageBuilder.append(sections.get(i));
+			if (i < sections.size() - 1)
+				messageBuilder.append("\n");
+		}
+		return messageBuilder.toString();
 	}
 }
