@@ -21,9 +21,8 @@ public abstract class Document extends PApplet {
 		p.strokeWeight(1);
 		p.strokeJoin(MITER);
 		p.strokeCap(ROUND);
-		p.textAlign(CENTER);
+		p.textAlign(LEFT, BASELINE);
 		p.textSize(12);
-		p.textLeading(14);
 		p.textMode(MODEL);
 		p.rectMode(CORNER);
 		p.ellipseMode(DIAMETER);
