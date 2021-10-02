@@ -75,7 +75,7 @@ public class NodePhysics implements PhysicsObject {
 			if (distance == 0) continue;
 			final PVector normal = getNormalTo(node);
 
-			if (distance <= NodeComponent.RADIUS) {
+			if (distance <= NodeComponent.NODE_RADIUS) {
 				if (!colliding) {
 					colliding = true;
 					velocity.sub(normal.copy().mult(2 * velocity.dot(normal.mult(-1))));

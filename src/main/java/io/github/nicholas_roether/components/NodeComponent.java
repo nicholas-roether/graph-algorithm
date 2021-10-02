@@ -1,6 +1,6 @@
 package io.github.nicholas_roether.components;
 
-import io.github.nicholas_roether.draw.Component;
+import io.github.nicholas_roether.draw.bounded.CircularComponent;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
@@ -10,9 +10,9 @@ import processing.core.PVector;
 import processing.event.MouseEvent;
 
 
-public class NodeComponent extends Component {
+public class NodeComponent extends CircularComponent {
 	public static final int Z_INDEX = 2;
-	public static final float RADIUS = 15;
+	public static final float NODE_RADIUS = 15;
 	public static final float TEXT_SIZE = 25;
 
 	public final GraphNode<PVector> node;
@@ -38,7 +38,7 @@ public class NodeComponent extends Component {
 		else p.fill(255, 255, 255);
 		p.stroke(100, 100, 100);
 		p.strokeWeight(3);
-		p.ellipse(physics.getPosition().x, physics.getPosition().y, 2 * RADIUS, 2 * RADIUS);
+		p.ellipse(physics.getPosition().x, physics.getPosition().y, 2 * NODE_RADIUS, 2 * NODE_RADIUS);
 
 		p.fill(0, 0, 0);
 		p.textAlign(CENTER);
@@ -47,7 +47,7 @@ public class NodeComponent extends Component {
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent event) {
+	public void mouseMovedAnywhere(MouseEvent event) {
 		hover = checkInBounds(event.getX(), event.getY());
 		if (dragging) {
 			physics.setPosition(new PVector(event.getX(), event.getY()));
@@ -56,30 +56,40 @@ public class NodeComponent extends Component {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent event) {
-		if (checkInBounds(event.getX(), event.getY()))
-			dragging = true;
+	public void mousePressedInBounds(MouseEvent event) {
+		dragging = true;
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent event) {
+	public void mouseReleasedAnywhere(MouseEvent event) {
 		dragging = false;
 		physics.setDisabled(anchor);
 	}
 
 	@Override
-	public int instructCursor(float x, float y) {
+	protected int instructCursorAnywhere(float x, float y) {
 		if (dragging) return MOVE;
-		if (checkInBounds(x, y)) {
-			return HAND;
-		}
-		return super.instructCursor(x, y);
+		return NO_CURSOR_INSTRUCT;
 	}
 
-	private boolean checkInBounds(float x, float y) {
-		final PVector dist = new PVector(x, y);
-		dist.sub(physics.getPosition());
+	@Override
+	protected int instructCursorInBounds() {
+		if (dragging) return MOVE;
+		return HAND;
+	}
 
-		return dist.magSq() <= RADIUS * RADIUS;
+	@Override
+	public float getRadius() {
+		return NODE_RADIUS;
+	}
+
+	@Override
+	public float getX() {
+		return physics.getPosition().x;
+	}
+
+	@Override
+	public float getY() {
+		return physics.getPosition().y;
 	}
 }
