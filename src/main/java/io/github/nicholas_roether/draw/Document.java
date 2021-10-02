@@ -2,10 +2,18 @@ package io.github.nicholas_roether.draw;
 
 import io.github.nicholas_roether.draw.cursor.CursorManager;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
+import java.awt.*;
+
 public abstract class Document extends PApplet {
+	public final String title;
+	public final PImage icon;
+	final int windowWidth;
+	final int windowHeight;
+
 	private static final DrawState DEFAULT_DRAW_STATE = new DrawState(p -> {
 		p.colorMode(RGB, 255);
 		p.fill(0, 0, 0, 0);
@@ -25,15 +33,32 @@ public abstract class Document extends PApplet {
 	private final ComponentRegistry componentRegistry;
 	private final CursorManager cursorManager;
 
-	public Document() {
+	public Document(int windowWidth, int windowHeight, String title) {
+		this.windowWidth = windowWidth;
+		this.windowHeight = windowHeight;
+		this.title = title;
+		this.icon = null;
 		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE);
 		this.cursorManager = new CursorManager();
 	}
+
+	public Document(int windowWidth, int windowHeight, String title, PImage icon) {
+		this.windowWidth = windowWidth;
+		this.windowHeight = windowHeight;
+		this.title = title;
+		this.icon = icon;
+		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE);
+		this.cursorManager = new CursorManager();
+	}
+
+	protected void create() {}
 
 	protected void init() {}
 
 	@Override
 	public final void setup() {
+		surface.setTitle(title);
+		if (icon != null) surface.setIcon(icon);
 		init();
 		build(componentRegistry);
 		super.setup();

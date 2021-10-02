@@ -7,10 +7,15 @@ import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import processing.core.PVector;
 
+import java.awt.*;
 import java.util.List;
 
 
 public class App extends Document {
+	public App() {
+		super(800, 600, "A* Algorithm");
+	}
+
 	public static void main(String[] args) {
 		final App app = new App();
 		System.setProperty("sun.java2d.uiScale", "1");
@@ -18,16 +23,12 @@ public class App extends Document {
 	}
 
 	@Override
-	public void settings() {
-		size(800, 600);
-		pixelDensity(displayDensity());
+	protected void init() {
+		frameRate(30);
 	}
 
 	@Override
 	protected void build(ComponentRegistry registry) {
-		frameRate(30);
-		surface.setTitle("A* Algorithm");
-
 		Graph<PVector, Object> graph = new Graph<>();
 
 		final GraphNode<PVector> nodeA = graph.addNode("A", new PVector(width / 2f, height / 2f));
