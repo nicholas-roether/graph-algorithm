@@ -12,6 +12,7 @@ public class NodePhysics implements PhysicsObject {
 	private static final float REPULSION_CONSTANT = 1150000;
 	private static final float ATTRACTION_CONSTANT = 4f;
 	private static final float FRICTION_CONSTANT = 2f;
+	private static final float RADIUS = NodeComponent.NODE_RADIUS;
 
 	private PVector acceleration = new PVector(0, 0);
 	private PVector velocity = new PVector(0, 0);
@@ -77,7 +78,7 @@ public class NodePhysics implements PhysicsObject {
 			if (distance == 0) continue;
 			final PVector normal = getNormalTo(node);
 
-			if (distance <= NodeComponent.NODE_RADIUS) {
+			if (distance <= RADIUS) {
 				if (!colliding) {
 					colliding = true;
 					velocity.sub(normal.copy().mult(2 * velocity.dot(normal.mult(-1))));
@@ -108,12 +109,12 @@ public class NodePhysics implements PhysicsObject {
 		return other.getData().copy().sub(node.getData()).normalize();
 	}
 
-	private float getRepulsion(float distance) {
+	private static float getRepulsion(float distance) {
 		if (distance == 0) return 0;
 		return REPULSION_CONSTANT / (distance * distance);
 	}
 
-	private float getAttraction(float distance) {
+	private static float getAttraction(float distance) {
 		return ATTRACTION_CONSTANT * distance;
 	}
 
