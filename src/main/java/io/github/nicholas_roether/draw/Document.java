@@ -56,6 +56,12 @@ public abstract class Document extends PApplet {
 	protected void init() {}
 
 	@Override
+	public void settings() {
+		size(windowWidth, windowHeight);
+		create();
+	}
+
+	@Override
 	public final void setup() {
 		surface.setTitle(title);
 		if (icon != null) surface.setIcon(icon);
