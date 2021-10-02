@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.draw;
 
+import io.github.nicholas_roether.draw.cursor.CursorManager;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
@@ -34,6 +35,14 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 		getComponents().forEach(component -> {
 			resetDrawState(p);
 			component.draw(p);
+		});
+	}
+
+	public void instructCursor(CursorManager manager, float x, float y) {
+		getComponents().forEach(component -> {
+			final int cursor = component.instructCursor(x, y);
+			if (cursor != CursorManager.NO_CURSOR_INSTRUCT)
+				manager.addInstruction(component.zIndex, cursor);
 		});
 	}
 

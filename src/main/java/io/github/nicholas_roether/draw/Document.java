@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.draw;
 
+import io.github.nicholas_roether.draw.cursor.CursorManager;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -22,9 +23,11 @@ public abstract class Document extends PApplet {
 	});
 
 	private final ComponentRegistry componentRegistry;
+	private final CursorManager cursorManager;
 
 	public Document() {
 		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE);
+		this.cursorManager = new CursorManager();
 	}
 
 	protected void init() {}
@@ -43,7 +46,9 @@ public abstract class Document extends PApplet {
 	@Override
 	public final void draw() {
 		frame();
+		instructCursor();
 		background(0);
+		cursor(cursorManager.getCurrentCursor());
 		componentRegistry.draw(this);
 	}
 
@@ -110,5 +115,11 @@ public abstract class Document extends PApplet {
 	@Override
 	public final void focusLost() {
 		componentRegistry.focusLost();
+	}
+
+	private void instructCursor() {
+		cursorManager.reset();
+		cursorManager.addInstruction(-1, ARROW);
+		componentRegistry.instructCursor(cursorManager, mouseX, mouseY);
 	}
 }

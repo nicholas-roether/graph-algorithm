@@ -1,11 +1,15 @@
 package io.github.nicholas_roether.draw;
 
+import io.github.nicholas_roether.draw.cursor.CursorManager;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 
+import java.awt.event.MouseEvent;
 import java.util.Objects;
 
 public abstract class Component extends Element implements WindowEventReceiver {
+	protected static final int NO_CURSOR_INSTRUCT = CursorManager.NO_CURSOR_INSTRUCT;
+
 	private static int idCounter = 0;
 
 	public final int zIndex;
@@ -27,6 +31,10 @@ public abstract class Component extends Element implements WindowEventReceiver {
 
 	public boolean shouldRebuild() {
 		return false;
+	}
+
+	public int instructCursor(float x, float y) {
+		return NO_CURSOR_INSTRUCT;
 	}
 
 	private int nextId() {

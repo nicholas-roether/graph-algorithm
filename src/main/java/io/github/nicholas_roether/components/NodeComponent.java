@@ -67,6 +67,15 @@ public class NodeComponent extends Component {
 		physics.setDisabled(anchor);
 	}
 
+	@Override
+	public int instructCursor(float x, float y) {
+		if (dragging) return MOVE;
+		if (checkInBounds(x, y)) {
+			return HAND;
+		}
+		return super.instructCursor(x, y);
+	}
+
 	private boolean checkInBounds(float x, float y) {
 		final PVector dist = new PVector(x, y);
 		dist.sub(physics.getPosition());

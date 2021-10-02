@@ -13,7 +13,7 @@ import java.util.List;
 public class App extends Document {
 	public static void main(String[] args) {
 		final App app = new App();
-		app.runSketch();
+		app.runSketch(args);
 	}
 
 	@Override
@@ -25,6 +25,7 @@ public class App extends Document {
 	@Override
 	protected void build(ComponentRegistry registry) {
 		frameRate(30);
+		surface.setTitle("A* Algorithm");
 
 		Graph<PVector, Object> graph = new Graph<>();
 
