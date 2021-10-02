@@ -13,6 +13,7 @@ import java.util.List;
 public class App extends Document {
 	public static void main(String[] args) {
 		final App app = new App();
+		System.setProperty("sun.java2d.uiScale", "1");
 		app.runSketch(args);
 	}
 
