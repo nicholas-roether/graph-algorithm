@@ -6,14 +6,41 @@ import processing.core.PImage;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
-import java.awt.*;
-
+/**
+ * A document lies at the root of the application, housing the actual running process as well
+ * as the central component registry and the central cursor manager. It sets some window and default
+ * drawing settings, applies the cursor type from the cursor manager, and passes window events to the
+ * component registry.
+ * <br>
+ * The document also contains the functionality for drawing to the screen, and as such, is the object
+ * that is passed to all {@code draw()} calls.
+ */
 public abstract class Document extends PApplet {
+	/**
+	 * The title of this document. It will appear on the top bar of the window.
+	 */
 	public final String title;
-	public final PImage icon;
-	final int windowWidth;
-	final int windowHeight;
 
+	/**
+	 * The icon of this document. It will appear on the top left of the window.
+	 */
+	public final PImage icon;
+
+	/**
+	 * The width of the window.
+	 */
+	private final int windowWidth;
+
+	/**
+	 * The height of the window.
+	 */
+	private final int windowHeight;
+
+	/**
+	 * The default draw state. Resets multiple values to their default settings when applied.
+	 *
+	 * @see DrawState
+	 */
 	private static final DrawState DEFAULT_DRAW_STATE = new DrawState(p -> {
 		p.colorMode(RGB, 255);
 		p.fill(0, 0, 0, 0);
@@ -29,7 +56,18 @@ public abstract class Document extends PApplet {
 		p.blendMode(BLEND);
 	});
 
+	/**
+	 * The central component registry of this document.
+	 *
+	 * @see ComponentRegistry
+	 */
 	private final ComponentRegistry componentRegistry;
+
+	/**
+	 * The central cursor manager of this document.
+	 *
+	 * @see CursorManager
+	 */
 	private final CursorManager cursorManager;
 
 	public Document(int windowWidth, int windowHeight, String title) {
@@ -50,8 +88,15 @@ public abstract class Document extends PApplet {
 		this.cursorManager = new CursorManager();
 	}
 
+	/**
+	 * A callback method that can be used to apply additional settings to the PApplet,
+	 * such as for example pixelDensity.
+	 */
 	protected void create() {}
 
+	/**
+	 * A callback that is called once before the first frame.
+	 */
 	protected void init() {}
 
 	@Override
@@ -69,18 +114,33 @@ public abstract class Document extends PApplet {
 		super.setup();
 	}
 
+	/**
+	 * A callback that registers all root components to the component registry.
+	 *
+	 * @param registry This document's component registry
+	 */
 	protected abstract void build(ComponentRegistry registry);
 
+	/**
+	 * A callback that is called on every frame.
+	 */
 	protected void frame() {}
 
 	@Override
 	public final void draw() {
 		frame();
+		// Get the cursor instructions
 		instructCursor();
+		// Set the background to black
 		background(0);
+		// Style the cursor to whichever instruction takes precedence
 		cursor(cursorManager.getCurrentCursor());
+		// Draw all registered components
 		componentRegistry.draw(this);
 	}
+
+	//------------------------------------------------------------------------------------------------------------------
+	// Pass all window events to the component registry
 
 	@Override
 	public final void mousePressed(MouseEvent event) {
@@ -147,9 +207,14 @@ public abstract class Document extends PApplet {
 		componentRegistry.focusLost();
 	}
 
+	//------------------------------------------------------------------------------------------------------------------
+
+	/**
+	 * Resets the cursor manager and gets all current instructions from the component registry.
+	 */
 	private void instructCursor() {
 		cursorManager.reset();
-		cursorManager.addInstruction(-1, ARROW);
+		cursorManager.addInstruction(-1, ARROW); // Default instruction for the ARROW cursor
 		componentRegistry.instructCursor(cursorManager, mouseX, mouseY);
 	}
 }

@@ -16,12 +16,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The graphical component representing a graph with physics.
+ *
+ * @see Component
+ */
 public class GraphComponent extends Component {
 	public final Graph<PVector, Object> graph;
+
+	/**
+	 * A list of the names of the nodes that are anchors, meaning they
+	 * are unaffected by physics and stay in place
+	 */
 	public final List<String> anchors;
 
+	/**
+	 * A set of the nodes that are currently being rendered. Updated
+	 * whenever the component is rebuilt.
+	 */
 	private Set<GraphNode<PVector>> nodes;
+
+	/**
+	 * A set of the nodes that are currently being rendered. Updated
+	 * whenever the component is rebuilt.
+	 */
 	private List<GraphEdge<PVector, Object>> edges;
+
+	/**
+	 * The physics engine in charge of simulating the nodes.
+	 *
+	 * @see PhysicsEngine
+	 */
 	private final PhysicsEngine<NodePhysics> physicsEngine;
 
 	public GraphComponent(Graph<PVector, Object> graph, List<String> anchors) {
@@ -33,21 +58,30 @@ public class GraphComponent extends Component {
 
 	@Override
 	public void build(ComponentRegistry registry) {
+		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
 
+		// Get current nodes and edges from the graph.
 		nodes = graph.getNodes();
 		edges = graph.getEdges();
 
 		final List<Component> components = new ArrayList<>();
 
 		for (GraphNode<PVector> node : nodes) {
+			// Create a NodeComponent for each node
 			final NodeComponent nodeComponent = new NodeComponent(node, graph, anchors.contains(node.name));
+
+			// Add the NodePhysics object corresponding to each node to the engine
 			physicsEngine.addObject(nodeComponent.physics);
+
 			components.add(nodeComponent);
 		}
 
 		for (GraphEdge<PVector, Object> edge : edges) {
+			// Create an EdgeComponent for each edge
 			components.add(new EdgeComponent(edge));
+
+			// Create an EdgeLabel for each edge
 			components.add(new EdgeLabel(edge));
 		}
 
@@ -56,11 +90,13 @@ public class GraphComponent extends Component {
 
 	@Override
 	public boolean shouldRebuild() {
+		// Rebuild if the graph contains new nodes or edges
 		return !nodes.equals(graph.getNodes()) || !edges.equals(graph.getEdges());
 	}
 
 	@Override
 	public void draw(@NotNull PApplet p) {
+		// step the physics engine on each frame
 		physicsEngine.step(1 / p.frameRate);
 	}
 }
