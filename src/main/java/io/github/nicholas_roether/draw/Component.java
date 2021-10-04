@@ -76,6 +76,11 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	}
 
 	/**
+	 * Called every frame before components are drawn to the screen.
+	 */
+	public void frame(float frameRate) {}
+
+	/**
 	 * Draw this component to the screen.
 	 *
 	 * @param p The {@code PApplet} to be drawn to.

@@ -8,8 +8,8 @@ public class EditingButton extends ToggleButton {
 	public static int Z_INDEX = 10;
 	private static PImage icon;
 
-	public EditingButton(float x, float y, float width, float height) {
-		super(Z_INDEX, x, y, width, height, 0xFF456990);
+	public EditingButton(float x, float y) {
+		super(Z_INDEX, x, y, 80, 40, 0xFF456990);
 	}
 
 	@Override

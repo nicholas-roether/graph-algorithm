@@ -17,6 +17,7 @@ public class MainView extends Component {
 	private GraphComponent graphComponent;
 	private Background background;
 	private EditingButton editingButton;
+	private EditActionSelector editActionSelector;
 
 	private enum State {
 		EDITING,
@@ -38,21 +39,24 @@ public class MainView extends Component {
 	public void build(ComponentRegistry registry, PApplet p) {
 		graphComponent = new GraphComponent(graph, List.of("A", "Z"));
 		background = new Background();
-		editingButton = new EditingButton(10, 10, 80, 40);
+		editingButton = new EditingButton(10, 10);
+		editActionSelector = new EditActionSelector(10, 30 + editingButton.height);
 		registry.register(List.of(
 				background,
 				graphComponent,
-				editingButton
+				editingButton,
+				editActionSelector
 		), id);
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void frame(float frameRate) {
 		if (state == State.EDITING) {
 			if (!editingButton.isPressed()) state = State.SHOWING;
 		} else {
 			if (editingButton.isPressed()) state = State.EDITING;
 		}
+		editActionSelector.setVisible(state == State.EDITING);
 		graphComponent.setRunning(state != State.EDITING);
 		background.setEditing(state == State.EDITING);
 	}
