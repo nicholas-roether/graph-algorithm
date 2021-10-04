@@ -7,7 +7,7 @@ public class EdgeButton extends ToggleButton {
 	public static final int Z_INDEX = 10;
 
 	public EdgeButton(float x, float y) {
-		super(Z_INDEX, x, y, 40, 40, 0xFF303030);
+		super(Z_INDEX, x, y, 40, 40, 0xFFA0A0A0);
 	}
 
 	@Override

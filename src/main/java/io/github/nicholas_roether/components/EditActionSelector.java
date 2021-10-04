@@ -1,7 +1,9 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.components.action_select.DeleteButton;
 import io.github.nicholas_roether.components.action_select.EdgeButton;
 import io.github.nicholas_roether.components.action_select.NodeButton;
+import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import processing.core.PApplet;
@@ -17,6 +19,9 @@ public class EditActionSelector extends Component {
 
 	private NodeButton nodeButton;
 	private EdgeButton edgeButton;
+	private DeleteButton deleteButton;
+
+	private State state = State.NODE;
 
 	public EditActionSelector(float x, float y) {
 		this.x = x;
@@ -29,9 +34,11 @@ public class EditActionSelector extends Component {
 		if (!visible) return;
 		nodeButton = new NodeButton(x, y);
 		edgeButton = new EdgeButton(x, y + nodeButton.height + 10);
+		deleteButton = new DeleteButton(x, y + nodeButton.height + edgeButton.height + 20);
 		registry.register(List.of(
 				nodeButton,
-				edgeButton
+				edgeButton,
+				deleteButton
 		), id);
 	}
 
@@ -46,5 +53,39 @@ public class EditActionSelector extends Component {
 	@Override
 	public boolean shouldRebuild() {
 		return showing != visible;
+	}
+
+	@Override
+	public void frame(float frameRate) {
+		switch (state) {
+			case NODE -> {
+				if (edgeButton.isPressed()) state = State.EDGE;
+				if (deleteButton.isPressed()) state = State.DELETE;
+			}
+			case EDGE -> {
+				if (nodeButton.isPressed()) state = State.NODE;
+				if (deleteButton.isPressed()) state = State.DELETE;
+			}
+			case DELETE -> {
+				if (nodeButton.isPressed()) state = State.NODE;
+				if (edgeButton.isPressed()) state = State.EDGE;
+			}
+		}
+
+		nodeButton.setPressed(false);
+		edgeButton.setPressed(false);
+		deleteButton.setPressed(false);
+
+		switch (state) {
+			case NODE -> nodeButton.setPressed(true);
+			case EDGE -> edgeButton.setPressed(true);
+			case DELETE -> deleteButton.setPressed(true);
+		}
+	}
+
+	public enum State {
+		NODE,
+		EDGE,
+		DELETE
 	}
 }
