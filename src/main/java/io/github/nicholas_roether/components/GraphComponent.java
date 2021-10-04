@@ -2,6 +2,7 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
+import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
 import io.github.nicholas_roether.graph.GraphNode;
@@ -9,7 +10,6 @@ import io.github.nicholas_roether.physics.PhysicsEngine;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
-import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import java.util.Set;
  * @see Component
  */
 public class GraphComponent extends Component {
-	public final Graph<PVector, Object> graph;
+	public final Graph<NodeData, Object> graph;
 
 	/**
 	 * A list of the names of the nodes that are anchors, meaning they
@@ -34,22 +34,22 @@ public class GraphComponent extends Component {
 	 * A set of the nodes that are currently being rendered. Updated
 	 * whenever the component is rebuilt.
 	 */
-	private Set<GraphNode<PVector>> nodes;
+	private Set<GraphNode<NodeData>> nodes;
 
 	/**
 	 * A set of the nodes that are currently being rendered. Updated
 	 * whenever the component is rebuilt.
 	 */
-	private List<GraphEdge<PVector, Object>> edges;
+	private List<GraphEdge<NodeData, Object>> edges;
 
 	/**
 	 * The physics engine in charge of simulating the nodes.
 	 *
 	 * @see PhysicsEngine
 	 */
-	private final PhysicsEngine<NodePhysics> physicsEngine;
+	private final PhysicsEngine<NodePhysics<NodeData>> physicsEngine;
 
-	public GraphComponent(Graph<PVector, Object> graph, List<String> anchors) {
+	public GraphComponent(Graph<NodeData, Object> graph, List<String> anchors) {
 		this.graph = graph;
 		this.anchors = anchors;
 		this.nodes = new HashSet<>();
@@ -62,12 +62,12 @@ public class GraphComponent extends Component {
 		physicsEngine.reset();
 
 		// Get current nodes and edges from the graph.
-		nodes = graph.getNodes();
-		edges = graph.getEdges();
+		nodes = Set.copyOf(graph.getNodes());
+		edges = List.copyOf(graph.getEdges());
 
 		final List<Component> components = new ArrayList<>();
 
-		for (GraphNode<PVector> node : nodes) {
+		for (GraphNode<NodeData> node : nodes) {
 			// Create a NodeComponent for each node
 			final NodeComponent nodeComponent = new NodeComponent(node, graph, anchors.contains(node.name));
 
@@ -77,7 +77,7 @@ public class GraphComponent extends Component {
 			components.add(nodeComponent);
 		}
 
-		for (GraphEdge<PVector, Object> edge : edges) {
+		for (GraphEdge<NodeData, Object> edge : edges) {
 			// Create an EdgeComponent for each edge
 			components.add(new EdgeComponent(edge));
 

@@ -3,9 +3,9 @@ package io.github.nicholas_roether;
 import io.github.nicholas_roether.components.GraphComponent;
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
-import io.github.nicholas_roether.graph.Graph;
+import io.github.nicholas_roether.general.GraphWithData;
+import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphNode;
-import processing.core.PVector;
 
 import java.util.List;
 
@@ -31,18 +31,18 @@ public class App extends Document {
 
 	@Override
 	protected void build(ComponentRegistry registry) {
-		Graph<PVector, Object> graph = new Graph<>();
+		GraphWithData graph = new GraphWithData();
 
-		final GraphNode<PVector> nodeA = graph.addNode("A", new PVector(width / 2f, height / 2f));
-		final GraphNode<PVector> nodeB = graph.addNode("B", new PVector(width / 2f + 100, height / 2f));
-		final GraphNode<PVector> nodeC = graph.addNode("C", new PVector(width / 2f, height / 2f - 100));
-		final GraphNode<PVector> nodeD = graph.addNode("D", new PVector(width / 2f, height / 2f - 69));
-		final GraphNode<PVector> nodeE = graph.addNode("E", new PVector(width / 2f - 300, height / 2f));
-		final GraphNode<PVector> nodeF = graph.addNode("F", new PVector(width / 2f - 100, height / 2f + 50));
-		final GraphNode<PVector> nodeG = graph.addNode("G", new PVector(width / 2f + 100, height / 2f - 34));
-		final GraphNode<PVector> nodeH = graph.addNode("H", new PVector(width / 2f + 32, height / 2f - 100));
-		final GraphNode<PVector> nodeI = graph.addNode("I", new PVector(width / 2f - 56, height / 2f + 200));
-		final GraphNode<PVector> nodeJ = graph.addNode("J", new PVector(width / 2f - 200, height / 2f - 14));
+		final GraphNode<NodeData> nodeA = graph.addNode("A", width / 2f, height / 2f);
+		final GraphNode<NodeData> nodeB = graph.addNode("B", width / 2f + 100, height / 2f);
+		final GraphNode<NodeData> nodeC = graph.addNode("C", width / 2f, height / 2f - 100);
+		final GraphNode<NodeData> nodeD = graph.addNode("D", width / 2f, height / 2f - 69);
+		final GraphNode<NodeData> nodeE = graph.addNode("E", width / 2f - 300, height / 2f);
+		final GraphNode<NodeData> nodeF = graph.addNode("F", width / 2f - 100, height / 2f + 50);
+		final GraphNode<NodeData> nodeG = graph.addNode("G", width / 2f + 100, height / 2f - 34);
+		final GraphNode<NodeData> nodeH = graph.addNode("H", width / 2f + 32, height / 2f - 100);
+		final GraphNode<NodeData> nodeI = graph.addNode("I", width / 2f - 56, height / 2f + 200);
+		final GraphNode<NodeData> nodeJ = graph.addNode("J", width / 2f - 200, height / 2f - 14);
 
 		graph.addEdge(nodeA, nodeB, 1);
 		graph.addEdge(nodeB, nodeC, 2);

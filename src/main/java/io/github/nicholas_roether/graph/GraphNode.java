@@ -24,18 +24,8 @@ public class GraphNode<D> {
 	/**
 	 * The value of this node. Will default to {@code null}.
 	 */
-	private D data;
+	public final D data;
 
-	/**
-	 * Constructs a node with the given name.
-	 * <br>
-	 * The node's value will be set to null.
-	 *
-	 * @param name The name of the node
-	 */
-	public GraphNode(@NotNull String name) {
-		this.name = name;
-	}
 
 	/**
 	 * Constructs a node with the given name and value.
@@ -45,24 +35,6 @@ public class GraphNode<D> {
 	 */
 	public GraphNode(@NotNull String name, D data) {
 		this.name = name;
-		this.data = data;
-	}
-
-	/**
-	 * Returns the value of this node. Will be {@code null} if none was set.
-	 *
-	 * @return the value of this node
-	 */
-	public D getData() {
-		return data;
-	}
-
-	/**
-	 * Sets the value of this node.
-	 *
-	 * @param data The new value
-	 */
-	public void setData(D data) {
 		this.data = data;
 	}
 

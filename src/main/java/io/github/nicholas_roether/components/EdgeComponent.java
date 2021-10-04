@@ -1,6 +1,7 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
+import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphEdge;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
@@ -15,9 +16,9 @@ public class EdgeComponent extends Component {
 	// Edges are drawn on layer 1.
 	public static final int Z_INDEX = 1;
 
-	public final GraphEdge<PVector, Object> edge;
+	public final GraphEdge<NodeData, Object> edge;
 
-	public EdgeComponent(GraphEdge<PVector, Object> edge) {
+	public EdgeComponent(GraphEdge<NodeData, Object> edge) {
 		super(Z_INDEX);
 		this.edge = edge;
 	}
@@ -25,8 +26,8 @@ public class EdgeComponent extends Component {
 	@Override
 	public void draw(@NotNull PApplet p) {
 		// Get the position vectors for the nodes the edge connects
-		final PVector nodePos0 = edge.nodes.getValue0().getData();
-		final PVector nodePos1 = edge.nodes.getValue1().getData();
+		final PVector nodePos0 = edge.nodes.getValue0().data.getPosition();
+		final PVector nodePos1 = edge.nodes.getValue1().data.getPosition();
 
 		// Draw a grey (RGB 100/100/100) line with 3 pixels width between the nodes
 		p.stroke(100, 100, 100);

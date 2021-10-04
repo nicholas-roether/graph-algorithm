@@ -1,6 +1,7 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.bounded.CircularComponent;
+import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
@@ -39,7 +40,7 @@ public class NodeComponent extends CircularComponent {
 	 */
 	private static final float MOUSE_VEL_TRANSLATION = 0.3f;
 
-	public final GraphNode<PVector> node;
+	public final GraphNode<NodeData> node;
 
 	/**
 	 * Whether this node is an anchor node, meaning it isn't affected by physics
@@ -51,7 +52,7 @@ public class NodeComponent extends CircularComponent {
 	 *
 	 * @see NodePhysics
 	 */
-	public final NodePhysics physics;
+	public final NodePhysics<NodeData> physics;
 
 	/**
 	 * Whether this node is currently being dragged.
@@ -73,17 +74,11 @@ public class NodeComponent extends CircularComponent {
 	 */
 	private PVector mouseVelocity;
 
-	/**
-	 * How many mouse buttons are pressed additionally to the left one while dragging.
-	 * Useful for determining when a node has stopped being dragged.
-	 */
-	private int additionalMouseButtons = 0;
-
-	public NodeComponent(GraphNode<PVector> node, Graph<PVector, Object> graph, boolean anchor) {
+	public NodeComponent(GraphNode<NodeData> node, Graph<NodeData, Object> graph, boolean anchor) {
 		super(Z_INDEX);
 		this.node = node;
 		this.anchor = anchor;
-		this.physics = new NodePhysics(node, graph);
+		this.physics = new NodePhysics<>(node, graph);
 		// Disable physics if the node is an anchor
 		if (anchor) physics.setDisabled(true);
 	}
@@ -107,7 +102,7 @@ public class NodeComponent extends CircularComponent {
 		// Draw center-aligned text with the node's name on top
 		p.fill(0, 0, 0);
 		p.textAlign(CENTER, CENTER);
-		p.textSize(getTextSizeForLength(node.name.length())); // The text is scaled down when longer
+		p.textSize(getTextSizeForLength()); // The text is scaled down when longer
 		p.textLeading(7); // Lower line height
 		p.text(
 				getMessage(node.name),
@@ -200,12 +195,11 @@ public class NodeComponent extends CircularComponent {
 	}
 
 	/**
-	 * Gets the appropriate text size for a node name with a given length.
+	 * Gets the appropriate text size for the node name.
 	 *
-	 * @param length The node name length
 	 * @return the computed appropriate size, in pixels
 	 */
-	private float getTextSizeForLength(int length) {
+	private float getTextSizeForLength() {
 		// the size is TEXT_SIZE when the length is 1, otherwise it is lower up until
 		// a minimum size which is reached at a length of four characters,
 		// according to the somewhat arbitrary function below.

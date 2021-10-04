@@ -11,7 +11,7 @@ import processing.core.PVector;
 /**
  * The physics object behind a NodeComponent.
  */
-public class NodePhysics implements PhysicsObject {
+public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
@@ -33,16 +33,6 @@ public class NodePhysics implements PhysicsObject {
 	private static final float RADIUS = NodeComponent.NODE_RADIUS;
 
 	/**
-	 * The acceleration of this node.
-	 */
-	private PVector acceleration = new PVector(0, 0);
-
-	/**
-	 * The velocity of this node.
-	 */
-	private PVector velocity = new PVector(0, 0);
-
-	/**
 	 * Whether the physics of this node is disabled (for example if the node is being dragged).
 	 */
 	private boolean disabled = false;
@@ -55,46 +45,46 @@ public class NodePhysics implements PhysicsObject {
 	/**
 	 * The node whose position the physics applies to
 	 */
-	private final GraphNode<PVector> node;
+	private final GraphNode<D> node;
 
 	/**
 	 * The graph the node belongs to
 	 */
-	private final Graph<PVector, Object> graph;
+	private final Graph<D, Object> graph;
 
-	public NodePhysics(GraphNode<PVector> node, Graph<PVector, Object> graph) {
+	public NodePhysics(GraphNode<D> node, Graph<D, Object> graph) {
 		this.node = node;
 		this.graph = graph;
 	}
 
 	@Override
 	public PVector getAcceleration() {
-		return acceleration;
+		return node.data.getAcceleration();
 	}
 
 	@Override
 	public PVector getVelocity() {
-		return velocity;
+		return node.data.getVelocity();
 	}
 
 	@Override
 	public PVector getPosition() {
-		return node.getData();
+		return node.data.getPosition();
 	}
 
 	@Override
 	public void setAcceleration(@NotNull PVector acceleration) {
-		this.acceleration = acceleration.copy();
+		node.data.setAcceleration(acceleration.copy());
 	}
 
 	@Override
 	public void setVelocity(@NotNull PVector velocity) {
-		this.velocity = velocity.copy();
+		node.data.setVelocity(velocity.copy());
 	}
 
 	@Override
 	public void setPosition(@NotNull PVector position) {
-		node.setData(position.copy());
+		node.data.setPosition(position.copy());
 	}
 
 	/**
@@ -137,7 +127,7 @@ public class NodePhysics implements PhysicsObject {
 		// The total acceleration is accumulated in this vector.
 		final PVector acc = new PVector(0, 0);
 
-		for (GraphNode<PVector> node : graph.getNodes()) {
+		for (GraphNode<D> node : graph.getNodes()) {
 			final float distance = getDistance(node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(node);
@@ -146,7 +136,7 @@ public class NodePhysics implements PhysicsObject {
 				if (!colliding) {
 					// Handle collisions by having the nodes bounce off of each other (once per collision)
 					colliding = true;
-					velocity.sub(normal.copy().mult(2 * velocity.dot(normal.mult(-1))));
+					getVelocity().sub(normal.copy().mult(2 * getVelocity().dot(normal.mult(-1))));
 				}
 			} else {
 				colliding = false;
@@ -155,7 +145,7 @@ public class NodePhysics implements PhysicsObject {
 				acc.add(normal.copy().mult(-repulsion));
 			}
 		}
-		for (GraphNeighbor<PVector, ?> neighbor : graph.getNeighbors(node)) {
+		for (GraphNeighbor<D, Object> neighbor : graph.getNeighbors(node)) {
 			final float distance = getDistance(neighbor.node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(neighbor.node);
@@ -173,8 +163,8 @@ public class NodePhysics implements PhysicsObject {
 	 * @param other The node to get the distance to
 	 * @return the computed distance
 	 */
-	private float getDistance(@NotNull GraphNode<PVector> other) {
-		return node.getData().dist(other.getData());
+	private float getDistance(@NotNull GraphNode<D> other) {
+		return getPosition().dist(other.data.getPosition());
 	}
 
 	/**
@@ -184,8 +174,8 @@ public class NodePhysics implements PhysicsObject {
 	 * @param other The node to get the normal vector to
 	 * @return the computed normal vector
 	 */
-	private PVector getNormalTo(@NotNull GraphNode<PVector> other) {
-		return other.getData().copy().sub(node.getData()).normalize();
+	private PVector getNormalTo(@NotNull GraphNode<D> other) {
+		return other.data.getPosition().copy().sub(getPosition()).normalize();
 	}
 
 	/**
@@ -231,6 +221,6 @@ public class NodePhysics implements PhysicsObject {
 	private PVector getFriction() {
 		// friction is simply proportional to the node's speed, and points in the opposite direction to
 		// the node's velocity.
-		return velocity.copy().mult(-FRICTION_CONSTANT);
+		return getVelocity().copy().mult(-FRICTION_CONSTANT);
 	}
 }
