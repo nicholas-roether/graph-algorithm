@@ -86,10 +86,11 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	 * Register this component's child components.
 	 *
 	 * @param registry The global component registry
+	 * @param p The PApplet corresponding to the application window
 	 *
 	 * @see ComponentRegistry
 	 */
-	public void build(ComponentRegistry registry) {}
+	public void build(ComponentRegistry registry, PApplet p) {}
 
 	/**
 	 * Returns whether the component's child components should be rebuilt. This function is

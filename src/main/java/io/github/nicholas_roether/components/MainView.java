@@ -35,7 +35,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry) {
+	public void build(ComponentRegistry registry, PApplet p) {
 		graphComponent = new GraphComponent(graph, List.of("A", "Z"));
 		background = new Background();
 		editingButton = new EditingButton(10, 10, 80, 40);

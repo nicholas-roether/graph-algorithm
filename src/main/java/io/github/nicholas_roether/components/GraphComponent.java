@@ -63,7 +63,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry) {
+	public void build(ComponentRegistry registry, PApplet p) {
 		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
 

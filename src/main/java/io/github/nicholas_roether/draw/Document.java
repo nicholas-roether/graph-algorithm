@@ -76,7 +76,7 @@ public abstract class Document extends PApplet {
 		this.windowHeight = windowHeight;
 		this.title = title;
 		this.icon = null;
-		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE);
+		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE, this);
 		this.cursorManager = new CursorManager();
 	}
 
@@ -85,7 +85,7 @@ public abstract class Document extends PApplet {
 		this.windowHeight = windowHeight;
 		this.title = title;
 		this.icon = icon;
-		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE);
+		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE, this);
 		this.cursorManager = new CursorManager();
 	}
 
