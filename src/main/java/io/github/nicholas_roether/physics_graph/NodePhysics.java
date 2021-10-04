@@ -52,9 +52,21 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	 */
 	private final Graph<D, Object> graph;
 
+	private float screenWidth = 0;
+
+	private float screenHeight = 0;
+
 	public NodePhysics(GraphNode<D> node, Graph<D, Object> graph) {
 		this.node = node;
 		this.graph = graph;
+	}
+
+	public void setScreenWidth(float screenWidth) {
+		this.screenWidth = screenWidth;
+	}
+
+	public void setScreenHeight(float screenHeight) {
+		this.screenHeight = screenHeight;
 	}
 
 	@Override
@@ -127,19 +139,22 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 		// The total acceleration is accumulated in this vector.
 		final PVector acc = new PVector(0, 0);
 
+		boolean collidingWithNode = false;
+		boolean collidingWithVerticalBorder = false;
+		boolean collidingWithHorizontalBorder = false;
+
 		for (GraphNode<D> node : graph.getNodes()) {
 			final float distance = getDistance(node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(node);
 
 			if (distance <= RADIUS) {
+				collidingWithNode = true;
 				if (!colliding) {
 					// Handle collisions by having the nodes bounce off of each other (once per collision)
-					colliding = true;
 					getVelocity().sub(normal.copy().mult(2 * getVelocity().dot(normal.mult(-1))));
 				}
 			} else {
-				colliding = false;
 				final float repulsion = getRepulsion(distance);
 				// Add a vector away from the other node with the appropriate length to the acceleration
 				acc.add(normal.copy().mult(-repulsion));
@@ -155,6 +170,17 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 		}
 		acc.add(getFriction()); // Add the acceleration due to friction
 		setAcceleration(acc);
+
+		if (screenHeight > 0 && (getPosition().x <= RADIUS || getPosition().x >= screenWidth - RADIUS)) {
+			if (!colliding) setVelocity(new PVector(-getVelocity().x, getVelocity().y));
+			collidingWithHorizontalBorder = true;
+		}
+		if (screenWidth > 0 && (getPosition().y <= RADIUS || getPosition().y >= screenHeight - RADIUS)) {
+			if (!colliding) setVelocity(new PVector(getVelocity().x, -getVelocity().y));
+			collidingWithVerticalBorder = true;
+		}
+
+		colliding = collidingWithNode || collidingWithHorizontalBorder || collidingWithVerticalBorder;
 	}
 
 	/**

@@ -78,7 +78,7 @@ public class GraphComponent extends Component {
 			final NodeComponent nodeComponent = new NodeComponent(node, graph, anchors.contains(node.name));
 
 			// Add the NodePhysics object corresponding to each node to the engine
-			physicsEngine.addObject(nodeComponent.physics);
+			physicsEngine.addObject(nodeComponent.getPhysics());
 
 			components.add(nodeComponent);
 		}

@@ -57,7 +57,7 @@ public class NodeComponent extends CircularComponent {
 	 *
 	 * @see NodePhysics
 	 */
-	public final NodePhysics<NodeData> physics;
+	private NodePhysics<NodeData> physics;
 
 	/**
 	 * Whether this node is currently being dragged.
@@ -83,10 +83,20 @@ public class NodeComponent extends CircularComponent {
 		super(Z_INDEX);
 		this.node = node;
 		this.anchor = anchor;
-		this.physics = new NodePhysics<>(node, graph);
 		this.graph = graph;
+		physics = new NodePhysics<>(node, graph);
 		// Disable physics if the node is an anchor
 		if (anchor) physics.setDisabled(true);
+	}
+
+	public NodePhysics<NodeData> getPhysics() {
+		return physics;
+	}
+
+	@Override
+	protected void init(PApplet p) {
+		physics.setScreenWidth(p.width);
+		physics.setScreenHeight(p.height);
 	}
 
 	@Override
@@ -195,4 +205,5 @@ public class NodeComponent extends CircularComponent {
 	public float getY() {
 		return physics.getPosition().y;
 	}
+
 }
