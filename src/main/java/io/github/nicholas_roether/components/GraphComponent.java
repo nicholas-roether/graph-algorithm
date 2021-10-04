@@ -10,6 +10,7 @@ import io.github.nicholas_roether.physics.PhysicsEngine;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,6 +49,11 @@ public class GraphComponent extends Component {
 	 * @see PhysicsEngine
 	 */
 	private final PhysicsEngine<NodePhysics<NodeData>> physicsEngine;
+
+	/**
+	 * Whether the physics simulation is currently running.
+	 */
+	private boolean running = true;
 
 	public GraphComponent(Graph<NodeData, Object> graph, List<String> anchors) {
 		this.graph = graph;
@@ -88,6 +94,17 @@ public class GraphComponent extends Component {
 		registry.register(components, id);
 	}
 
+	public void setRunning(boolean running) {
+		if (running != this.running) {
+			// Reset velocities and accelerations when starting / stopping the simulation
+			nodes.forEach(node -> {
+				node.data.setVelocity(new PVector());
+				node.data.setAcceleration(new PVector());
+			});
+			this.running = running;
+		}
+	}
+
 	@Override
 	public boolean shouldRebuild() {
 		// Rebuild if the graph contains new nodes or edges
@@ -96,7 +113,7 @@ public class GraphComponent extends Component {
 
 	@Override
 	public void draw(@NotNull PApplet p) {
-		// step the physics engine on each frame
-		physicsEngine.step(1 / p.frameRate);
+		// step the physics engine on each frame if the simulation is running
+		if (running) physicsEngine.step(1 / p.frameRate);
 	}
 }

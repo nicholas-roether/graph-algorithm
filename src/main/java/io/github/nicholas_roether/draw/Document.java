@@ -54,6 +54,7 @@ public abstract class Document extends PApplet {
 		p.rectMode(CORNER);
 		p.ellipseMode(DIAMETER);
 		p.blendMode(BLEND);
+		p.imageMode(CORNER);
 	});
 
 	/**

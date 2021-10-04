@@ -83,7 +83,14 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 
 	@Override
 	public void draw(@NotNull PApplet p) {
+		// Initialize any uninitialized components
+		getComponents().forEach(component -> {
+			if (!component.isInitialized())
+				component.setup(p);
+		});
+		// Check if any components need to be rebuilt
 		checkRebuild();
+		// Draw all components
 		getComponents().forEach(component -> {
 			resetDrawState(p);
 			component.draw(p);

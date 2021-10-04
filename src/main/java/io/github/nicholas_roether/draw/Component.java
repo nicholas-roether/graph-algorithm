@@ -30,6 +30,11 @@ import java.util.Objects;
  */
 public abstract class Component extends Element implements WindowEventReceiver {
 	/**
+	 * Whether this component has been initialized.
+	 */
+	private boolean initialized = false;
+
+	/**
 	 * The cursor type to be specified when the component doesn't want to request any cursor type for itself.
 	 */
 	protected static final int NO_CURSOR_INSTRUCT = CursorManager.NO_CURSOR_INSTRUCT;
@@ -58,6 +63,16 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	public Component(int zIndex) {
 		this.zIndex = zIndex;
 		id = nextId();
+	}
+
+	/**
+	 * Initialize this component.
+	 *
+	 * @param p The {@code PApplet} corresponding to the app window.
+	 */
+	public final void setup(PApplet p) {
+		init(p);
+		initialized = true;
 	}
 
 	/**
@@ -98,6 +113,18 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	public int instructCursor(float x, float y) {
 		return NO_CURSOR_INSTRUCT;
 	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	/**
+	 * A function called before the component is built, meant for the
+	 * component to be initialized according data provided by the PApplet.
+	 *
+	 * @param p The {@code PApplet} corresponding to the app window.
+	 */
+	protected void init(PApplet p) {}
 
 	/**
 	 * Returns the next unique id.

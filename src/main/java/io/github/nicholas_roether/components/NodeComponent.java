@@ -3,6 +3,7 @@ package io.github.nicholas_roether.components;
 import io.github.nicholas_roether.draw.bounded.CircularComponent;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
+import io.github.nicholas_roether.graph.GraphNeighbor;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,8 @@ public class NodeComponent extends CircularComponent {
 
 	public final GraphNode<NodeData> node;
 
+	public final Graph<NodeData, Object> graph;
+
 	/**
 	 * Whether this node is an anchor node, meaning it isn't affected by physics
 	 */
@@ -79,6 +82,7 @@ public class NodeComponent extends CircularComponent {
 		this.node = node;
 		this.anchor = anchor;
 		this.physics = new NodePhysics<>(node, graph);
+		this.graph = graph;
 		// Disable physics if the node is an anchor
 		if (anchor) physics.setDisabled(true);
 	}
@@ -114,8 +118,18 @@ public class NodeComponent extends CircularComponent {
 	@Override
 	public void mouseMovedAnywhere(MouseEvent event) {
 		if (dragging) {
-			// Move the node to the mouse if it is being dragged
-			physics.setPosition(new PVector(event.getX(), event.getY()));
+			// Move the node to the mouse if it is being dragged and the new position isn't inside another node
+			final PVector mousePos = new PVector(event.getX(), event.getY());
+			boolean canMove = true;
+			for (GraphNode<NodeData> other : graph.getNodes()) {
+				if (other.equals(node)) continue;
+				final float distance = mousePos.dist(other.data.getPosition());
+				if (distance <= 2 * NODE_RADIUS) {
+					canMove = false;
+					break;
+				}
+			}
+			if (canMove) physics.setPosition(mousePos);
 		}
 
 		// Update mouse velocity unless there was no tracked mouse event yet

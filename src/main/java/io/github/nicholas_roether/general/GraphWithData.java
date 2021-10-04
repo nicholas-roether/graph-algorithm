@@ -8,6 +8,7 @@ import processing.core.PVector;
 public class GraphWithData extends Graph<NodeData, Object> {
 	public GraphNode<NodeData> addNode(@NotNull String name, float x ,float y) {
 		final GraphNode<NodeData> node = addNode(name, new NodeData());
+		if (node == null) return null;
 		node.data.setPosition(new PVector(x, y));
 		return node;
 	}

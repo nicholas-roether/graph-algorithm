@@ -1,6 +1,7 @@
 package io.github.nicholas_roether;
 
 import io.github.nicholas_roether.components.GraphComponent;
+import io.github.nicholas_roether.components.MainView;
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.general.GraphWithData;
@@ -62,6 +63,6 @@ public class App extends Document {
 		graph.addEdge(nodeD, nodeG, 2);
 
 		GraphComponent graphComponent = new GraphComponent(graph, List.of("A"));
-		registry.register(graphComponent, ComponentRegistry.NO_PARENT);
+		registry.register(new MainView(), ComponentRegistry.NO_PARENT);
 	}
 }
