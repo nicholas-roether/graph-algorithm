@@ -15,7 +15,7 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
-	private static final float REPULSION_CONSTANT = 1150000f;
+	private static final float REPULSION_CONSTANT = 1200000f;
 
 	/**
 	 * The constant that determines the strength of the attraction between connected nodes.

@@ -33,7 +33,7 @@ public class EdgeLabel extends Component {
 
 		// Draw white text of 15px size at the center point, displaying the
 		// edge's weight.
-		p.textSize(15);
+		p.textSize(20);
 		p.fill(255, 255, 255);
 		p.textAlign(CENTER);
 		p.text(Double.toString(edge.weight), center.x, center.y);

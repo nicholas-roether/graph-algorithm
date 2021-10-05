@@ -5,7 +5,6 @@ import io.github.nicholas_roether.draw.bounded.CircularComponent;
 import io.github.nicholas_roether.elements.NodeElement;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
-import io.github.nicholas_roether.graph.GraphNeighbor;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +12,6 @@ import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The graphical component representing a graph node within a rendered graph.
@@ -30,13 +27,13 @@ public class NodeComponent extends CircularComponent {
 	/**
 	 * The radius of the nodes in pixels.
 	 */
-	public static final float NODE_RADIUS = 15;
+	public static final float NODE_RADIUS = 20;
 
 	/**
 	 * The default text size in pixels; text with more than one letter will be drawn
 	 * smaller.
 	 */
-	private static final float TEXT_SIZE = 25;
+	private static final float TEXT_SIZE = 30;
 
 	/**
 	 * What proportion of the mouse velocity is translated to the node velocity after dragging a node

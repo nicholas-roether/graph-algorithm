@@ -5,7 +5,6 @@ import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.general.GraphWithData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphNode;
-import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 
 import java.util.List;

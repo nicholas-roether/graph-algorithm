@@ -16,13 +16,18 @@ import java.util.List;
 public class App extends Document {
 	public App() {
 		// create an 800x800 window with the below title
-		super(800, 600, "A* Algorithm");
+		super(1280, 900, "A* Algorithm");
 	}
 
 	public static void main(String[] args) {
 		final App app = new App();
-		System.setProperty("sun.java2d.uiScale", "1"); // disable ui scaling to fix blurry graphics on high-dpi screens
+		System.setProperty("sun.java2d.uiScale.enabled", "false"); // disable ui scaling to fix blurry graphics on high-dpi screens
 		app.runSketch(args); // start the application
+	}
+
+	@Override
+	protected void create() {
+//		fullScreen();
 	}
 
 	@Override
