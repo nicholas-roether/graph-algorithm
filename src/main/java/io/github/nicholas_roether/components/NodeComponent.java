@@ -235,7 +235,28 @@ public class NodeComponent extends CircularComponent {
 		return physics.getPosition().y;
 	}
 
+	/**
+	 * Find the first point at which, going along the path between the node position and the requested position,
+	 * the two nodes at {@code nodePos} and otherPos intersect.
+	 * <br>
+	 * This function is used to figure out at which point the node at {@code otherPos} blocks the node at
+	 * {@code nodePos} from moving further if it was to try to move in a straight line from {@code nodePos}
+	 * to {@code requestedPos}.
+	 * <br>
+	 * If the node is never blocked along its path (or if the math somehow breaks terribly),
+	 * the function will simply return {@code requestedPos}.
+	 *
+	 * @param requestedPos The position the node would like to move to
+	 * @param nodePos The starting position of the node
+	 * @param otherPos The position of the other node that collides.
+	 * @return The computed position of intersection
+	 */
 	public static PVector closestPointToOtherNode(PVector requestedPos, PVector nodePos, PVector otherPos) {
+		/*
+		The vector maths for this took me hours to figure out, and I really don't think I can
+		explain it within the confines of a comment like this. If necessary, I could provide an
+		explanatory geogebra file (the same one I used to come up with the formula).
+		 */
 		final PVector nm = requestedPos.copy().sub(nodePos);
 		final PVector on = otherPos.copy().sub(nodePos);
 
@@ -244,7 +265,7 @@ public class NodeComponent extends CircularComponent {
 		final float c = on.magSq() - 4 * NODE_RADIUS * NODE_RADIUS;
 
 		final float sqrt = (float) Math.sqrt(b * b - 4 * a * c);
-		if (Float.isNaN(sqrt)) return nodePos;
+		if (Float.isNaN(sqrt)) return requestedPos;
 		final float k = (-b - sqrt) / (2 * a);
 
 		final PVector offset = nm.copy().mult(k);
