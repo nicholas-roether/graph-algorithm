@@ -79,6 +79,9 @@ public class NodeComponent extends CircularComponent {
 	 */
 	private PVector mouseVelocity;
 
+	private float screenWidth;
+	private float screenHeight;
+
 	public NodeComponent(GraphNode<NodeData> node, Graph<NodeData, Object> graph, boolean anchor) {
 		super(Z_INDEX);
 		this.node = node;
@@ -97,6 +100,8 @@ public class NodeComponent extends CircularComponent {
 	protected void init(PApplet p) {
 		physics.setScreenWidth(p.width);
 		physics.setScreenHeight(p.height);
+		screenWidth = p.width;
+		screenHeight = p.height;
 	}
 
 	@Override
@@ -117,8 +122,12 @@ public class NodeComponent extends CircularComponent {
 	public void mouseMovedAnywhere(MouseEvent event) {
 		if (dragging) {
 			// Move the node to the mouse if it is being dragged and the new position isn't inside another node
+			// or outside the screen
 			final PVector mousePos = new PVector(event.getX(), event.getY());
 			boolean canMove = true;
+			//noinspection RedundantIfStatement
+			if (mousePos.x <= NODE_RADIUS || mousePos.x >= screenWidth - NODE_RADIUS) canMove = false;
+			if (mousePos.y <= NODE_RADIUS || mousePos.y >= screenHeight - NODE_RADIUS) canMove = false;
 			for (GraphNode<NodeData> other : graph.getNodes()) {
 				if (other.equals(node)) continue;
 				final float distance = mousePos.dist(other.data.getPosition());
