@@ -15,8 +15,9 @@ public class NodeElement extends Element {
 	private final float radius;
 	private final String message;
 	private final float textSize;
+	private final float opacity;
 
-	public NodeElement(boolean hovering, boolean anchor, float x, float y, float radius, String message, float textSize) {
+	public NodeElement(boolean hovering, boolean anchor, float x, float y, float radius, String message, float textSize, float opacity) {
 		this.hovering = hovering;
 		this.anchor = anchor;
 		this.x = x;
@@ -24,19 +25,20 @@ public class NodeElement extends Element {
 		this.radius = radius;
 		this.message = message;
 		this.textSize = textSize;
+		this.opacity = opacity;
 	}
 
 	@Override
 	public void draw(@NotNull PApplet p) {
 		// If the mouse is hovering over the node, fill it light blue
-		if (hovering) p.fill(140, 245, 256);
+		if (hovering) p.fill(140, 245, 256, opacity);
 			// If the node is an anchor, fill it with a darker ble
-		else if (anchor) p.fill(85, 205, 244);
+		else if (anchor) p.fill(85, 205, 244, opacity);
 			// Otherwise, fill it with white.
-		else p.fill(255, 255, 255);
+		else p.fill(255, 255, 255, opacity);
 
 		// Have a grey outline of 3px width around the node
-		p.stroke(100, 100, 100);
+		p.stroke(100, 100, 100, opacity);
 		p.strokeWeight(3);
 
 		// Draw a circle with the node's radius and the set filling and outline

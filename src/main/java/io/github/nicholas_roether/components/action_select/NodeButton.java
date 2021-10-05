@@ -21,7 +21,8 @@ public class NodeButton extends ToggleButton {
 				y + height / 2f,
 				width * 0.3f,
 				"",
-				1
+				1,
+				255
 		);
 		nodeElement.draw(p);
 	}

@@ -6,11 +6,12 @@ import io.github.nicholas_roether.components.action_select.NodeButton;
 import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
+import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import processing.core.PApplet;
 
 import java.util.List;
 
-public class EditActionSelector extends Component {
+public class EditActionSelector extends RectangularComponent {
 	public final float x;
 	public final float y;
 
@@ -40,6 +41,10 @@ public class EditActionSelector extends Component {
 				edgeButton,
 				deleteButton
 		), id);
+	}
+
+	public State getState() {
+		return state;
 	}
 
 	public boolean isVisible() {
@@ -81,6 +86,26 @@ public class EditActionSelector extends Component {
 			case EDGE -> edgeButton.setPressed(true);
 			case DELETE -> deleteButton.setPressed(true);
 		}
+	}
+
+	@Override
+	public float getWidth() {
+		return Math.max(Math.max(nodeButton.width, edgeButton.width), deleteButton.width);
+	}
+
+	@Override
+	public float getHeight() {
+		return nodeButton.height + edgeButton.height + deleteButton.height + 20;
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
 	}
 
 	public enum State {

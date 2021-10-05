@@ -113,7 +113,8 @@ public class NodeComponent extends CircularComponent {
 				physics.getPosition().y,
 				NODE_RADIUS,
 				node.name,
-				TEXT_SIZE
+				TEXT_SIZE,
+				255
 		);
 		nodeElement.draw(p);
 	}
