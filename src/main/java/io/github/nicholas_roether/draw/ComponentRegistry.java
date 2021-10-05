@@ -95,7 +95,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 				component.setup(p);
 		});
 		// Call the frame callback for every component
-		getComponents().forEach(component -> component.frame(p.frameRate));
+		getComponents().forEach(component -> component.frame(p));
 		// Check if any components need to be rebuilt
 		checkRebuild();
 		// Draw all components

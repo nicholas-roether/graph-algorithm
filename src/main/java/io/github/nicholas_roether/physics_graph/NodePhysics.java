@@ -153,6 +153,7 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 				if (!colliding) {
 					// Handle collisions by having the nodes bounce off of each other (once per collision)
 					getVelocity().sub(normal.copy().mult(2 * getVelocity().dot(normal.mult(-1))));
+					getPosition().add(normal.copy().mult((distance - RADIUS) / 2));
 				}
 			} else {
 				final float repulsion = getRepulsion(distance);
@@ -174,10 +175,14 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 		if (screenHeight > 0 && (getPosition().x <= RADIUS || getPosition().x >= screenWidth - RADIUS)) {
 			if (!colliding) setVelocity(new PVector(-getVelocity().x, getVelocity().y));
 			collidingWithHorizontalBorder = true;
+			if (getPosition().x <= RADIUS) getPosition().x = RADIUS;
+			if (getPosition().x >= screenWidth - RADIUS) getPosition().x = screenWidth - RADIUS;
 		}
 		if (screenWidth > 0 && (getPosition().y <= RADIUS || getPosition().y >= screenHeight - RADIUS)) {
 			if (!colliding) setVelocity(new PVector(getVelocity().x, -getVelocity().y));
 			collidingWithVerticalBorder = true;
+			if (getPosition().y <= RADIUS) getPosition().y = RADIUS;
+			if (getPosition().y >= screenHeight - RADIUS) getPosition().y = screenHeight - RADIUS;
 		}
 
 		colliding = collidingWithNode || collidingWithHorizontalBorder || collidingWithVerticalBorder;

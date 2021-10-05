@@ -54,7 +54,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void frame(float frameRate) {
+	public void frame(PApplet p) {
 		if (state == State.EDITING) {
 			if (!editingButton.isPressed()) state = State.SHOWING;
 		} else {

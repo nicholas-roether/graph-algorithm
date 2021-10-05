@@ -2,6 +2,7 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.components.action_select.DeleteButton;
 import io.github.nicholas_roether.components.action_select.EdgeButton;
+import io.github.nicholas_roether.components.action_select.MoveButton;
 import io.github.nicholas_roether.components.action_select.NodeButton;
 import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Component;
@@ -18,11 +19,12 @@ public class EditActionSelector extends RectangularComponent {
 	private boolean visible = true;
 	private boolean showing = false;
 
+	private MoveButton moveButton;
 	private NodeButton nodeButton;
 	private EdgeButton edgeButton;
 	private DeleteButton deleteButton;
 
-	private State state = State.NODE;
+	private State state = State.MOVE;
 
 	public EditActionSelector(float x, float y) {
 		this.x = x;
@@ -33,10 +35,12 @@ public class EditActionSelector extends RectangularComponent {
 	public void build(ComponentRegistry registry, PApplet p) {
 		showing = visible;
 		if (!visible) return;
-		nodeButton = new NodeButton(x, y);
-		edgeButton = new EdgeButton(x, y + nodeButton.height + 10);
-		deleteButton = new DeleteButton(x, y + nodeButton.height + edgeButton.height + 20);
+		moveButton = new MoveButton(x, y);
+		nodeButton = new NodeButton(x, y + moveButton.height + 10);
+		edgeButton = new EdgeButton(x, y + moveButton.height + nodeButton.height + 20);
+		deleteButton = new DeleteButton(x, y + moveButton.height + nodeButton.height + edgeButton.height + 30);
 		registry.register(List.of(
+				moveButton,
 				nodeButton,
 				edgeButton,
 				deleteButton
@@ -61,27 +65,37 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	@Override
-	public void frame(float frameRate) {
+	public void frame(PApplet p) {
 		switch (state) {
+			case MOVE -> {
+				if (nodeButton.isPressed()) state = State.NODE;
+				if (edgeButton.isPressed()) state = State.EDGE;
+				if (deleteButton.isPressed()) state = State.DELETE;
+			}
 			case NODE -> {
+				if (moveButton.isPressed()) state = State.MOVE;
 				if (edgeButton.isPressed()) state = State.EDGE;
 				if (deleteButton.isPressed()) state = State.DELETE;
 			}
 			case EDGE -> {
+				if (moveButton.isPressed()) state = State.MOVE;
 				if (nodeButton.isPressed()) state = State.NODE;
 				if (deleteButton.isPressed()) state = State.DELETE;
 			}
 			case DELETE -> {
+				if (moveButton.isPressed()) state = State.MOVE;
 				if (nodeButton.isPressed()) state = State.NODE;
 				if (edgeButton.isPressed()) state = State.EDGE;
 			}
 		}
 
+		moveButton.setPressed(false);
 		nodeButton.setPressed(false);
 		edgeButton.setPressed(false);
 		deleteButton.setPressed(false);
 
 		switch (state) {
+			case MOVE -> moveButton.setPressed(true);
 			case NODE -> nodeButton.setPressed(true);
 			case EDGE -> edgeButton.setPressed(true);
 			case DELETE -> deleteButton.setPressed(true);
@@ -95,7 +109,7 @@ public class EditActionSelector extends RectangularComponent {
 
 	@Override
 	public float getHeight() {
-		return nodeButton.height + edgeButton.height + deleteButton.height + 20;
+		return moveButton.height + nodeButton.height + edgeButton.height + deleteButton.height + 30;
 	}
 
 	@Override
@@ -109,6 +123,7 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	public enum State {
+		MOVE,
 		NODE,
 		EDGE,
 		DELETE

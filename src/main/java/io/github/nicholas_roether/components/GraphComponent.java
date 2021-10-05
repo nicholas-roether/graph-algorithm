@@ -112,8 +112,8 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void frame(float frameRate) {
+	public void frame(PApplet p) {
 		// step the physics engine on each frame if the simulation is running
-		if (running) physicsEngine.step(1 / frameRate);
+		if (running) physicsEngine.step(1 / p.frameRate);
 	}
 }
