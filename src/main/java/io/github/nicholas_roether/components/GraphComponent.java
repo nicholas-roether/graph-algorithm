@@ -2,14 +2,13 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics.PhysicsEngine;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
-import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, PApplet p) {
+	public void build(ComponentRegistry registry, Document p) {
 		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
 
@@ -112,7 +111,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void frame(PApplet p) {
+	public void frame(Document p) {
 		// step the physics engine on each frame if the simulation is running
 		if (running) physicsEngine.step(1 / p.frameRate);
 	}

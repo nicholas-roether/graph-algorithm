@@ -41,7 +41,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	/**
 	 * The PApplet that created this component registry.
 	 */
-	private final PApplet pApplet;
+	private final Document document;
 
 	/**
 	 * Whether the components were rebuilt and need to be re-sorted. True
@@ -55,10 +55,10 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 */
 	private List<Component> cachedComponents;
 
-	public ComponentRegistry(DrawState initialDrawState, PApplet pApplet) {
+	public ComponentRegistry(DrawState initialDrawState, Document document) {
 		componentMap = new HashMap<>();
 		this.initialDrawState = initialDrawState;
-		this.pApplet = pApplet;
+		this.document = document;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 */
 	public void register(@NotNull Collection<? extends Component> components, int id) {
 		// build up all child components and let them register theirs in turn
-		components.forEach(component -> component.build(this, pApplet));
+		components.forEach(component -> component.build(this, document));
 		addComponents(components, id);
 	}
 
@@ -88,7 +88,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		// Initialize any uninitialized components
 		getComponents().forEach(component -> {
 			if (!component.isInitialized())
@@ -209,7 +209,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 		didRebuild = true;
 		// Remove all child components registered to the parent and rebuild
 		componentMap.remove(parent.id);
-		parent.build(this, pApplet);
+		parent.build(this, document);
 	}
 
 	/**

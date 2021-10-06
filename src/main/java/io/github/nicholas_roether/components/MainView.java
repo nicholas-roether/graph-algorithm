@@ -2,10 +2,10 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.general.GraphWithData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphNode;
-import processing.core.PApplet;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	protected void init(PApplet p) {
+	protected void init(Document p) {
 		final GraphNode<NodeData> startNode = graph.addNode("A", 60f, p.height / 2f);
 		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - 60f, p.height / 2f);
 		final GraphNode<NodeData> centerNode = graph.addNode("C", p.width / 2f, 40);
@@ -36,7 +36,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, PApplet p) {
+	public void build(ComponentRegistry registry, Document p) {
 		graphComponent = new GraphComponent(graph, List.of("A", "Z"));
 		background = new Background();
 		editingButton = new EditingButton(10, 10);
@@ -53,7 +53,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void frame(PApplet p) {
+	public void frame(Document p) {
 		if (state == State.EDITING) {
 			if (!editingButton.isPressed()) state = State.SHOWING;
 		} else {

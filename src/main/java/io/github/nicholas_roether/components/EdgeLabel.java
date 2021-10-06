@@ -1,10 +1,10 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphEdge;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 import processing.core.PVector;
 
 /**
@@ -24,7 +24,7 @@ public class EdgeLabel extends Component {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		// Get the position vectors of the nodes the edge connects, and
 		// find the center point between them.
 		final PVector from = edge.nodes.getValue0().data.getPosition();

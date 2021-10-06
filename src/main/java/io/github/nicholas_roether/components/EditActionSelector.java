@@ -7,6 +7,7 @@ import io.github.nicholas_roether.components.action_select.NodeButton;
 import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import processing.core.PApplet;
 
@@ -32,7 +33,7 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, PApplet p) {
+	public void build(ComponentRegistry registry, Document p) {
 		showing = visible;
 		if (!visible) return;
 		moveButton = new MoveButton(x, y);
@@ -65,7 +66,7 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	@Override
-	public void frame(PApplet p) {
+	public void frame(Document p) {
 		switch (state) {
 			case MOVE -> {
 				if (nodeButton.isPressed()) state = State.NODE;

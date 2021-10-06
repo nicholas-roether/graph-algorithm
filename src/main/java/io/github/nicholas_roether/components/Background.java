@@ -1,8 +1,8 @@
 package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
+import io.github.nicholas_roether.draw.Document;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 
 public class Background extends Component {
 	public static final int Z_INDEX = 0;
@@ -13,7 +13,7 @@ public class Background extends Component {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		if (editing) {
 			p.stroke(30);
 			p.strokeWeight(1);

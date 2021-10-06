@@ -2,7 +2,6 @@ package io.github.nicholas_roether.draw;
 
 import io.github.nicholas_roether.draw.cursor.CursorManager;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 
 import java.util.Objects;
 
@@ -68,24 +67,26 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	/**
 	 * Initialize this component.
 	 *
-	 * @param p The {@code PApplet} corresponding to the app window.
+	 * @param p The {@code Document} corresponding to the app window.
 	 */
-	public final void setup(PApplet p) {
+	public final void setup(Document p) {
 		init(p);
 		initialized = true;
 	}
 
 	/**
 	 * Called every frame before components are drawn to the screen.
+	 *
+	 * @param p The {@code Document} corresponding to the app window.
 	 */
-	public void frame(PApplet p) {}
+	public void frame(Document p) {}
 
 	/**
 	 * Draw this component to the screen.
 	 *
-	 * @param p The {@code PApplet} to be drawn to.
+	 * @param p The {@code Document} to be drawn to.
 	 */
-	public void draw(@NotNull PApplet p) {}
+	public void draw(@NotNull Document p) {}
 
 	/**
 	 * Register this component's child components.
@@ -95,7 +96,7 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	 *
 	 * @see ComponentRegistry
 	 */
-	public void build(ComponentRegistry registry, PApplet p) {}
+	public void build(ComponentRegistry registry, Document p) {}
 
 	/**
 	 * Returns whether the component's child components should be rebuilt. This function is
@@ -130,7 +131,7 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	 *
 	 * @param p The {@code PApplet} corresponding to the app window.
 	 */
-	protected void init(PApplet p) {}
+	protected void init(Document p) {}
 
 	/**
 	 * Returns the next unique id.

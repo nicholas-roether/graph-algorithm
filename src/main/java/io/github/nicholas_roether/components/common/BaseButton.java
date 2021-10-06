@@ -1,6 +1,7 @@
 package io.github.nicholas_roether.components.common;
 
 
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
@@ -29,7 +30,7 @@ public abstract class BaseButton extends RectangularComponent {
 		this.filled = filled;
 	}
 
-	protected abstract void drawLabel(PApplet p);
+	protected abstract void drawLabel(Document p);
 
 	public boolean isPressed() {
 		return pressed;
@@ -44,7 +45,7 @@ public abstract class BaseButton extends RectangularComponent {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		if (pressed) p.fill(pressedColor);
 		else if (filled) p.fill(baseColor);
 		else p.fill(0);

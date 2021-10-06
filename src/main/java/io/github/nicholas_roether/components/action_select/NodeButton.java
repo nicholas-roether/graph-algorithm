@@ -1,9 +1,9 @@
 package io.github.nicholas_roether.components.action_select;
 
 import io.github.nicholas_roether.components.common.ToggleButton;
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.elements.NodeElement;
-import processing.core.PApplet;
 
 public class NodeButton extends ToggleButton {
 	public static final int Z_INDEX = 10;
@@ -13,7 +13,7 @@ public class NodeButton extends ToggleButton {
 	}
 
 	@Override
-	protected void drawLabel(PApplet p) {
+	protected void drawLabel(Document p) {
 		final Element nodeElement = new NodeElement(
 				false,
 				false,

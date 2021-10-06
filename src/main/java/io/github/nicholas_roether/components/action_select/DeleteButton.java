@@ -1,7 +1,7 @@
 package io.github.nicholas_roether.components.action_select;
 
 import io.github.nicholas_roether.components.common.ToggleButton;
-import processing.core.PApplet;
+import io.github.nicholas_roether.draw.Document;
 import processing.core.PImage;
 
 public class DeleteButton extends ToggleButton {
@@ -13,12 +13,12 @@ public class DeleteButton extends ToggleButton {
 	}
 
 	@Override
-	protected void init(PApplet p) {
+	protected void init(Document p) {
 		icon = p.loadImage("delete_icon.png");
 	}
 
 	@Override
-	protected void drawLabel(PApplet p) {
+	protected void drawLabel(Document p) {
 		p.imageMode(CENTER);
 		p.image(icon, x + width / 2, y + height / 2);
 	}

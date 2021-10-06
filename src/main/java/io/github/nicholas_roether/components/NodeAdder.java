@@ -1,15 +1,14 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.draw.bounded.BoundedComponent;
 import io.github.nicholas_roether.elements.NodeElement;
 import io.github.nicholas_roether.general.GraphWithData;
 import io.github.nicholas_roether.general.NodeData;
 
-import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
@@ -42,7 +41,7 @@ public class NodeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		if (!enabled || !checkInBounds(p.mouseX, p.mouseY)) return;
 		final Element nodeElement = new NodeElement(
 				false,

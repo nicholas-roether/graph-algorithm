@@ -12,5 +12,5 @@ public interface Drawable {
 	 *
 	 * @param p The PApplet to draw to
 	 */
-	void draw(@NotNull PApplet p);
+	void draw(@NotNull Document p);
 }

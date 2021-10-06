@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.draw.bounded.CircularComponent;
 import io.github.nicholas_roether.elements.NodeElement;
@@ -8,7 +9,6 @@ import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
@@ -94,7 +94,7 @@ public class NodeComponent extends CircularComponent {
 	}
 
 	@Override
-	protected void init(PApplet p) {
+	protected void init(Document p) {
 		physics.setScreenWidth(p.width);
 		physics.setScreenHeight(p.height);
 		screenWidth = p.width;
@@ -102,12 +102,12 @@ public class NodeComponent extends CircularComponent {
 	}
 
 	@Override
-	public void frame(PApplet p) {
+	public void frame(Document p) {
 		if (dragging) moveToMouse(p);
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		final Element nodeElement = new NodeElement(
 				checkInBounds(p.mouseX, p.mouseY),
 				anchor,
@@ -121,7 +121,7 @@ public class NodeComponent extends CircularComponent {
 		nodeElement.draw(p);
 	}
 
-	private void moveToMouse(PApplet p) {
+	private void moveToMouse(Document p) {
 		// Move the node to the mouse if it is being dragged and the new position isn't inside another node
 		// or outside the screen
 		final PVector nodePos = node.data.getPosition();

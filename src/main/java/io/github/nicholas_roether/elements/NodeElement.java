@@ -1,8 +1,8 @@
 package io.github.nicholas_roether.elements;
 
+import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class NodeElement extends Element {
 	}
 
 	@Override
-	public void draw(@NotNull PApplet p) {
+	public void draw(@NotNull Document p) {
 		// If the mouse is hovering over the node, fill it light blue
 		if (hovering) p.fill(140, 245, 256, opacity);
 			// If the node is an anchor, fill it with a darker ble
