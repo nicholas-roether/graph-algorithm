@@ -2,6 +2,8 @@ package io.github.nicholas_roether.components.common;
 
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -112,5 +114,24 @@ public class Dialog extends Popup {
 			if (callback != null) callback.run();
 			popup.setShowing(false);
 		}));
+	}
+
+	@Override
+	public void keyTyped(KeyEvent event) {
+		if (event.getKey() == ENTER) {
+			final ActionButton button = buttons.get(0);
+			if (button != null) button.mousePressed(
+					new MouseEvent(
+							new Object(),
+							event.getMillis(),
+							MouseEvent.PRESS,
+							0,
+							(int) Math.ceil(button.x),
+							(int) Math.ceil(button.y),
+							LEFT,
+							1
+					)
+			);
+		}
 	}
 }

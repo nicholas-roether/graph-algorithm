@@ -188,6 +188,7 @@ public class Input extends RectangularComponent {
 	public void keyTyped(KeyEvent event) {
 		// If the input is focused, it is affected by key presses.
 		if (focused) {
+			if (event.getKey() == ENTER) return;
 			if (event.getKey() == BACKSPACE) {
 				// If backspace was pressed, delete the last character of the value (if the value isn't empty).
 				if (!value.isEmpty())

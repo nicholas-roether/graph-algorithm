@@ -27,7 +27,7 @@ public abstract class Popup extends Component {
 	private boolean showing = false;
 	private boolean childrenShowing = false;
 	protected List<Option> options;
-	private final List<TextActionButton> buttons = new ArrayList<>();
+	protected final List<TextActionButton> buttons = new ArrayList<>();
 
 	public Popup(String title) {
 		super(Z_INDEX);
