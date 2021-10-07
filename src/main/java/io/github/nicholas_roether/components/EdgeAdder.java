@@ -79,7 +79,7 @@ public class EdgeAdder extends BoundedComponent {
 
 	@Override
 	public void draw(@NotNull Document p) {
-		if (!enabled || hoveredNode == null) return;
+		if (!enabled || hoveredNode == null || p.popupManager.hasPopup()) return;
 		p.fill(0x6011A032);
 		p.circle(hoveredNode.data.getPosition().x, hoveredNode.data.getPosition().y, NodeComponent.NODE_RADIUS * 2.4f);
 	}
