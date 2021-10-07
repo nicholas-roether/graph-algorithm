@@ -91,7 +91,7 @@ public class GraphElementDeleter extends BoundedComponent {
 
 	@Override
 	protected void mousePressedInBounds(MouseEvent event) {
-		if (!enabled) return;
+		if (!enabled || event.getButton() != LEFT) return;
 		if (hoveredNode != null) {
 			graph.removeNode(hoveredNode);
 		} else if (hoveredEdge != null) {

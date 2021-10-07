@@ -4,6 +4,9 @@ import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Document;
 import processing.core.PImage;
 
+/**
+ * The button for moving nodes in the editing menu
+ */
 public class MoveButton extends ToggleButton {
 	public static final int Z_INDEX = 10;
 	private static PImage icon;
@@ -14,11 +17,14 @@ public class MoveButton extends ToggleButton {
 
 	@Override
 	protected void init(Document p) {
-		icon = p.loadImage("move_icon.png");
+		// load the icon if it hasn't already been loaded
+		if (icon == null)
+			icon = p.loadImage("move_icon.png");
 	}
 
 	@Override
 	protected void drawLabel(Document p) {
+		// display the icon
 		p.imageMode(CENTER);
 		p.image(icon, x + width / 2, y + height / 2);
 	}

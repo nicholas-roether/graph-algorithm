@@ -27,6 +27,11 @@ public abstract class Document extends PApplet {
 	public final PImage icon;
 
 	/**
+	 * The document's popup manager, housing its popup stack.
+	 */
+	public final PopupManager popupManager;
+
+	/**
 	 * The width of the window.
 	 */
 	private final int windowWidth;
@@ -78,6 +83,7 @@ public abstract class Document extends PApplet {
 		this.icon = null;
 		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE, this);
 		this.cursorManager = new CursorManager();
+		this.popupManager = new PopupManager(componentRegistry);
 	}
 
 	public Document(int windowWidth, int windowHeight, String title, PImage icon) {
@@ -87,6 +93,7 @@ public abstract class Document extends PApplet {
 		this.icon = icon;
 		this.componentRegistry = new ComponentRegistry(DEFAULT_DRAW_STATE, this);
 		this.cursorManager = new CursorManager();
+		this.popupManager = new PopupManager(componentRegistry);
 	}
 
 	/**
@@ -141,81 +148,96 @@ public abstract class Document extends PApplet {
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
-	// Pass all window events to the component registry
+	// Pass all window events to the component registry, or the current popup if one exists.
 
 	@Override
 	public final void mousePressed(MouseEvent event) {
-		componentRegistry.mousePressed(event);
+		if (popupManager.hasPopup()) popupManager.mousePressed(event);
+		else componentRegistry.mousePressed(event);
 	}
 
 	@Override
 	public final void mouseReleased(MouseEvent event) {
-		componentRegistry.mouseReleased(event);
+		if (popupManager.hasPopup()) popupManager.mouseReleased(event);
+		else componentRegistry.mouseReleased(event);
 	}
 
 	@Override
 	public final void mouseClicked(MouseEvent event) {
-		componentRegistry.mouseClicked(event);
+		if (popupManager.hasPopup()) popupManager.mouseClicked(event);
+		else componentRegistry.mouseClicked(event);
 	}
 
 	@Override
 	public final void mouseMoved(MouseEvent event) {
-		componentRegistry.mouseMoved(event);
+		if (popupManager.hasPopup()) popupManager.mouseMoved(event);
+		else componentRegistry.mouseMoved(event);
 	}
 
 	@Override
 	public final void mouseDragged(MouseEvent event) {
-		componentRegistry.mouseDragged(event);
+		if (popupManager.hasPopup()) popupManager.mouseDragged(event);
+		else componentRegistry.mouseDragged(event);
 	}
 
 	@Override
 	public final void mouseEntered(MouseEvent event) {
-		componentRegistry.mouseEntered(event);
+		if (popupManager.hasPopup()) popupManager.mouseEntered(event);
+		else componentRegistry.mouseEntered(event);
 	}
 
 	@Override
 	public final void mouseExited(MouseEvent event) {
-		componentRegistry.mouseExited(event);
+		if (popupManager.hasPopup()) popupManager.mouseExited(event);
+		else componentRegistry.mouseExited(event);
 	}
 
 	@Override
 	public final void mouseWheel(MouseEvent event) {
-		componentRegistry.mouseWheel(event);
+		if (popupManager.hasPopup()) popupManager.mouseWheel(event);
+		else componentRegistry.mouseWheel(event);
 	}
 
 	@Override
 	public final void keyPressed(KeyEvent event) {
-		componentRegistry.keyPressed(event);
+		if (popupManager.hasPopup()) popupManager.keyPressed(event);
+		else componentRegistry.keyPressed(event);
 	}
 
 	@Override
 	public final void keyReleased(KeyEvent event) {
-		componentRegistry.keyReleased(event);
+		if (popupManager.hasPopup()) popupManager.keyReleased(event);
+		else componentRegistry.keyReleased(event);
 	}
 
 	@Override
 	public final void keyTyped(KeyEvent event) {
-		componentRegistry.keyTyped(event);
+		if (popupManager.hasPopup()) popupManager.keyTyped(event);
+		else componentRegistry.keyTyped(event);
 	}
 
 	@Override
 	public final void focusGained() {
-		componentRegistry.focusGained();
+		if (popupManager.hasPopup()) popupManager.focusGained();
+		else componentRegistry.focusGained();
 	}
 
 	@Override
 	public final void focusLost() {
-		componentRegistry.focusLost();
+		if (popupManager.hasPopup()) popupManager.focusLost();
+		else componentRegistry.focusLost();
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
 
 	/**
-	 * Resets the cursor manager and gets all current instructions from the component registry.
+	 * Resets the cursor manager and gets all current instructions from the component registry,
+	 * or the current popup if one exists,
 	 */
 	private void instructCursor() {
 		cursorManager.reset();
 		cursorManager.addInstruction(-1, ARROW); // Default instruction for the ARROW cursor
-		componentRegistry.instructCursor(cursorManager, mouseX, mouseY);
+		if (popupManager.hasPopup()) popupManager.instructCursor(cursorManager, mouseX, mouseY);
+		else componentRegistry.instructCursor(cursorManager, mouseX, mouseY);
 	}
 }

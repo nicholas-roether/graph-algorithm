@@ -4,30 +4,67 @@ import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+/**
+ * A simple popup that asks for user input.
+ */
 public class Dialog extends Popup {
+	/**
+	 * A regex string that all values that can be typed into the input need to match.
+	 */
 	private final String allowedValues;
+
+	/**
+	 * A regex pattern that all values that can be returned need to match.
+	 */
 	private final Pattern allowedReturns;
 
+	/**
+	 * The current callback for when the dialog is closed.
+	 */
 	private Runnable callback;
 
+	/**
+	 * The input component that is shown in the dialog.
+	 */
 	private Input input;
 
+	/**
+	 * Constructs a {@code Dialog}.
+	 *
+	 * @param prompt The title of the dialog, prompting the user for the input.
+	 * @param allowedValues A regex string that all values that can be typed into the input need to match.
+	 * @param allowedReturns A regex string that all values that can be returned from the dialog need to match.
+	 *                       If the user enters a value into the dialog that this regex doesn't match, the "Ok"-Button
+	 *                       will be disabled.
+	 */
 	public Dialog(String prompt, String allowedValues, String allowedReturns) {
 		super(prompt);
 		this.allowedValues = allowedValues;
 		this.allowedReturns = Pattern.compile(allowedReturns);
 	}
 
+	/**
+	 * Gets the current value of the dialog, meaning the text that has been typed into its input.
+	 * <br>
+	 * This method is only applicable when the dialog has been built. If this is not the case,
+	 * it will return {@code null}.
+	 *
+	 * @return the current value of the dialog
+	 */
 	public String getValue() {
 		if (input == null) return null;
 		return input.getValue();
 	}
 
+	/**
+	 * Displays the dialog, and calls the given callback function as soon as the user presses "Ok" and closes the
+	 * popup, passing to it the value they typed into the input.
+	 *
+	 * @param callback The callback to call when the dialog is closed
+	 */
 	public void prompt(Consumer<String> callback) {
 		this.callback = () -> {
 			callback.accept(getValue());

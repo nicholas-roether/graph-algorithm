@@ -254,7 +254,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 * Returns all registered components in rendering order.
 	 * @return all registered components in rendering order
 	 */
-	private List<Component> getComponents() {
+	public List<Component> getComponents() {
 		if (cachedComponents == null || didRebuild) {
 			// If resorting is necessary, either because the cache is empty or the components were rebuilt,
 			// sort them and store the sorted list in cachedComponents
@@ -266,5 +266,17 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 		}
 		// Return the cached value
 		return cachedComponents;
+	}
+
+	/**
+	 * Returns all children of the given component.
+	 *
+	 * @param component The component whose children to get
+	 * @return all children of the given component
+	 */
+	public List<Component> getChildren(Component component) {
+		final List<Component> children = componentMap.get(component.id);
+		if (children != null) return Collections.unmodifiableList(children);
+		return List.of();
 	}
 }

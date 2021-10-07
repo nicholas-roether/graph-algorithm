@@ -3,6 +3,7 @@ package io.github.nicholas_roether.components.common;
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
+import io.github.nicholas_roether.draw.PopupManager;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,6 @@ import java.util.function.Consumer;
 
 public abstract class Popup extends Component {
 	public static final int Z_INDEX = 200;
-	public static Option CLOSE = new Option("Close", 0xFF456990, popup -> popup.setShowing(false));
 
 	private static final float PADDING = 20;
 	private static final float TITLE_HEIGHT = 30;
@@ -23,6 +23,7 @@ public abstract class Popup extends Component {
 	public float popupHeight;
 	public float width = 0;
 
+	private PopupManager popupManager;
 	private boolean showing = false;
 	private boolean childrenShowing = false;
 	protected List<Option> options;
@@ -83,6 +84,7 @@ public abstract class Popup extends Component {
 	@Override
 	protected void init(Document p) {
 		width = 0.34f * p.width;
+		popupManager = p.popupManager;
 	}
 
 	@Override
@@ -104,7 +106,12 @@ public abstract class Popup extends Component {
 	}
 
 	public void setShowing(boolean showing) {
-		this.showing = showing;
+		if (this.showing != showing) {
+			this.showing = showing;
+			if (popupManager == null) return;
+			if (showing) popupManager.pushPopup(this);
+			else popupManager.removePopup(this);
+		}
 	}
 
 

@@ -57,8 +57,8 @@ public class NodeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void mouseClickedInBounds(MouseEvent event) {
-		if (!enabled) return;
+	public void mousePressedInBounds(MouseEvent event) {
+		if (!enabled || event.getButton() != LEFT) return;
 		addNode(event.getX(), event.getY());
 	}
 

@@ -5,6 +5,9 @@ import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.elements.NodeElement;
 
+/**
+ * The icon for adding nodes in the editing menu.
+ */
 public class NodeButton extends ToggleButton {
 	public static final int Z_INDEX = 10;
 
@@ -14,6 +17,7 @@ public class NodeButton extends ToggleButton {
 
 	@Override
 	protected void drawLabel(Document p) {
+		// Display a small node with no title inside the button
 		final Element nodeElement = new NodeElement(
 				false,
 				false,

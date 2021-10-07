@@ -92,7 +92,7 @@ public class EdgeAdder extends BoundedComponent {
 
 	@Override
 	protected void mousePressedInBounds(MouseEvent event) {
-		if (!enabled || hoveredNode == null) return;
+		if (!enabled || event.getButton() != LEFT || hoveredNode == null) return;
 		if (linkedNode == null) {
 			linkedNode = hoveredNode;
 		} else {
