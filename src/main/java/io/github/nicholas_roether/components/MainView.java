@@ -33,7 +33,7 @@ public class MainView extends Component {
 	protected void init(Document p) {
 		final GraphNode<NodeData> startNode = graph.addNode("A", INITIAL_NODE_INSET, p.height / 2f);
 		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - INITIAL_NODE_INSET, p.height / 2f);
-		final GraphNode<NodeData> centerNode = graph.addNode("C", p.width / 2f, 40);
+		final GraphNode<NodeData> centerNode = graph.addNode("B", p.width / 2f, 40);
 
 		graph.addEdge(startNode, centerNode, 1f);
 		graph.addEdge(endNode, centerNode, 1f);

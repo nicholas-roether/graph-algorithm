@@ -34,7 +34,6 @@ public class Dialog extends Popup {
 			this.callback = null;
 		};
 		setShowing(true);
-		input.setFocused(true);
 	}
 
 	@Override
@@ -48,6 +47,7 @@ public class Dialog extends Popup {
 	public void build(ComponentRegistry registry, Document p) {
 		super.build(registry, p);
 		setDisabled(true);
+		if (input != null) input.setFocused(true);
 	}
 
 	@Override
