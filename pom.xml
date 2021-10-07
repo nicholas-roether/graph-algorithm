@@ -13,12 +13,19 @@
         <maven.compiler.target>15</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.processing/core -->
         <dependency>
-            <groupId>org.processing</groupId>
-            <artifactId>core</artifactId>
-            <version>3.3.7</version>
+            <groupId>com.github.micycle1</groupId>
+            <artifactId>processing-core-4</artifactId>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.javatuples</groupId>
