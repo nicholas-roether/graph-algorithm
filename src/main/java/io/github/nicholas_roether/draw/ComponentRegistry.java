@@ -205,11 +205,22 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 * @param parent The parent component
 	 */
 	private void rebuild(Component parent) {
+		remove(parent);
+		parent.build(this, document);
+	}
+
+	/**
+	 * Removes the given component and all it's children from the registry.
+	 *
+	 * @param component The component to remove
+	 */
+	private void remove(Component component) {
 		// Force component re-sort on next call to getComponents()
 		didRebuild = true;
-		// Remove all child components registered to the parent and rebuild
-		componentMap.remove(parent.id);
-		parent.build(this, document);
+
+		if (componentMap.get(component.id) != null)
+			componentMap.get(component.id).forEach(this::remove);
+		componentMap.remove(component.id);
 	}
 
 	/**

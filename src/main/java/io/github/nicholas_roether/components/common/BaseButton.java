@@ -4,7 +4,6 @@ package io.github.nicholas_roether.components.common;
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import org.jetbrains.annotations.NotNull;
-import processing.core.PApplet;
 import processing.event.MouseEvent;
 
 public abstract class BaseButton extends RectangularComponent {
@@ -18,6 +17,7 @@ public abstract class BaseButton extends RectangularComponent {
 
 	private boolean pressed = false;
 	private boolean hover = false;
+	private boolean disabled = false;
 
 	public BaseButton(int zIndex, float x, float y, float width, float height, int baseColor, int pressedColor, boolean filled) {
 		super(zIndex);
@@ -40,22 +40,38 @@ public abstract class BaseButton extends RectangularComponent {
 		return hover;
 	}
 
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		if (!disabled) setPressed(false);
+		this.disabled = disabled;
+	}
+
 	public void setPressed(boolean pressed) {
 		this.pressed = pressed;
 	}
 
 	@Override
 	public void draw(@NotNull Document p) {
-		if (pressed) p.fill(pressedColor);
+		if (disabled) p.fill(150);
+		else if (pressed) p.fill(pressedColor);
 		else if (filled) p.fill(baseColor);
 		else p.fill(0);
-		if (hover) {
-			if (pressed) p.stroke(pressedColor + 0x00303030);
-			else p.stroke(baseColor + 0x00303030);
+
+		if (!disabled) {
+			if (hover) {
+				if (pressed) p.stroke(pressedColor + 0x00303030);
+				else p.stroke(baseColor + 0x00303030);
+			} else {
+				if (pressed) p.stroke(pressedColor);
+				else p.stroke(baseColor);
+			}
 		} else {
-			if (pressed) p.stroke(pressedColor);
-			else p.stroke(baseColor);
+			p.stroke(150);
 		}
+
 		p.strokeWeight(2);
 		p.rect(x, y, width, height, 5, 5, 5, 5);
 		p.fill(0);
@@ -71,7 +87,9 @@ public abstract class BaseButton extends RectangularComponent {
 
 	@Override
 	protected int instructCursorInBounds() {
-		return HAND;
+		if (!disabled)
+			return HAND;
+		return super.instructCursorInBounds();
 	}
 
 	@Override
