@@ -45,7 +45,8 @@ public class EdgeAdder extends BoundedComponent {
 	@Override
 	public void build(ComponentRegistry registry, Document p) {
 		weightDialog = new Dialog(
-				"Enter the Edge's Weight",
+				"Create Edge",
+				"Please enter a weight for the edge:",
 				"^[0-9]+(?:\\.[0-9]*)?$",
 				"^(?:[1-9]+)|(?:[0-9]\\.[0-9]+)$"
 		);
