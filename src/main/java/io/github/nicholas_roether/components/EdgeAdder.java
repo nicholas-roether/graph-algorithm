@@ -70,7 +70,10 @@ public class EdgeAdder extends BoundedComponent {
 				if(graph.areConnected(node, linkedNode)) continue;
 			}
 			final float distance = node.data.getPosition().dist(new PVector(p.mouseX, p.mouseY));
-			if (distance <= NodeComponent.NODE_RADIUS) hoveredNode = node;
+			if (distance <= NodeComponent.NODE_RADIUS) {
+				hoveredNode = node;
+				break;
+			}
 		}
 	}
 
@@ -83,7 +86,7 @@ public class EdgeAdder extends BoundedComponent {
 
 	@Override
 	protected int instructCursorInBounds() {
-		if (hoveredNode != null) return HAND;
+		if (enabled && hoveredNode != null) return HAND;
 		return super.instructCursorInBounds();
 	}
 

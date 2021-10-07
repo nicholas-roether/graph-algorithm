@@ -211,7 +211,7 @@ public class NodeComponent extends CircularComponent {
 		// If the node is being tracked, the cursor should be set to
 		// MOVE anywhere on the screen
 		if (dragging) return MOVE;
-		return NO_CURSOR_INSTRUCT;
+		return super.instructCursorAnywhere(x, y);
 	}
 
 	@Override

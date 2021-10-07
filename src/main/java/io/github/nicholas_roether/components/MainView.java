@@ -22,6 +22,7 @@ public class MainView extends Component {
 	private EditActionSelector editActionSelector;
 	private NodeAdder nodeAdder;
 	private EdgeAdder edgeAdder;
+	private GraphElementDeleter graphElementDeleter;
 
 	private enum State {
 		EDITING,
@@ -49,13 +50,15 @@ public class MainView extends Component {
 				&& !editingButton.checkInBounds(x, y);
 		nodeAdder = new NodeAdder(graph, bounds);
 		edgeAdder = new EdgeAdder(graph, bounds);
+		graphElementDeleter = new GraphElementDeleter(graph, bounds, graphComponent.anchors);
 		registry.register(List.of(
 				background,
 				graphComponent,
 				editingButton,
 				editActionSelector,
 				nodeAdder,
-				edgeAdder
+				edgeAdder,
+				graphElementDeleter
 		), id);
 	}
 
@@ -75,5 +78,6 @@ public class MainView extends Component {
 		background.setEditing(state == State.EDITING);
 		nodeAdder.setEnabled(state == State.EDITING && editActionSelector.getState() == EditActionSelector.State.NODE);
 		edgeAdder.setEnabled(state == State.EDITING && editActionSelector.getState() == EditActionSelector.State.EDGE);
+		graphElementDeleter.setEnabled(state == State.EDITING && editActionSelector.getState() == EditActionSelector.State.DELETE);
 	}
 }

@@ -124,7 +124,7 @@ public class Graph<ND, ED> {
 	}
 
 	/**
-	 * Removes the given node from the graph if the graph contains it.
+	 * Removes the given node and all associated edges from the graph if the graph contains it.
 	 *
 	 * @param node The node to remove
 	 * @return {@code true} if the node was actually contained and has been removed
@@ -132,6 +132,12 @@ public class Graph<ND, ED> {
 	 * @see GraphNode
 	 */
 	public boolean removeNode(@NotNull GraphNode<ND> node) {
+		List<GraphEdge<ND, ED>> associatedEdges = new ArrayList<>();
+		for (GraphEdge<ND, ED> edge : edges) {
+			if (edge.nodes.contains(node))
+				associatedEdges.add(edge);
+		}
+		associatedEdges.forEach(this::removeEdge);
 		return nodes.remove(node);
 	}
 
