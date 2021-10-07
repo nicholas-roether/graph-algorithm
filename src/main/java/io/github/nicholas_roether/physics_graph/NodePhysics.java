@@ -15,7 +15,7 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
-	private static final float REPULSION_CONSTANT = 1200000f;
+	private static final float REPULSION_CONSTANT = 3000000f;
 
 	/**
 	 * The constant that determines the strength of the attraction between connected nodes.
@@ -153,7 +153,8 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 				if (!colliding) {
 					// Handle collisions by having the nodes bounce off of each other (once per collision)
 					getVelocity().sub(normal.copy().mult(2 * getVelocity().dot(normal.mult(-1))));
-					getPosition().add(normal.copy().mult((distance - RADIUS) / 2));
+					if (distance != RADIUS)
+						getPosition().add(normal.copy().mult((distance - RADIUS) / 2));
 				}
 			} else {
 				final float repulsion = getRepulsion(distance);

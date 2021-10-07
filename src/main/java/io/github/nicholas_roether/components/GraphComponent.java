@@ -37,6 +37,11 @@ public class GraphComponent extends Component {
 	private Set<GraphNode<NodeData>> nodes;
 
 	/**
+	 * A list of all node components that are children to this graph component.
+	 */
+	private List<NodeComponent> nodeComponents = new ArrayList<>();
+
+	/**
 	 * A set of the nodes that are currently being rendered. Updated
 	 * whenever the component is rebuilt.
 	 */
@@ -54,6 +59,11 @@ public class GraphComponent extends Component {
 	 */
 	private boolean running = true;
 
+	/**
+	 * Whether the user should be able to drag nodes.
+	 */
+	private boolean draggingEnabled = true;
+
 	public GraphComponent(Graph<NodeData, Object> graph, List<String> anchors) {
 		this.graph = graph;
 		this.anchors = anchors;
@@ -65,6 +75,9 @@ public class GraphComponent extends Component {
 	public void build(ComponentRegistry registry, Document p) {
 		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
+
+		// Empty the node component list
+		nodeComponents.clear();
 
 		// Get current nodes and edges from the graph.
 		nodes = Set.copyOf(graph.getNodes());
@@ -79,6 +92,7 @@ public class GraphComponent extends Component {
 			// Add the NodePhysics object corresponding to each node to the engine
 			physicsEngine.addObject(nodeComponent.getPhysics());
 
+			nodeComponents.add(nodeComponent);
 			components.add(nodeComponent);
 		}
 
@@ -102,6 +116,15 @@ public class GraphComponent extends Component {
 			});
 			this.running = running;
 		}
+	}
+
+	public void setDraggingEnabled(boolean draggingEnabled) {
+		this.draggingEnabled = draggingEnabled;
+		nodeComponents.forEach(nodeComponent -> nodeComponent.setDraggingEnabled(draggingEnabled));
+	}
+
+	public boolean isDraggingEnabled() {
+		return draggingEnabled;
 	}
 
 	@Override

@@ -267,6 +267,20 @@ public class Graph<ND, ED> {
 	}
 
 	/**
+	 * Checks if the two given nodes are connected by an edge.
+	 *
+	 * @param node1 The first of the nodes to check
+	 * @param node2 The second of the nodes to check
+	 * @return {@code true} if the nodes are connected
+	 */
+	public boolean areConnected(GraphNode<ND> node1, GraphNode<ND> node2) {
+		for (GraphNeighbor<ND, ED> neighbor : getNeighbors(node1)) {
+			if (neighbor.node == node2) return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Checks if the graph equals the given object. For objects that aren't graphs, this
 	 * will always return {@code false}.
 	 * <br>

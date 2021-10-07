@@ -8,8 +8,11 @@ import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphNode;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 public class MainView extends Component {
+	private static final float INITIAL_NODE_INSET = 200f;
+
 	private final GraphWithData graph = new GraphWithData();
 	private State state = State.EDITING;
 
@@ -18,6 +21,7 @@ public class MainView extends Component {
 	private EditingButton editingButton;
 	private EditActionSelector editActionSelector;
 	private NodeAdder nodeAdder;
+	private EdgeAdder edgeAdder;
 
 	private enum State {
 		EDITING,
@@ -27,8 +31,8 @@ public class MainView extends Component {
 
 	@Override
 	protected void init(Document p) {
-		final GraphNode<NodeData> startNode = graph.addNode("A", 60f, p.height / 2f);
-		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - 60f, p.height / 2f);
+		final GraphNode<NodeData> startNode = graph.addNode("A", INITIAL_NODE_INSET, p.height / 2f);
+		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - INITIAL_NODE_INSET, p.height / 2f);
 		final GraphNode<NodeData> centerNode = graph.addNode("C", p.width / 2f, 40);
 
 		graph.addEdge(startNode, centerNode, 1f);
@@ -41,14 +45,17 @@ public class MainView extends Component {
 		background = new Background();
 		editingButton = new EditingButton(10, 10);
 		editActionSelector = new EditActionSelector(10, 30 + editingButton.height);
-		nodeAdder = new NodeAdder(graph, (x, y) -> !editActionSelector.checkInBounds(x, y)
-				&& !editingButton.checkInBounds(x, y));
+		final BiFunction<Float, Float, Boolean> bounds = (x, y) -> !editActionSelector.checkInBounds(x, y)
+				&& !editingButton.checkInBounds(x, y);
+		nodeAdder = new NodeAdder(graph, bounds);
+		edgeAdder = new EdgeAdder(graph, bounds);
 		registry.register(List.of(
 				background,
 				graphComponent,
 				editingButton,
 				editActionSelector,
-				nodeAdder
+				nodeAdder,
+				edgeAdder
 		), id);
 	}
 
@@ -61,7 +68,12 @@ public class MainView extends Component {
 		}
 		editActionSelector.setVisible(state == State.EDITING);
 		graphComponent.setRunning(state != State.EDITING);
+		graphComponent.setDraggingEnabled(
+						state != State.EDITING
+						|| editActionSelector.getState() == EditActionSelector.State.MOVE
+				);
 		background.setEditing(state == State.EDITING);
 		nodeAdder.setEnabled(state == State.EDITING && editActionSelector.getState() == EditActionSelector.State.NODE);
+		edgeAdder.setEnabled(state == State.EDITING && editActionSelector.getState() == EditActionSelector.State.EDGE);
 	}
 }

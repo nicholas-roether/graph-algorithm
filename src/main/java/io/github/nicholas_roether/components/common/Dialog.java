@@ -34,6 +34,7 @@ public class Dialog extends Popup {
 			this.callback = null;
 		};
 		setShowing(true);
+		input.setFocused(true);
 	}
 
 	@Override

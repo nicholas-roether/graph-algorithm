@@ -62,6 +62,11 @@ public class NodeComponent extends CircularComponent {
 	private boolean dragging = false;
 
 	/**
+	 * Whether the user should be able to drag this node.
+	 */
+	private boolean draggingEnabled = true;
+
+	/**
 	 * The time at which the mouse was last moved, in milliseconds.
 	 */
 	private long lastMouseMove = 0;
@@ -109,7 +114,7 @@ public class NodeComponent extends CircularComponent {
 	@Override
 	public void draw(@NotNull Document p) {
 		final Element nodeElement = new NodeElement(
-				checkInBounds(p.mouseX, p.mouseY),
+				draggingEnabled && checkInBounds(p.mouseX, p.mouseY),
 				anchor,
 				physics.getPosition().x,
 				physics.getPosition().y,
@@ -175,7 +180,7 @@ public class NodeComponent extends CircularComponent {
 
 	@Override
 	public void mousePressedInBounds(MouseEvent event) {
-		if (event.getButton() == LEFT) {
+		if (event.getButton() == LEFT && draggingEnabled) {
 			// The node has started to be dragged; disable its physics
 			dragging = true;
 			physics.setDisabled(true);
@@ -214,7 +219,8 @@ public class NodeComponent extends CircularComponent {
 		// Inside the bounds of the node, the cursor should be MOVE if
 		// the node is being dragged, otherwise it should be HAND.
 		if (dragging) return MOVE;
-		return HAND;
+		else if (draggingEnabled) return HAND;
+		return super.instructCursorInBounds();
 	}
 
 	@Override
@@ -230,6 +236,14 @@ public class NodeComponent extends CircularComponent {
 	@Override
 	public float getY() {
 		return physics.getPosition().y;
+	}
+
+	public boolean isDraggingEnabled() {
+		return draggingEnabled;
+	}
+
+	public void setDraggingEnabled(boolean draggingEnabled) {
+		this.draggingEnabled = draggingEnabled;
 	}
 
 	/**
