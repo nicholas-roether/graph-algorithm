@@ -2,6 +2,7 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.Document;
+import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphEdge;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +17,9 @@ public class EdgeLabel extends Component {
 	// Edge labels are drawn on layer 3.
 	public static final int Z_INDEX = 3;
 
-	public final GraphEdge<NodeData, Object> edge;
+	public final GraphEdge<NodeData, EdgeData> edge;
 
-	public EdgeLabel(GraphEdge<NodeData, Object> edge) {
+	public EdgeLabel(GraphEdge<NodeData, EdgeData> edge) {
 		super(Z_INDEX);
 		this.edge = edge;
 	}

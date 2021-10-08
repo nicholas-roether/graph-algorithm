@@ -4,6 +4,7 @@ import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.draw.bounded.CircularComponent;
 import io.github.nicholas_roether.elements.NodeElement;
+import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
@@ -42,7 +43,7 @@ public class NodeComponent extends CircularComponent {
 
 	public final GraphNode<NodeData> node;
 
-	public final Graph<NodeData, Object> graph;
+	public final Graph<NodeData, EdgeData> graph;
 
 	/**
 	 * Whether this node is an anchor node, meaning it isn't affected by physics
@@ -54,7 +55,7 @@ public class NodeComponent extends CircularComponent {
 	 *
 	 * @see NodePhysics
 	 */
-	private NodePhysics<NodeData> physics;
+	private final NodePhysics physics;
 
 	/**
 	 * Whether this node is currently being dragged.
@@ -84,17 +85,17 @@ public class NodeComponent extends CircularComponent {
 	private float screenWidth;
 	private float screenHeight;
 
-	public NodeComponent(GraphNode<NodeData> node, Graph<NodeData, Object> graph, boolean anchor) {
+	public NodeComponent(GraphNode<NodeData> node, Graph<NodeData, EdgeData> graph, boolean anchor) {
 		super(Z_INDEX);
 		this.node = node;
 		this.anchor = anchor;
 		this.graph = graph;
-		physics = new NodePhysics<>(node, graph);
+		physics = new NodePhysics(node, graph);
 		// Disable physics if the node is an anchor
 		if (anchor) physics.setDisabled(true);
 	}
 
-	public NodePhysics<NodeData> getPhysics() {
+	public NodePhysics getPhysics() {
 		return physics;
 	}
 

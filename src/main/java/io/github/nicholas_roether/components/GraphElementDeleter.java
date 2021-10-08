@@ -2,6 +2,7 @@ package io.github.nicholas_roether.components;
 
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.bounded.BoundedComponent;
+import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.GraphWithData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphEdge;
@@ -23,7 +24,7 @@ public class GraphElementDeleter extends BoundedComponent {
 	private final List<String> undeletableNodes;
 	private boolean enabled;
 	private GraphNode<NodeData> hoveredNode;
-	private GraphEdge<NodeData, Object> hoveredEdge;
+	private GraphEdge<NodeData, EdgeData> hoveredEdge;
 
 	public GraphElementDeleter(GraphWithData graph, BiFunction<Float, Float, Boolean> bounds, List<String> undeletableNodes) {
 		super(Z_INDEX);
@@ -46,7 +47,7 @@ public class GraphElementDeleter extends BoundedComponent {
 			}
 		}
 		if (hoveredNode != null) return;
-		for (GraphEdge<NodeData, Object> edge : graph.getEdges()) {
+		for (GraphEdge<NodeData, EdgeData> edge : graph.getEdges()) {
 			float distance = distanceToLine(
 					new PVector(p.mouseX, p.mouseY),
 					edge.nodes.getValue0().data.getPosition().copy(),
