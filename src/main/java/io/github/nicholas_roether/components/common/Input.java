@@ -1,11 +1,14 @@
 package io.github.nicholas_roether.components.common;
 
-import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
-import org.jetbrains.annotations.NotNull;
+import io.github.nicholas_roether.utils.Utils;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
@@ -58,6 +61,11 @@ public class Input extends RectangularComponent {
 	private final Pattern allowedValues;
 
 	/**
+	 * The size of the text in the input in pixels.
+	 */
+	private final float textSize;
+
+	/**
 	 * A string builder that stores the current value of the input, meaning the text that has
 	 * been typed into it.
 	 */
@@ -86,10 +94,25 @@ public class Input extends RectangularComponent {
 	private boolean selecting = false;
 
 	/**
+	 * Whether the control key is pressed.
+	 */
+	private boolean controlPressed = false;
+
+	/**
 	 * The progress within the blinking animation of the cursor. Since the animation has a period of one second,
 	 * this value rises each frame from zero to one, and then starts over.
 	 */
 	private float cursorAnim = 0;
+
+	/**
+	 * The time at which the last mouse press occurred, for keeping track of double clicks.
+	 */
+	private float lastMouseClick = 0;
+
+	/**
+	 * The last text index that was clicked, for keeping track of double clicks.
+	 */
+	private int lastMouseIndex = -1;
 
 	/**
 	 * Constructs an {@code Input}.
@@ -110,6 +133,7 @@ public class Input extends RectangularComponent {
 		this.height = height;
 		contentWidth = width - 4 * PADDING;
 		contentHeight = height - 2 * PADDING;
+		textSize = 0.7f * contentHeight;
 		this.textColor = textColor;
 		this.allowedValues = Pattern.compile(allowedValues);
 	}
@@ -132,7 +156,6 @@ public class Input extends RectangularComponent {
 		p.stroke(0xFFA0A0A0);
 		p.rect(x, y, width, height, 5, 5, 5, 5);
 
-		p.textSize(contentHeight * 0.7f);
 		final float cursorX = x + 2 * PADDING + getOffsetToIndex(cursorIndex);
 		final float cursorStartY = y + PADDING;
 		final float cursorEndY = y + PADDING + contentHeight;
@@ -149,12 +172,13 @@ public class Input extends RectangularComponent {
 		}
 
 		// Draw the text.
+		p.textSize(textSize);
 		p.stroke(0);
 		p.fill(textColor);
 		p.text(value.toString(), x + 2 * PADDING, y + PADDING, contentWidth, contentHeight);
 
 		// Draw the cursor if applicable.
-		if (!hasSelection() && cursorAnim <= 0.5f) {
+		if (focused && !hasSelection() && cursorAnim <= 0.5f) {
 			p.stroke(textColor);
 			p.strokeWeight(1);
 			p.line(cursorX, cursorStartY, cursorX, cursorEndY);
@@ -162,6 +186,7 @@ public class Input extends RectangularComponent {
 	}
 
 	private float getOffsetToIndex(int index) {
+		p.textSize(textSize);
 		float offset = 0;
 		if (!value.isEmpty()) {
 			final String textBeforeIndex = value.substring(0, index);
@@ -170,8 +195,20 @@ public class Input extends RectangularComponent {
 		return offset;
 	}
 
-	private int getIndexForOffset(int index) {
-		return 0;
+	private int getIndexForOffset(float offset) {
+		p.textSize(textSize);
+		int bestIndex = -1;
+		float bestDistance = 0;
+		for (int i = 0; i <= value.length(); i++) {
+			float distance = Math.abs(getOffsetToIndex(i) - offset);
+			if (bestIndex == -1 || distance < bestDistance) {
+				bestIndex = i;
+				bestDistance = distance;
+			} else if (distance > bestDistance) {
+				break;
+			}
+		}
+		return bestIndex;
 	}
 
 	/**
@@ -192,6 +229,9 @@ public class Input extends RectangularComponent {
 	 */
 	public void setFocused(boolean focused) {
 		if (!this.focused && focused) cursorAnim = 0;
+		else if (!focused) {
+			positionCursorAt(0);
+		}
 		this.focused = focused;
 	}
 
@@ -235,6 +275,11 @@ public class Input extends RectangularComponent {
 		return value.substring(getSelectionStart(), getSelectionEnd());
 	}
 
+	public void selectAll() {
+		positionCursorAt(0);
+		positionCursorAt(value.length(), true);
+	}
+
 	@Override
 	protected void mousePressedAnywhere(MouseEvent event) {
 		// If the left mouse button is pressed inside the bounds of the input, focus it. If the left mouse button is
@@ -243,10 +288,36 @@ public class Input extends RectangularComponent {
 			setFocused(checkInBounds(event.getX(), event.getY()));
 	}
 
+	@Override
+	protected void mousePressedInBounds(MouseEvent event) {
+		if (event.getButton() != LEFT) return;
+		final float offset = event.getX() - x - PADDING * 2;
+		final int index = getIndexForOffset(offset);
+		positionCursorAt(index);
+		if (p.millis() - lastMouseClick <= 500 && index == lastMouseIndex)
+			selectAll();
+		lastMouseClick = p.millis();
+		lastMouseIndex = index;
+	}
+
+	@Override
+	protected void mouseDraggedAnywhere(MouseEvent event) {
+		if (!focused || event.getButton() != LEFT) return;
+		final float offset = event.getX() - x - PADDING * 2;
+		positionCursorAt(getIndexForOffset(offset), true);
+	}
+
 	private void deleteSelection() {
 		value.delete(getSelectionStart(), getSelectionEnd());
 		positionCursorAt(getSelectionStart(), false);
 	}
+
+	private void copySelectionToClipboard() {
+		if (!hasSelection()) return;
+		final StringSelection selection = new StringSelection(getSelection());
+		Utils.getClipboard().setContents(selection, selection);
+	}
+
 
 	@Override
 	public void keyPressed(KeyEvent event) {
@@ -279,22 +350,55 @@ public class Input extends RectangularComponent {
 					case LEFT -> moveCursorBy(-1, selecting); // Move the cursor left
 					case RIGHT -> moveCursorBy(1, selecting); // Move the cursor right
 					case SHIFT -> selecting = true;
+					case CONTROL -> controlPressed = true;
 				}
 			}
 			default -> {
-				// Save the current value
-				final String prevValue = value.toString();
-				// If text is selected, delete that text to replace it.
-				deleteSelection();
-				// Add the character to the value
-				value.insert(cursorIndex, event.getKey());
-				// Check if the new value is valid
-				if (!allowedValues.matcher(value).find()) {
-					// if not, reset the modifications.
-					value.setLength(0);
-					value.append(prevValue);
+				if (controlPressed) {
+					switch (event.getKeyCode())  {
+						// Ctrl+A (select all)
+						case 65 -> selectAll();
+						// Ctrl+C (copy)
+						case 67 -> copySelectionToClipboard();
+						// Ctrl+X (cut)
+						case 88 -> {
+							copySelectionToClipboard();
+							deleteSelection();
+						}
+						// Ctrl+V (paste)
+						case 86 -> {
+							final String prevValue = value.toString();
+							final int prevCursor = cursorIndex;
+							try {
+								final String clipboard = (String) Utils.getClipboard().getData(DataFlavor.stringFlavor);
+								deleteSelection();
+								value.insert(cursorIndex, clipboard);
+								if (!allowedValues.matcher(value).find()) {
+									setValue(prevValue);
+									positionCursorAt(prevCursor);
+								} else {
+									moveCursorBy(clipboard.length());
+								}
+							} catch (UnsupportedFlavorException | IOException e) {
+								setValue(prevValue);
+								positionCursorAt(prevCursor);
+							}
+						}
+					}
 				} else {
-					moveCursorBy(1); // else, keep them and advance the cursor by 1.
+					// Save the current value
+					final String prevValue = value.toString();
+					// If text is selected, delete that text to replace it.
+					deleteSelection();
+					// Add the character to the value
+					value.insert(cursorIndex, event.getKey());
+					// Check if the new value is valid
+					if (!allowedValues.matcher(value).find()) {
+						// if not, reset the modifications.
+						setValue(prevValue);
+					} else {
+						moveCursorBy(1); // else, keep them and advance the cursor by 1.
+					}
 				}
 			}
 		}
@@ -302,7 +406,10 @@ public class Input extends RectangularComponent {
 
 	@Override
 	public void keyReleased(KeyEvent event) {
-		if (event.getKeyCode() == SHIFT) selecting = false;
+		switch (event.getKeyCode()) {
+			case SHIFT -> selecting = false;
+			case CONTROL -> controlPressed = false;
+		}
 	}
 
 	public void positionCursorAt(int index, boolean selecting) {
@@ -319,8 +426,8 @@ public class Input extends RectangularComponent {
 
 	public void moveCursorBy(int amount, boolean selecting) {
 		if (hasSelection() && !selecting) {
-			selectionAnchor = cursorIndex;
-			cursorAnim = 0;
+			if (amount < 0) positionCursorAt(getSelectionStart());
+			else positionCursorAt(getSelectionEnd());
 		}
 		else positionCursorAt(cursorIndex + amount, selecting);
 	}

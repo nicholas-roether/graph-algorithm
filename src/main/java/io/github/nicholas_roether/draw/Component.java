@@ -30,6 +30,8 @@ import java.util.Objects;
 public abstract class Component implements PConstants, WindowEventReceiver {
 	/**
 	 * The document this component belongs to.
+	 * <br>
+	 * Important: The document is only guaranteed to be reset to its default state before Component.draw() calls!
 	 */
 	protected Document p;
 
