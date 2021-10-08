@@ -33,7 +33,7 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		showing = visible;
 		if (!visible) return;
 		moveButton = new MoveButton(x, y);
@@ -66,7 +66,7 @@ public class EditActionSelector extends RectangularComponent {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		switch (state) {
 			case MOVE -> {
 				if (nodeButton.isPressed()) state = State.NODE;

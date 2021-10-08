@@ -84,15 +84,15 @@ public class Dialog extends Popup {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		final String value = getValue();
 		if (value == null) return;
 		setDisabled(!allowedReturns.matcher(value).find());
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
-		super.build(registry, p);
+	public void build(ComponentRegistry registry) {
+		super.build(registry);
 		setDisabled(true);
 		if (input != null) input.setFocused(true);
 	}
@@ -101,10 +101,10 @@ public class Dialog extends Popup {
 	private final float contentPadding = 15;
 
 	@Override
-	protected Content buildContent(Document p) {
+	protected Content buildContent() {
 		return new Popup.Content(contentTextHeight + contentPadding + 40) {
 			@Override
-			public void build(ComponentRegistry registry, Document p) {
+			public void build(ComponentRegistry registry) {
 				input = new Input(
 						1000,
 						x,
@@ -118,7 +118,7 @@ public class Dialog extends Popup {
 			}
 
 			@Override
-			public void draw(@NotNull Document p) {
+			public void draw() {
 				p.fill(255);
 				p.textSize(contentTextHeight * 0.7f);
 				p.text(prompt, x, y, width, contentTextHeight);
@@ -127,7 +127,7 @@ public class Dialog extends Popup {
 	}
 
 	@Override
-	protected List<Option> buildOptions(Document p) {
+	protected List<Option> buildOptions() {
 		return List.of(new Popup.Option("Ok", 0xFF456990, popup -> {
 			if (callback != null) callback.run();
 			popup.setShowing(false);

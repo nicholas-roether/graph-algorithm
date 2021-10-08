@@ -16,7 +16,7 @@ public class NodeButton extends ToggleButton {
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		// Display a small node with no title inside the button
 		final Element nodeElement = new NodeElement(
 				false,

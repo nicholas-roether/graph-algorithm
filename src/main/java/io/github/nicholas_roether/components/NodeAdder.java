@@ -43,7 +43,7 @@ public class NodeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		nameIndex = 0;
 		lastNodeLength = graph.getNodes().size();
 	}
@@ -56,7 +56,7 @@ public class NodeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		if (!enabled || !checkInBounds(p.mouseX, p.mouseY)) return;
 		final Element nodeElement = new NodeElement(
 				false,

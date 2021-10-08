@@ -25,7 +25,7 @@ public class EdgeComponent extends Component {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		// Get the position vectors for the nodes the edge connects
 		final PVector nodePos0 = edge.nodes.getValue0().data.getPosition();
 		final PVector nodePos1 = edge.nodes.getValue1().data.getPosition();

@@ -15,7 +15,7 @@ public class Input extends RectangularComponent {
 	/**
 	 * The amount of pixels between the text box and the border.
 	 */
-	public static final float PADDING = 5;
+	public static final float PADDING = 7;
 
 	/**
 	 * The x-position of the top-left corner of the input.
@@ -58,11 +58,6 @@ public class Input extends RectangularComponent {
 	private final Pattern allowedValues;
 
 	/**
-	 * A string builder used each frame to build the text displayed on the screen.
-	 */
-	private final StringBuilder displayMessageBuilder = new StringBuilder(255);
-
-	/**
 	 * A string builder that stores the current value of the input, meaning the text that has
 	 * been typed into it.
 	 */
@@ -75,10 +70,26 @@ public class Input extends RectangularComponent {
 	private boolean focused = false;
 
 	/**
+	 * The cursor position in the string.
+	 */
+	private int cursorIndex = 0;
+
+	/**
+	 * The point to which the selection spans from the cursor. If this is the same as {@code cursorIndex},
+	 * no selection is occurring.
+	 */
+	private int selectionAnchor = 0;
+
+	/**
+	 * Whether the shift key is currently pressed, meaning pressing the arrow keys results in a selection.
+	 */
+	private boolean selecting = false;
+
+	/**
 	 * The progress within the blinking animation of the cursor. Since the animation has a period of one second,
 	 * this value rises each frame from zero to one, and then starts over.
 	 */
-	private float anim = 0;
+	private float cursorAnim = 0;
 
 	/**
 	 * Constructs an {@code Input}.
@@ -97,14 +108,14 @@ public class Input extends RectangularComponent {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		contentWidth = width - 2 * PADDING;
+		contentWidth = width - 4 * PADDING;
 		contentHeight = height - 2 * PADDING;
 		this.textColor = textColor;
 		this.allowedValues = Pattern.compile(allowedValues);
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		/*
 		If the input is focused, play the cursor animation.
 
@@ -112,28 +123,55 @@ public class Input extends RectangularComponent {
 		modulo 1. This variable therefore counts up from 0 to 1 over and over, with a period of 1 second.
 		 */
 		if (focused)
-			anim = (anim + 1 / p.frameRate) % 1;
+			cursorAnim = (cursorAnim + 1 / p.frameRate) % 1;
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		// Draw a grey, rectangular outline with a border radius of 5px.
 		p.stroke(0xFFA0A0A0);
 		p.rect(x, y, width, height, 5, 5, 5, 5);
 
-		// Reset the displayMessageBuilder and fill it with the current value.
-		displayMessageBuilder.setLength(0);
-		displayMessageBuilder.append(value);
+		p.textSize(contentHeight * 0.7f);
+		final float cursorX = x + 2 * PADDING + getOffsetToIndex(cursorIndex);
+		final float cursorStartY = y + PADDING;
+		final float cursorEndY = y + PADDING + contentHeight;
 
-		// If the input is focused and the cursor animation is in its first half, add the cursor to the display message.
-		if (focused && anim < 0.5f)
-			displayMessageBuilder.append("|");
+		// Draw the selection box if applicable.
+		if (hasSelection()) {
+			float selectionX = cursorX;
+			if (selectionAnchor < cursorIndex)
+				selectionX = x + 2 * PADDING + getOffsetToIndex(selectionAnchor);
+			final float selectionWidth = p.textWidth(getSelection());
+			p.strokeWeight(0);
+			p.fill(0xFF3033FF);
+			p.rect(selectionX, cursorStartY, selectionWidth, contentHeight);
+		}
 
 		// Draw the text.
 		p.stroke(0);
 		p.fill(textColor);
-		p.textSize(contentHeight * 0.7f);
-		p.text(displayMessageBuilder.toString(), x + PADDING, y + PADDING, contentWidth, contentHeight);
+		p.text(value.toString(), x + 2 * PADDING, y + PADDING, contentWidth, contentHeight);
+
+		// Draw the cursor if applicable.
+		if (!hasSelection() && cursorAnim <= 0.5f) {
+			p.stroke(textColor);
+			p.strokeWeight(1);
+			p.line(cursorX, cursorStartY, cursorX, cursorEndY);
+		}
+	}
+
+	private float getOffsetToIndex(int index) {
+		float offset = 0;
+		if (!value.isEmpty()) {
+			final String textBeforeIndex = value.substring(0, index);
+			offset = p.textWidth(textBeforeIndex);
+		}
+		return offset;
+	}
+
+	private int getIndexForOffset(int index) {
+		return 0;
 	}
 
 	/**
@@ -153,7 +191,7 @@ public class Input extends RectangularComponent {
 	 * @param focused Whether this input is focused.
 	 */
 	public void setFocused(boolean focused) {
-		if (!this.focused && focused) anim = 0;
+		if (!this.focused && focused) cursorAnim = 0;
 		this.focused = focused;
 	}
 
@@ -176,6 +214,27 @@ public class Input extends RectangularComponent {
 		this.value.append(value);
 	}
 
+	/**
+	 * Checks whether there is currently text selected in the input.
+	 *
+	 * @return {@code true} if text is selected
+	 */
+	public boolean hasSelection() {
+		return cursorIndex != selectionAnchor;
+	}
+
+	public int getSelectionStart() {
+		return Math.min(cursorIndex, selectionAnchor);
+	}
+
+	public int getSelectionEnd() {
+		return Math.max(cursorIndex, selectionAnchor);
+	}
+
+	public String getSelection() {
+		return value.substring(getSelectionStart(), getSelectionEnd());
+	}
+
 	@Override
 	protected void mousePressedAnywhere(MouseEvent event) {
 		// If the left mouse button is pressed inside the bounds of the input, focus it. If the left mouse button is
@@ -184,23 +243,90 @@ public class Input extends RectangularComponent {
 			setFocused(checkInBounds(event.getX(), event.getY()));
 	}
 
+	private void deleteSelection() {
+		value.delete(getSelectionStart(), getSelectionEnd());
+		positionCursorAt(getSelectionStart(), false);
+	}
+
 	@Override
-	public void keyTyped(KeyEvent event) {
-		// If the input is focused, it is affected by key presses.
-		if (focused) {
-			if (event.getKey() == ENTER) return;
-			if (event.getKey() == BACKSPACE) {
-				// If backspace was pressed, delete the last character of the value (if the value isn't empty).
-				if (!value.isEmpty())
-					value.deleteCharAt(value.length() - 1);
-			} else {
-				// Otherwise, append the new character to the value, check if the new value satisfies the
-				// allowedValues regex, and keep the new character only if it does.
-				value.append(event.getKey());
-				if (!allowedValues.matcher(value).find())
-					value.deleteCharAt(value.length() - 1);
+	public void keyPressed(KeyEvent event) {
+		// If the input isn't focused, it isn't affected by key presses.
+		if (!focused) return;
+		switch (event.getKey()) {
+			case ENTER -> {} // Ignore enter presses
+			case BACKSPACE -> {
+				// When backspace is pressed, if no text is selected, delete the last character before the cursor
+				// and move the cursor back, if the cursor isn't at position 0.
+				// If text is selected, delete the selected text.
+				if (hasSelection()) {
+					deleteSelection();
+				} else if (cursorIndex > 0) {
+					value.deleteCharAt(cursorIndex - 1);
+					moveCursorBy(-1);
+				}
+			}
+			case DELETE -> {
+				// When delete is pressed, if no text is selected, delete the character at the cursor position,
+				// if the cursor isn't at the last position.
+				// If text is selected, delete the selected text.
+				if (hasSelection()) {
+					deleteSelection();
+				} else if (cursorIndex < value.length())
+					value.deleteCharAt(cursorIndex);
+			}
+			case CODED -> {
+				switch (event.getKeyCode()) {
+					case LEFT -> moveCursorBy(-1, selecting); // Move the cursor left
+					case RIGHT -> moveCursorBy(1, selecting); // Move the cursor right
+					case SHIFT -> selecting = true;
+				}
+			}
+			default -> {
+				// Save the current value
+				final String prevValue = value.toString();
+				// If text is selected, delete that text to replace it.
+				deleteSelection();
+				// Add the character to the value
+				value.insert(cursorIndex, event.getKey());
+				// Check if the new value is valid
+				if (!allowedValues.matcher(value).find()) {
+					// if not, reset the modifications.
+					value.setLength(0);
+					value.append(prevValue);
+				} else {
+					moveCursorBy(1); // else, keep them and advance the cursor by 1.
+				}
 			}
 		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent event) {
+		if (event.getKeyCode() == SHIFT) selecting = false;
+	}
+
+	public void positionCursorAt(int index, boolean selecting) {
+		if (index < 0) index = 0;
+		else if (index > value.length()) index = value.length();
+		cursorIndex = index;
+		cursorAnim = 0;
+		if (!selecting) selectionAnchor = index;
+	}
+
+	public void positionCursorAt(int index) {
+		positionCursorAt(index, false);
+	}
+
+	public void moveCursorBy(int amount, boolean selecting) {
+		if (hasSelection() && !selecting) {
+			selectionAnchor = cursorIndex;
+			cursorAnim = 0;
+		}
+		else positionCursorAt(cursorIndex + amount, selecting);
+	}
+
+	public void moveCursorBy(int amount) {
+		moveCursorBy(amount, false);
 	}
 
 	@Override

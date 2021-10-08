@@ -13,14 +13,14 @@ public class EditingButton extends ToggleButton {
 	}
 
 	@Override
-	protected void init(Document p) {
+	protected void init() {
 		if (icon == null) {
 			icon = p.loadImage("edit_icon.png");
 		}
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		p.imageMode(CENTER);
 		p.image(icon, x + width / 2f, y + height / 2f);
 	}

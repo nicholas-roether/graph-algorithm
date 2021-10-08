@@ -100,7 +100,7 @@ public class NodeComponent extends CircularComponent {
 	}
 
 	@Override
-	protected void init(Document p) {
+	protected void init() {
 		physics.setScreenWidth(p.width);
 		physics.setScreenHeight(p.height);
 		screenWidth = p.width;
@@ -108,12 +108,12 @@ public class NodeComponent extends CircularComponent {
 	}
 
 	@Override
-	public void frame(Document p) {
-		if (dragging) moveToMouse(p);
+	public void frame() {
+		if (dragging) moveToMouse();
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		final Element nodeElement = new NodeElement(
 				draggingEnabled && checkInBounds(p.mouseX, p.mouseY),
 				anchor,
@@ -127,7 +127,7 @@ public class NodeComponent extends CircularComponent {
 		nodeElement.draw(p);
 	}
 
-	private void moveToMouse(Document p) {
+	private void moveToMouse() {
 		// Move the node to the mouse if it is being dragged and the new position isn't inside another node
 		// or outside the screen
 		final PVector nodePos = node.data.getPosition();

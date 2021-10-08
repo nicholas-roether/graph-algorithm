@@ -31,7 +31,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	protected void init(Document p) {
+	protected void init() {
 		final GraphNode<NodeData> startNode = graph.addNode("A", INITIAL_NODE_INSET, p.height / 2f);
 		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - INITIAL_NODE_INSET, p.height / 2f);
 		final GraphNode<NodeData> centerNode = graph.addNode("B", p.width / 2f, 40);
@@ -41,7 +41,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		graphComponent = new GraphComponent(graph, List.of("A", "Z"));
 		background = new Background();
 		editingButton = new EditingButton(10, 10);
@@ -63,7 +63,7 @@ public class MainView extends Component {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		if (state == State.EDITING) {
 			if (!editingButton.isPressed()) state = State.SHOWING;
 		} else {

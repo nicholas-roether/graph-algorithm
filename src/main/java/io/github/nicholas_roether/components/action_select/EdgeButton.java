@@ -14,7 +14,7 @@ public class EdgeButton extends ToggleButton {
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		// Draw a grey line inside the button, representing an edge
 		p.stroke(100);
 		p.strokeWeight(2);

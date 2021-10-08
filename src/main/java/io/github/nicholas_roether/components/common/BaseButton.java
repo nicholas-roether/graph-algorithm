@@ -88,10 +88,8 @@ public abstract class BaseButton extends RectangularComponent {
 
 	/**
 	 * Draws the contents of the button.
-	 *
-	 * @param p The document to draw on.
 	 */
-	protected abstract void drawLabel(Document p);
+	protected abstract void drawLabel();
 
 	/**
 	 * Checks whether the button is currently pressed.
@@ -143,7 +141,7 @@ public abstract class BaseButton extends RectangularComponent {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		/*
 		If the button is disabled, fill it gray.
 		If the button is being pressed, fill it with its pressed color.
@@ -185,7 +183,7 @@ public abstract class BaseButton extends RectangularComponent {
 		p.strokeWeight(0);
 
 		// Draw the label
-		drawLabel(p);
+		drawLabel();
 	}
 
 	@Override

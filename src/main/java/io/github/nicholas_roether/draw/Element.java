@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.draw;
 
+import org.jetbrains.annotations.NotNull;
 import processing.core.PConstants;
 
 /**
@@ -12,4 +13,4 @@ import processing.core.PConstants;
  * Note that pure elements will need to be drawn explicitly within the draw function of some component, and that
  * the draw state will not be automatically reset.
  */
-public abstract class Element implements Drawable, PConstants {}
+public abstract class Element implements PConstants, Drawable {}

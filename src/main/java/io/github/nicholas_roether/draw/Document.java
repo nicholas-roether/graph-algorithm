@@ -144,7 +144,7 @@ public abstract class Document extends PApplet {
 		// Style the cursor to whichever instruction takes precedence
 		cursor(cursorManager.getCurrentCursor());
 		// Draw all registered components
-		componentRegistry.draw(this);
+		componentRegistry.draw();
 	}
 
 	//------------------------------------------------------------------------------------------------------------------

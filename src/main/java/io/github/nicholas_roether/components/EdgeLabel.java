@@ -25,7 +25,7 @@ public class EdgeLabel extends Component {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		// Get the position vectors of the nodes the edge connects, and
 		// find the center point between them.
 		final PVector from = edge.nodes.getValue0().data.getPosition();

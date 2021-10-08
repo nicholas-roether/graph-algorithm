@@ -34,7 +34,7 @@ public class GraphElementDeleter extends BoundedComponent {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		if (!enabled) return;
 		hoveredNode = null;
 		hoveredEdge = null;
@@ -61,7 +61,7 @@ public class GraphElementDeleter extends BoundedComponent {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		if (!enabled) return;
 		if (hoveredNode != null) {
 			p.fill(0x60FF0000);

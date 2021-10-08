@@ -1,7 +1,7 @@
 package io.github.nicholas_roether.draw;
 
 import io.github.nicholas_roether.draw.cursor.CursorManager;
-import org.jetbrains.annotations.NotNull;
+import processing.core.PConstants;
 
 import java.util.Objects;
 
@@ -27,7 +27,12 @@ import java.util.Objects;
  * @see ComponentRegistry
  * @see CursorManager
  */
-public abstract class Component extends Element implements WindowEventReceiver {
+public abstract class Component implements PConstants, WindowEventReceiver {
+	/**
+	 * The document this component belongs to.
+	 */
+	protected Document p;
+
 	/**
 	 * Whether this component has been initialized.
 	 */
@@ -70,33 +75,29 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	 * @param p The {@code Document} corresponding to the app window.
 	 */
 	public final void setup(Document p) {
-		init(p);
+		this.p = p;
+		init();
 		initialized = true;
 	}
 
 	/**
 	 * Called every frame before components are drawn to the screen.
-	 *
-	 * @param p The {@code Document} corresponding to the app window.
 	 */
-	public void frame(Document p) {}
+	public void frame() {}
 
 	/**
 	 * Draw this component to the screen.
-	 *
-	 * @param p The {@code Document} to be drawn to.
 	 */
-	public void draw(@NotNull Document p) {}
+	public void draw() {}
 
 	/**
 	 * Register this component's child components.
 	 *
 	 * @param registry The global component registry
-	 * @param p The PApplet corresponding to the application window
 	 *
 	 * @see ComponentRegistry
 	 */
-	public void build(ComponentRegistry registry, Document p) {}
+	public void build(ComponentRegistry registry) {}
 
 	/**
 	 * Returns whether the component's child components should be rebuilt. This function is
@@ -128,10 +129,8 @@ public abstract class Component extends Element implements WindowEventReceiver {
 	/**
 	 * A function called before the component is built, meant for the
 	 * component to be initialized according data provided by the PApplet.
-	 *
-	 * @param p The {@code PApplet} corresponding to the app window.
 	 */
-	protected void init(Document p) {}
+	protected void init() {}
 
 	/**
 	 * Returns the next unique id.

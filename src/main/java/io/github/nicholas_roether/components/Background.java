@@ -13,7 +13,7 @@ public class Background extends Component {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		if (editing) {
 			p.stroke(30);
 			p.strokeWeight(1);

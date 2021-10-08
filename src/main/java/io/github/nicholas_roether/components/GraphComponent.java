@@ -73,7 +73,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
 
@@ -135,7 +135,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		// step the physics engine on each frame if the simulation is running
 		if (running) physicsEngine.step(1 / p.frameRate);
 	}

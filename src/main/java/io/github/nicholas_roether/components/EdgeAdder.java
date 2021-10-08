@@ -43,7 +43,7 @@ public class EdgeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		weightDialog = new Dialog(
 				"Create Edge",
 				"Please enter a weight for the edge:",
@@ -52,7 +52,7 @@ public class EdgeAdder extends BoundedComponent {
 		);
 		final Component edgePreview = new Component(EdgeComponent.Z_INDEX) {
 			@Override
-			public void draw(@NotNull Document p) {
+			public void draw() {
 				if (linkedNode == null) return;
 				p.stroke(100);
 				p.strokeWeight(3);
@@ -63,7 +63,7 @@ public class EdgeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		hoveredNode = null;
 		for (GraphNode<NodeData> node : graph.getNodes()) {
 			if (linkedNode != null) {
@@ -79,7 +79,7 @@ public class EdgeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		if (!enabled || hoveredNode == null || p.popupManager.hasPopup()) return;
 		p.fill(0x6011A032);
 		p.circle(hoveredNode.data.getPosition().x, hoveredNode.data.getPosition().y, NodeComponent.NODE_RADIUS * 2.4f);
