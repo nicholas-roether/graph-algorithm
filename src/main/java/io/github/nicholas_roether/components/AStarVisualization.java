@@ -34,7 +34,6 @@ public class AStarVisualization extends Component {
 	public void start() {
 		if (running) return;
 		reset();
-		initGraphState();
 		aStar.step();
 		running = true;
 	}
@@ -59,6 +58,8 @@ public class AStarVisualization extends Component {
 	public void frame() {
 		if (!running) return;
 		resetGraphState();
+		start.data.setStart(true);
+		goal.data.setGoal(true);
 
 		visitedNodes.add(aStar.getCurrent());
 
@@ -105,15 +106,6 @@ public class AStarVisualization extends Component {
 
 	public boolean isRunning() {
 		return running;
-	}
-
-	private void initGraphState() {
-		graph.getNodes().forEach(node -> node.data.setState(NodeData.State.DEFAULT));
-		graph.getEdges().forEach(edge -> edge.data.setState(EdgeData.State.DEFAULT));
-		start.data.setState(NodeData.State.VISITED);
-		goal.data.setState(NodeData.State.VISITED);
-		start.data.setStart(true);
-		goal.data.setGoal(true);
 	}
 
 	private List<GraphNeighbor<NodeData, EdgeData>> getNeighborsAlongPath(List<GraphNode<NodeData>> path) {
