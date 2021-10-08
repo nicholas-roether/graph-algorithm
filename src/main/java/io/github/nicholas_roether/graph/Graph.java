@@ -267,7 +267,7 @@ public class Graph<ND, ED> {
 				neighbor = edge.nodes.getValue0();
 			}
 			if (neighbor != null)
-					neighbors.add(new GraphNeighbor<>(neighbor, edge.weight, edge.data()));
+					neighbors.add(new GraphNeighbor<>(neighbor, edge.weight, edge.data));
 		}
 		return neighbors;
 	}

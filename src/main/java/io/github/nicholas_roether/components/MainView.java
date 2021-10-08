@@ -20,9 +20,11 @@ public class MainView extends Component {
 	private Background background;
 	private EditingButton editingButton;
 	private EditActionSelector editActionSelector;
+	private RunningButton runningButton;
 	private NodeAdder nodeAdder;
 	private EdgeAdder edgeAdder;
 	private GraphElementDeleter graphElementDeleter;
+	private AStarVisualization aStarVisualization;
 
 	private enum State {
 		EDITING,
@@ -46,29 +48,59 @@ public class MainView extends Component {
 		background = new Background();
 		editingButton = new EditingButton(10, 10);
 		editActionSelector = new EditActionSelector(10, 30 + editingButton.height);
+		runningButton = new RunningButton(20 + editingButton.width, 10);
 		final BiFunction<Float, Float, Boolean> bounds = (x, y) -> !editActionSelector.checkInBounds(x, y)
 				&& !editingButton.checkInBounds(x, y);
 		nodeAdder = new NodeAdder(graph, bounds);
 		edgeAdder = new EdgeAdder(graph, bounds);
 		graphElementDeleter = new GraphElementDeleter(graph, bounds, graphComponent.anchors);
+		aStarVisualization = new AStarVisualization(graph, graph.getNode("A"), graph.getNode("Z"));
 		registry.register(List.of(
 				background,
 				graphComponent,
 				editingButton,
 				editActionSelector,
+				runningButton,
 				nodeAdder,
 				edgeAdder,
-				graphElementDeleter
+				graphElementDeleter,
+				aStarVisualization
 		), id);
 	}
 
 	@Override
 	public void frame() {
-		if (state == State.EDITING) {
-			if (!editingButton.isPressed()) state = State.SHOWING;
-		} else {
-			if (editingButton.isPressed()) state = State.EDITING;
+		switch (state) {
+			case EDITING -> {
+				if (runningButton.isPressed()) {
+					editingButton.setPressed(false);
+					state = State.RUNNING;
+					aStarVisualization.start();
+				}
+				else if (!editingButton.isPressed()) {
+					state = State.SHOWING;
+				}
+			}
+			case SHOWING -> {
+				if (editingButton.isPressed()) state = State.EDITING;
+				else if (runningButton.isPressed()) {
+					state = State.RUNNING;
+					aStarVisualization.start();
+				}
+			}
+			case RUNNING -> {
+				if (editingButton.isPressed()) {
+					aStarVisualization.stop();
+					runningButton.setPressed(false);
+					state = State.EDITING;
+				} else if (!runningButton.isPressed()) {
+					aStarVisualization.stop();
+					state = State.SHOWING;
+				}
+			}
 		}
+
+
 		editActionSelector.setVisible(state == State.EDITING);
 		graphComponent.setRunning(state != State.EDITING);
 		graphComponent.setDraggingEnabled(

@@ -1,13 +1,21 @@
 package io.github.nicholas_roether.general;
 
 public class EdgeData {
-	private boolean highlighted = false;
+	private State state = State.DEFAULT;
 
-	public boolean isHighlighted() {
-		return highlighted;
+	public void setState(State state) {
+		this.state = state;
 	}
 
-	public void setHighlighted(boolean highlighted) {
-		this.highlighted = highlighted;
+	public State getState() {
+		return state;
+	}
+
+	public enum State {
+		DEFAULT,
+		CHECKING,
+		CHOSEN,
+		CURRENT,
+		FINAL
 	}
 }

@@ -59,6 +59,7 @@ public class NodeAdder extends BoundedComponent {
 	public void draw() {
 		if (!enabled || !checkInBounds(p.mouseX, p.mouseY)) return;
 		final Element nodeElement = new NodeElement(
+				NodeData.State.DEFAULT,
 				false,
 				false,
 				p.mouseX,

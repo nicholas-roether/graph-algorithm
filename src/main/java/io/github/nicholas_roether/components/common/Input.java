@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.components.common;
 
+import io.github.nicholas_roether.draw.Animation;
 import io.github.nicholas_roether.draw.bounded.RectangularComponent;
 import io.github.nicholas_roether.utils.Utils;
 import processing.event.KeyEvent;
@@ -99,10 +100,10 @@ public class Input extends RectangularComponent {
 	private boolean controlPressed = false;
 
 	/**
-	 * The progress within the blinking animation of the cursor. Since the animation has a period of one second,
+	 * The blinking animation of the cursor. Since the animation has a period of one second,
 	 * this value rises each frame from zero to one, and then starts over.
 	 */
-	private float cursorAnim = 0;
+	private final Animation cursorAnim = new Animation(1.0, Animation.LINEAR, true);
 
 	/**
 	 * The time at which the last mouse press occurred, for keeping track of double clicks.
@@ -147,7 +148,7 @@ public class Input extends RectangularComponent {
 		modulo 1. This variable therefore counts up from 0 to 1 over and over, with a period of 1 second.
 		 */
 		if (focused)
-			cursorAnim = (cursorAnim + 1 / p.frameRate) % 1;
+			cursorAnim.step(1.0 / p.frameRate);
 	}
 
 	@Override
@@ -178,7 +179,7 @@ public class Input extends RectangularComponent {
 		p.text(value.toString(), x + 2 * PADDING, y + PADDING, contentWidth, contentHeight);
 
 		// Draw the cursor if applicable.
-		if (focused && !hasSelection() && cursorAnim <= 0.5f) {
+		if (focused && !hasSelection() && cursorAnim.getProgress() <= 0.5) {
 			p.stroke(textColor);
 			p.strokeWeight(1);
 			p.line(cursorX, cursorStartY, cursorX, cursorEndY);
@@ -228,7 +229,7 @@ public class Input extends RectangularComponent {
 	 * @param focused Whether this input is focused.
 	 */
 	public void setFocused(boolean focused) {
-		if (!this.focused && focused) cursorAnim = 0;
+		if (!this.focused && focused) cursorAnim.restart();
 		else if (!focused) {
 			positionCursorAt(0);
 		}
@@ -416,7 +417,7 @@ public class Input extends RectangularComponent {
 		if (index < 0) index = 0;
 		else if (index > value.length()) index = value.length();
 		cursorIndex = index;
-		cursorAnim = 0;
+		cursorAnim.restart();
 		if (!selecting) selectionAnchor = index;
 	}
 

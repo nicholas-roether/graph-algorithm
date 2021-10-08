@@ -1,8 +1,10 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.draw.Animation;
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.draw.bounded.CircularComponent;
+import io.github.nicholas_roether.elements.IconPlaque;
 import io.github.nicholas_roether.elements.NodeElement;
 import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.NodeData;
@@ -10,6 +12,7 @@ import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
 import org.jetbrains.annotations.NotNull;
+import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
@@ -24,6 +27,11 @@ import processing.event.MouseEvent;
 public class NodeComponent extends CircularComponent {
 	// Nodes are drawn on layer 2.
 	public static final int Z_INDEX = 2;
+
+	private static final float PLAQUE_OFFSET = 20;
+
+	private static PImage startIcon;
+	private static PImage goalIcon;
 
 	/**
 	 * The radius of the nodes in pixels.
@@ -82,6 +90,8 @@ public class NodeComponent extends CircularComponent {
 	 */
 	private PVector mouseVelocity;
 
+	private final Animation animation = new Animation(0.25, Animation.EASE_IN, true);
+
 	private float screenWidth;
 	private float screenHeight;
 
@@ -105,16 +115,22 @@ public class NodeComponent extends CircularComponent {
 		physics.setScreenHeight(p.height);
 		screenWidth = p.width;
 		screenHeight = p.height;
+		if (startIcon == null) startIcon = p.loadImage("start_icon.png");
+		if (goalIcon == null) goalIcon = p.loadImage("goal_icon.png");
 	}
 
 	@Override
 	public void frame() {
 		if (dragging) moveToMouse();
+		if (node.data.getState() == NodeData.State.CHECKING)
+			animation.step(1 / p.frameRate);
+		else animation.restart();
 	}
 
 	@Override
 	public void draw() {
 		final Element nodeElement = new NodeElement(
+				node.data.getState(),
 				draggingEnabled && checkInBounds(p.mouseX, p.mouseY),
 				anchor,
 				physics.getPosition().x,
@@ -125,6 +141,24 @@ public class NodeComponent extends CircularComponent {
 				255
 		);
 		nodeElement.draw(p);
+
+		if (node.data.getState() == NodeData.State.CHECKING) {
+			float radius = Document.lerp(NODE_RADIUS * 1.2f, NODE_RADIUS * 1.8f, (float) animation.getProgress());
+			float opacity = 255 * (1 - (float) animation.getProgress());
+			p.stroke(85, 205, 244, opacity);
+			p.strokeWeight(2);
+			p.fill(0, 0, 0, 0);
+			p.ellipseMode(RADIUS);
+			p.circle(getX(), getY(), radius);
+		}
+
+		if (node.data.isStart()) {
+			final Element plaque = new IconPlaque(startIcon, getX() + PLAQUE_OFFSET, getY() - PLAQUE_OFFSET);
+			plaque.draw(p);
+		} else if (node.data.isGoal()) {
+			final Element plaque = new IconPlaque(goalIcon, getX() + PLAQUE_OFFSET, getY() - PLAQUE_OFFSET);
+			plaque.draw(p);
+		}
 	}
 
 	private void moveToMouse() {
@@ -145,19 +179,6 @@ public class NodeComponent extends CircularComponent {
 			}
 		}
 		node.data.setPosition(targetPos);
-//		boolean canMove = true;
-//		//noinspection RedundantIfStatement
-//		if (mousePos.x <= NODE_RADIUS || mousePos.x >= screenWidth - NODE_RADIUS) canMove = false;
-//		if (mousePos.y <= NODE_RADIUS || mousePos.y >= screenHeight - NODE_RADIUS) canMove = false;
-//		for (GraphNode<NodeData> other : graph.getNodes()) {
-//			if (other.equals(node)) continue;
-//			final float distance = mousePos.dist(other.data.getPosition());
-//			if (distance <= 2 * NODE_RADIUS) {
-//				canMove = false;
-//				break;
-//			}
-//		}
-//		if (canMove) physics.setPosition(mousePos);
 	}
 
 	@Override

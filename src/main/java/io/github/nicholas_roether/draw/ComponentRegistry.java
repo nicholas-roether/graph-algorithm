@@ -71,7 +71,10 @@ public class ComponentRegistry implements WindowEventReceiver {
 	 */
 	public void register(@NotNull Collection<? extends Component> components, int id) {
 		// build up all child components and let them register theirs in turn
-		components.forEach(component -> component.build(this));
+		components.forEach(component -> {
+			component.setup(document);
+			component.build(this);
+		});
 		addComponents(components, id);
 	}
 
@@ -88,8 +91,6 @@ public class ComponentRegistry implements WindowEventReceiver {
 	}
 
 	public void draw() {
-		// Initialize any uninitialized components
-		initComponents();
 		// Call the frame callback for every component
 		getComponents().forEach(Component::frame);
 		// Check if any components need to be rebuilt
@@ -228,18 +229,6 @@ public class ComponentRegistry implements WindowEventReceiver {
 				rebuild(component);
 			}
 		}
-		// Initialize any uninitialized components
-		initComponents();
-	}
-
-	/**
-	 * Initializes all unitialized components
-	 */
-	private void initComponents() {
-		getComponents().forEach(component -> {
-			if (!component.isInitialized())
-				component.setup(document);
-		});
 	}
 
 	/**

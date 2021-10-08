@@ -31,7 +31,7 @@ public class GraphEdge<ND, D> {
 	/**
 	 * The custom data associated to this edge. Set to {@code null} by default.
 	 */
-	private D data;
+	public final D data;
 
 	/**
 	 * Creates an edge between the two provided nodes, with the given weight and data.
@@ -44,53 +44,6 @@ public class GraphEdge<ND, D> {
 	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight, D data) {
 		nodes = Pair.with(node1, node2);
 		this.weight = weight;
-		this.data = data;
-	}
-
-	/**
-	 * Creates an edge between the two provided nodes, with the given weight.
-	 * <br>
-	 * The custom data will be set to {@code null} by default.
-	 *
-	 * @param node1 The first of the nodes the edge connects
-	 * @param node2 The second of the nodes the edge connects
-	 * @param weight The weight of the edge
-	 */
-	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight) {
-		nodes = Pair.with(node1, node2);
-		this.weight = weight;
-		data = null;
-	}
-
-	/**
-	 * Creates an edge between the two provided nodes.
-	 * <br>
-	 * The weight is set to {@code 1}, and the custom data to {@code null} by default.
-	 *
-	 * @param node1 The first of the nodes the edge connects
-	 * @param node2 The second of the nodes the edge connects
-	 */
-	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2) {
-		nodes = Pair.with(node1, node2);
-		this.weight = 1;
-		data = null;
-	}
-
-	/**
-	 * Returns the custom data that is associated with this edge.
-	 *
-	 * @return the custom data that is associated with this edge.
-	 */
-	public D data() {
-		return data;
-	}
-
-	/**
-	 * Sets the custom data that is associated with this edge.
-	 *
-	 * @param data the new custom data
-	 */
-	public void setData(D data) {
 		this.data = data;
 	}
 
