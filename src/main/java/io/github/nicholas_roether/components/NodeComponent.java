@@ -36,7 +36,7 @@ public class NodeComponent extends CircularComponent {
 	/**
 	 * The radius of the nodes in pixels.
 	 */
-	public static final float NODE_RADIUS = 20;
+	public static final float NODE_RADIUS = NodePhysics.RADIUS;
 
 	/**
 	 * The default text size in pixels; text with more than one letter will be drawn
@@ -295,7 +295,7 @@ public class NodeComponent extends CircularComponent {
 
 		final float a = nm.magSq();
 		final float b = -2 * nm.dot(on);
-		final float c = on.magSq() - 4 * NODE_RADIUS * NODE_RADIUS;
+		final float c = on.magSq() - 4 * RADIUS * RADIUS;
 
 		final float sqrt = (float) Math.sqrt(b * b - 4 * a * c);
 		final float k = (-b - sqrt) / (2 * a);

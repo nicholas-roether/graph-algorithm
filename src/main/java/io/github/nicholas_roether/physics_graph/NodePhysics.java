@@ -10,6 +10,9 @@ import io.github.nicholas_roether.physics.PhysicsObject;
 import org.jetbrains.annotations.NotNull;
 import processing.core.PVector;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 /**
  * The physics object behind a NodeComponent.
  */
@@ -31,17 +34,22 @@ public class NodePhysics implements PhysicsObject {
 	/**
 	 * The radius of a node.
 	 */
-	private static final float RADIUS = NodeComponent.NODE_RADIUS;
+	public static final float RADIUS = 20;
 
 	/**
 	 * Whether the physics of this node is disabled (for example if the node is being dragged).
 	 */
 	private boolean disabled = false;
 
-	/**
-	 * Whether this node is currently colliding with another node.
-	 */
-	private boolean colliding = false;
+	private boolean collidingWithLeftBorder = false;
+
+	private boolean collidingWithRightBorder = false;
+
+	private boolean collidingWithTopBorder = false;
+
+	private boolean collidingWithBottomBorder = false;
+
+	private final HashSet<GraphNode<NodeData>> collisionNodes = new HashSet<>();
 
 	/**
 	 * The node whose position the physics applies to
@@ -126,24 +134,22 @@ public class NodePhysics implements PhysicsObject {
 
 		final PVector acc = new PVector(0, 0);
 
-		boolean collidingWithNode = false;
-		boolean collidingWithVerticalBorder = false;
-		boolean collidingWithHorizontalBorder = false;
 
 		for (GraphNode<NodeData> node : graph.getNodes()) {
 			final float distance = getDistance(node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(node);
 
-			if (distance <= RADIUS) {
-				collidingWithNode = true;
-				if (!colliding) {
-					// Handle collisions by having the nodes bounce off of each other (once per collision)
-					getVelocity().sub(normal.copy().mult(2 * getVelocity().dot(normal.mult(-1))));
-					if (distance != RADIUS)
-						getPosition().add(normal.copy().mult((distance - RADIUS) / 2));
+			if (distance < 2 * RADIUS) {
+				if (!collisionNodes.contains(node)) {
+					final PVector velocity = getVelocity().copy();
+					getVelocity().sub(normal.copy().mult(velocity.dot(normal)));
+					node.data.getVelocity().add(normal.copy().mult(velocity.dot(normal)));
+					collisionNodes.add(node);
 				}
+				getPosition().add(normal.mult(distance - 2 * RADIUS));
 			} else {
+				collisionNodes.remove(node);
 				final float repulsion = getRepulsion(distance);
 				// Add a vector away from the other node with the appropriate length to the acceleration
 				acc.add(normal.copy().mult(-repulsion));
@@ -153,29 +159,42 @@ public class NodePhysics implements PhysicsObject {
 			final float distance = getDistance(neighbor.node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(neighbor.node);
-//			final float attraction = getAttraction(distance, neighbor.edgeWeight);
-//			// Add a vector towards the neighboring node with the appropriate length to the acceleration
-//			acc.add(normal.mult(attraction));
 			final float acceleration = getAccelerationTowards(distance, neighbor.edgeWeight);
 			acc.add(normal.mult(acceleration));
 		}
 		acc.add(getFriction()); // Add the acceleration due to friction
 		setAcceleration(acc);
 
-		if (screenHeight > 0 && (getPosition().x <= RADIUS || getPosition().x >= screenWidth - RADIUS)) {
-			if (!colliding) setVelocity(new PVector(-getVelocity().x, getVelocity().y));
-			collidingWithHorizontalBorder = true;
-			if (getPosition().x <= RADIUS) getPosition().x = RADIUS;
-			if (getPosition().x >= screenWidth - RADIUS) getPosition().x = screenWidth - RADIUS;
-		}
-		if (screenWidth > 0 && (getPosition().y <= RADIUS || getPosition().y >= screenHeight - RADIUS)) {
-			if (!colliding) setVelocity(new PVector(getVelocity().x, -getVelocity().y));
-			collidingWithVerticalBorder = true;
-			if (getPosition().y <= RADIUS) getPosition().y = RADIUS;
-			if (getPosition().y >= screenHeight - RADIUS) getPosition().y = screenHeight - RADIUS;
-		}
+		if (screenHeight == 0 || screenWidth == 0) return;
 
-		colliding = collidingWithNode || collidingWithHorizontalBorder || collidingWithVerticalBorder;
+		if (getPosition().x <= RADIUS) {
+			if (!collidingWithLeftBorder) getVelocity().x *= -1;
+			collidingWithLeftBorder = true;
+			getAcceleration().x = 0;
+			getPosition().x = RADIUS;
+		} else {
+			collidingWithLeftBorder = false;
+			if (getPosition().x >= screenWidth - RADIUS) {
+				if (!collidingWithRightBorder) getVelocity().x *= -1;
+				collidingWithRightBorder = true;
+				getAcceleration().x = 0;
+				getPosition().x = screenWidth - RADIUS;
+			} else collidingWithRightBorder = false;
+		}
+		if (getPosition().y <= RADIUS) {
+			if (!collidingWithTopBorder) getVelocity().y *= -1;
+			collidingWithTopBorder = true;
+			getAcceleration().y = 0;
+			getPosition().y = RADIUS;
+		} else {
+			collidingWithTopBorder = false;
+			if (getPosition().y >= screenHeight - RADIUS) {
+				if (!collidingWithBottomBorder) getVelocity().y *= -1;
+				collidingWithBottomBorder = true;
+				getAcceleration().y = 0;
+				getPosition().y = screenHeight - RADIUS;
+			} else collidingWithBottomBorder = false;
+		}
 	}
 
 	/**
