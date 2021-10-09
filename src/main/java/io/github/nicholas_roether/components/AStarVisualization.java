@@ -23,7 +23,7 @@ public class AStarVisualization extends Component {
 
 	private boolean running = false;
 	private final HashSet<GraphNode<NodeData>> visitedNodes = new HashSet<>();
-	private final Animation animation = new Animation(2 * STAGE_DURATION, Animation.LINEAR, false);
+	private final Animation animation = new Animation(2 * STAGE_DURATION, Animation.LINEAR, 1);
 
 	public AStarVisualization(Graph<NodeData, EdgeData> graph, GraphNode<NodeData> start, GraphNode<NodeData> goal) {
 		this.graph = graph;

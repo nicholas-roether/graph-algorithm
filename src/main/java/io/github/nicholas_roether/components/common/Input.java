@@ -103,7 +103,7 @@ public class Input extends RectangularComponent {
 	 * The blinking animation of the cursor. Since the animation has a period of one second,
 	 * this value rises each frame from zero to one, and then starts over.
 	 */
-	private final Animation cursorAnim = new Animation(1.0, Animation.LINEAR, true);
+	private final Animation cursorAnim = new Animation(1.0, Animation.LINEAR, 0);
 
 	/**
 	 * The time at which the last mouse press occurred, for keeping track of double clicks.

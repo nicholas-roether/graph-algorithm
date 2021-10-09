@@ -21,8 +21,8 @@ public class EdgeComponent extends Component {
 
 	public final GraphEdge<NodeData, EdgeData> edge;
 
-	private final Animation checkBeamStart = new Animation(ANIMATION_PERIOD, Animation.EASE_IN, true);
-	private final Animation checkBeamEnd = new Animation(ANIMATION_PERIOD, Animation.EASE_OUT, true);
+	private final Animation checkBeamStart = new Animation(ANIMATION_PERIOD, Animation.EASE_IN, 2);
+	private final Animation checkBeamEnd = new Animation(ANIMATION_PERIOD, Animation.EASE_OUT, 2);
 	private boolean checking = false;
 
 	public EdgeComponent(GraphEdge<NodeData, EdgeData> edge) {

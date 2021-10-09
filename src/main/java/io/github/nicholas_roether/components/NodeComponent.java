@@ -90,7 +90,7 @@ public class NodeComponent extends CircularComponent {
 	 */
 	private PVector mouseVelocity;
 
-	private final Animation animation = new Animation(0.25, Animation.EASE_IN, true);
+	private final Animation animation = new Animation(0.25, Animation.EASE_IN, 2);
 
 	private float screenWidth;
 	private float screenHeight;
