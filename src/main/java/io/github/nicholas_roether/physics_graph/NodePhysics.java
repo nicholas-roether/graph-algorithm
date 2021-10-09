@@ -168,28 +168,28 @@ public class NodePhysics implements PhysicsObject {
 		if (screenHeight == 0 || screenWidth == 0) return;
 
 		if (getPosition().x <= RADIUS) {
-			if (!collidingWithLeftBorder) getVelocity().x *= -1;
+			if (!collidingWithLeftBorder) getVelocity().x *= -0.5;
 			collidingWithLeftBorder = true;
 			getAcceleration().x = 0;
 			getPosition().x = RADIUS;
 		} else {
 			collidingWithLeftBorder = false;
 			if (getPosition().x >= screenWidth - RADIUS) {
-				if (!collidingWithRightBorder) getVelocity().x *= -1;
+				if (!collidingWithRightBorder) getVelocity().x *= -0.5;
 				collidingWithRightBorder = true;
 				getAcceleration().x = 0;
 				getPosition().x = screenWidth - RADIUS;
 			} else collidingWithRightBorder = false;
 		}
 		if (getPosition().y <= RADIUS) {
-			if (!collidingWithTopBorder) getVelocity().y *= -1;
+			if (!collidingWithTopBorder) getVelocity().y *= -0.5;
 			collidingWithTopBorder = true;
 			getAcceleration().y = 0;
 			getPosition().y = RADIUS;
 		} else {
 			collidingWithTopBorder = false;
 			if (getPosition().y >= screenHeight - RADIUS) {
-				if (!collidingWithBottomBorder) getVelocity().y *= -1;
+				if (!collidingWithBottomBorder) getVelocity().y *= -0.5;
 				collidingWithBottomBorder = true;
 				getAcceleration().y = 0;
 				getPosition().y = screenHeight - RADIUS;
