@@ -21,7 +21,7 @@ public class Animation {
 	}
 
 	public void step(double amount) {
-		if (time <= 1) {
+		if (time < 1) {
 			time += amount / duration;
 		} else if (repetitions == 0 || currentReps < repetitions - 1) {
 			time %= 1;
