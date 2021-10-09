@@ -144,7 +144,7 @@ public abstract class Document extends PApplet {
 		// Style the cursor to whichever instruction takes precedence
 		cursor(cursorManager.getCurrentCursor());
 		// Draw all registered components
-		componentRegistry.draw(this);
+		componentRegistry.draw();
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
@@ -200,6 +200,7 @@ public abstract class Document extends PApplet {
 
 	@Override
 	public final void keyPressed(KeyEvent event) {
+		if (event.getKeyCode() == ESC) key = 0;
 		if (popupManager.hasPopup()) popupManager.keyPressed(event);
 		else componentRegistry.keyPressed(event);
 	}

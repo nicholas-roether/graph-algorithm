@@ -4,6 +4,7 @@ import io.github.nicholas_roether.components.common.ToggleButton;
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.elements.NodeElement;
+import io.github.nicholas_roether.general.NodeData;
 
 /**
  * The icon for adding nodes in the editing menu.
@@ -16,9 +17,10 @@ public class NodeButton extends ToggleButton {
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		// Display a small node with no title inside the button
 		final Element nodeElement = new NodeElement(
+				NodeData.State.DEFAULT,
 				false,
 				false,
 				x + width / 2f,

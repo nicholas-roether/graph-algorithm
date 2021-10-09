@@ -16,14 +16,14 @@ public class MoveButton extends ToggleButton {
 	}
 
 	@Override
-	protected void init(Document p) {
+	protected void init() {
 		// load the icon if it hasn't already been loaded
 		if (icon == null)
 			icon = p.loadImage("move_icon.png");
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		// display the icon
 		p.imageMode(CENTER);
 		p.image(icon, x + width / 2, y + height / 2);

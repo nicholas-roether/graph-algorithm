@@ -2,6 +2,7 @@ package io.github.nicholas_roether.components.common;
 
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
+import org.jetbrains.annotations.NotNull;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
@@ -13,6 +14,11 @@ import java.util.regex.Pattern;
  * A simple popup that asks for user input.
  */
 public class Dialog extends Popup {
+	/**
+	 * The content text of the dialog, prompting the user for the input.
+	 */
+	public final String prompt;
+
 	/**
 	 * A regex string that all values that can be typed into the input need to match.
 	 */
@@ -36,14 +42,16 @@ public class Dialog extends Popup {
 	/**
 	 * Constructs a {@code Dialog}.
 	 *
-	 * @param prompt The title of the dialog, prompting the user for the input.
+	 * @param title The title  of the dialog
+	 * @param prompt The content text of the dialog, prompting the user for the input.
 	 * @param allowedValues A regex string that all values that can be typed into the input need to match.
 	 * @param allowedReturns A regex string that all values that can be returned from the dialog need to match.
 	 *                       If the user enters a value into the dialog that this regex doesn't match, the "Ok"-Button
 	 *                       will be disabled.
 	 */
-	public Dialog(String prompt, String allowedValues, String allowedReturns) {
-		super(prompt);
+	public Dialog(String title, String prompt, String allowedValues, String allowedReturns) {
+		super(title);
+		this.prompt = prompt;
 		this.allowedValues = allowedValues;
 		this.allowedReturns = Pattern.compile(allowedReturns);
 	}
@@ -76,40 +84,50 @@ public class Dialog extends Popup {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		final String value = getValue();
 		if (value == null) return;
 		setDisabled(!allowedReturns.matcher(value).find());
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
-		super.build(registry, p);
+	public void build(ComponentRegistry registry) {
+		super.build(registry);
 		setDisabled(true);
 		if (input != null) input.setFocused(true);
 	}
 
+	private final float contentTextHeight = 23;
+	private final float contentPadding = 15;
+
 	@Override
-	protected Content buildContent(Document p) {
-		return new Popup.Content(40) {
+	protected Content buildContent() {
+		return new Popup.Content(contentTextHeight + contentPadding + 40) {
 			@Override
-			public void build(ComponentRegistry registry, Document p) {
+			public void build(ComponentRegistry registry) {
 				input = new Input(
 						1000,
 						x,
-						y,
+						y + contentTextHeight + contentPadding,
 						width,
-						height,
+						40,
 						allowedValues,
 						0xFFFFFFFF
 				);
 				registry.register(input, id);
 			}
+
+			@Override
+			public void draw() {
+				p.fill(255);
+				p.textSize(contentTextHeight * 0.7f);
+				p.text(prompt, x, y, width, contentTextHeight);
+			}
 		};
 	}
 
 	@Override
-	protected List<Option> buildOptions(Document p) {
+	protected List<Option> buildOptions() {
 		return List.of(new Popup.Option("Ok", 0xFF456990, popup -> {
 			if (callback != null) callback.run();
 			popup.setShowing(false);

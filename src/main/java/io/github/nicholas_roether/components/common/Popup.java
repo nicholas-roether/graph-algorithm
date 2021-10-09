@@ -34,16 +34,16 @@ public abstract class Popup extends Component {
 		this.title = title;
 	}
 
-	protected abstract Content buildContent(Document p);
+	protected abstract Content buildContent();
 
-	protected abstract List<Option> buildOptions(Document p);
+	protected abstract List<Option> buildOptions();
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		if (!showing) return;
 
-		options = buildOptions(p);
-		Content content = buildContent(p);
+		options = buildOptions();
+		Content content = buildContent();
 		popupHeight = content.height + TITLE_HEIGHT + ACTIONS_HEIGHT + 6 * PADDING;
 		content.setX((p.width - width) / 2f + PADDING * 2);
 		content.setY((p.height - popupHeight) / 2f + TITLE_HEIGHT + 3 * PADDING);
@@ -82,13 +82,13 @@ public abstract class Popup extends Component {
 	}
 
 	@Override
-	protected void init(Document p) {
+	protected void init() {
 		width = 0.34f * p.width;
 		popupManager = p.popupManager;
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void draw() {
 		if (!showing) return;
 		p.fill(0, 0, 0, 150);
 		p.rect(0, 0, p.width, p.height);

@@ -3,6 +3,7 @@ package io.github.nicholas_roether.components;
 import io.github.nicholas_roether.draw.Component;
 import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
+import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphEdge;
@@ -22,7 +23,7 @@ import java.util.Set;
  * @see Component
  */
 public class GraphComponent extends Component {
-	public final Graph<NodeData, Object> graph;
+	public final Graph<NodeData, EdgeData> graph;
 
 	/**
 	 * A list of the names of the nodes that are anchors, meaning they
@@ -39,20 +40,20 @@ public class GraphComponent extends Component {
 	/**
 	 * A list of all node components that are children to this graph component.
 	 */
-	private List<NodeComponent> nodeComponents = new ArrayList<>();
+	private final List<NodeComponent> nodeComponents = new ArrayList<>();
 
 	/**
 	 * A set of the nodes that are currently being rendered. Updated
 	 * whenever the component is rebuilt.
 	 */
-	private List<GraphEdge<NodeData, Object>> edges;
+	private List<GraphEdge<NodeData, EdgeData>> edges;
 
 	/**
 	 * The physics engine in charge of simulating the nodes.
 	 *
 	 * @see PhysicsEngine
 	 */
-	private final PhysicsEngine<NodePhysics<NodeData>> physicsEngine;
+	private final PhysicsEngine<NodePhysics> physicsEngine;
 
 	/**
 	 * Whether the physics simulation is currently running.
@@ -64,7 +65,7 @@ public class GraphComponent extends Component {
 	 */
 	private boolean draggingEnabled = true;
 
-	public GraphComponent(Graph<NodeData, Object> graph, List<String> anchors) {
+	public GraphComponent(Graph<NodeData, EdgeData> graph, List<String> anchors) {
 		this.graph = graph;
 		this.anchors = anchors;
 		this.nodes = new HashSet<>();
@@ -72,7 +73,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void build(ComponentRegistry registry, Document p) {
+	public void build(ComponentRegistry registry) {
 		// Reset the physics engine since all the nodes will be rebuilt.
 		physicsEngine.reset();
 
@@ -96,7 +97,7 @@ public class GraphComponent extends Component {
 			components.add(nodeComponent);
 		}
 
-		for (GraphEdge<NodeData, Object> edge : edges) {
+		for (GraphEdge<NodeData, EdgeData> edge : edges) {
 			// Create an EdgeComponent for each edge
 			components.add(new EdgeComponent(edge));
 
@@ -134,7 +135,7 @@ public class GraphComponent extends Component {
 	}
 
 	@Override
-	public void frame(Document p) {
+	public void frame() {
 		// step the physics engine on each frame if the simulation is running
 		if (running) physicsEngine.step(1 / p.frameRate);
 	}

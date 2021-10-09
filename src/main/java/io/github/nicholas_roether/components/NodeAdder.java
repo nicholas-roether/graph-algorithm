@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.components;
 
+import io.github.nicholas_roether.draw.ComponentRegistry;
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
 import io.github.nicholas_roether.draw.bounded.BoundedComponent;
@@ -22,6 +23,7 @@ public class NodeAdder extends BoundedComponent {
 
 	private final BiFunction<Float, Float, Boolean> bounds;
 
+	private int lastNodeLength = 0;
 	private boolean enabled = false;
 	private int nameIndex = 0;
 
@@ -41,9 +43,23 @@ public class NodeAdder extends BoundedComponent {
 	}
 
 	@Override
-	public void draw(@NotNull Document p) {
+	public void build(ComponentRegistry registry) {
+		nameIndex = 0;
+		lastNodeLength = graph.getNodes().size();
+	}
+
+	@Override
+	public boolean shouldRebuild() {
+		if (graph.getNodes().size() > lastNodeLength)
+			lastNodeLength = graph.getNodes().size();
+		return graph.getNodes().size() < lastNodeLength;
+	}
+
+	@Override
+	public void draw() {
 		if (!enabled || !checkInBounds(p.mouseX, p.mouseY)) return;
 		final Element nodeElement = new NodeElement(
+				NodeData.State.DEFAULT,
 				false,
 				false,
 				p.mouseX,

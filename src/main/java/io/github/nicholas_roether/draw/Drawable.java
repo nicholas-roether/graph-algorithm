@@ -10,7 +10,7 @@ public interface Drawable {
 	/**
 	 * Draws this Drawable to the screen.
 	 *
-	 * @param p The PApplet to draw to
+	 * @param p The Document to draw to.
 	 */
 	void draw(@NotNull Document p);
 }

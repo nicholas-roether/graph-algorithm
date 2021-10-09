@@ -1,7 +1,10 @@
 package io.github.nicholas_roether.graph;
 
+import io.github.nicholas_roether.JSONSerializable;
 import org.javatuples.Pair;
 import org.jetbrains.annotations.NotNull;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 import java.util.Objects;
 
@@ -15,7 +18,7 @@ import java.util.Objects;
  * @param <ND> The node data type of the node the edge connects
  * @param <D> The type of the custom data of the edge
  */
-public class GraphEdge<ND, D> {
+public class GraphEdge<ND extends JSONSerializable, D extends JSONSerializable> implements JSONSerializable {
 	/**
 	 * The nodes this edge connects.
 	 *
@@ -31,7 +34,7 @@ public class GraphEdge<ND, D> {
 	/**
 	 * The custom data associated to this edge. Set to {@code null} by default.
 	 */
-	private D data;
+	public final D data;
 
 	/**
 	 * Creates an edge between the two provided nodes, with the given weight and data.
@@ -44,53 +47,6 @@ public class GraphEdge<ND, D> {
 	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight, D data) {
 		nodes = Pair.with(node1, node2);
 		this.weight = weight;
-		this.data = data;
-	}
-
-	/**
-	 * Creates an edge between the two provided nodes, with the given weight.
-	 * <br>
-	 * The custom data will be set to {@code null} by default.
-	 *
-	 * @param node1 The first of the nodes the edge connects
-	 * @param node2 The second of the nodes the edge connects
-	 * @param weight The weight of the edge
-	 */
-	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2, double weight) {
-		nodes = Pair.with(node1, node2);
-		this.weight = weight;
-		data = null;
-	}
-
-	/**
-	 * Creates an edge between the two provided nodes.
-	 * <br>
-	 * The weight is set to {@code 1}, and the custom data to {@code null} by default.
-	 *
-	 * @param node1 The first of the nodes the edge connects
-	 * @param node2 The second of the nodes the edge connects
-	 */
-	public GraphEdge(@NotNull GraphNode<ND> node1, @NotNull GraphNode<ND> node2) {
-		nodes = Pair.with(node1, node2);
-		this.weight = 1;
-		data = null;
-	}
-
-	/**
-	 * Returns the custom data that is associated with this edge.
-	 *
-	 * @return the custom data that is associated with this edge.
-	 */
-	public D data() {
-		return data;
-	}
-
-	/**
-	 * Sets the custom data that is associated with this edge.
-	 *
-	 * @param data the new custom data
-	 */
-	public void setData(D data) {
 		this.data = data;
 	}
 
@@ -112,6 +68,18 @@ public class GraphEdge<ND, D> {
 			strBuilder.append("\n}");
 		}
 		return strBuilder.toString();
+	}
+
+	@Override
+	public JSONObject toJSON() {
+		final JSONObject obj = new JSONObject();
+		final JSONArray nodesArr = new JSONArray();
+		nodesArr.append(nodes.getValue0().name);
+		nodesArr.append(nodes.getValue1().name);
+		obj.put("nodes", nodesArr);
+		obj.put("weight", weight);
+		obj.put("data", data.toJSON());
+		return obj;
 	}
 
 	/**

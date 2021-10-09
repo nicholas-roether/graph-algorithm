@@ -1,5 +1,6 @@
 package io.github.nicholas_roether.graph;
 
+import io.github.nicholas_roether.JSONSerializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @param <ND> The node data type of the neighboring node
  * @param <ED> The type of the custom data of the edge
  */
-public class GraphNeighbor<ND, ED> {
+public class GraphNeighbor<ND extends JSONSerializable, ED extends JSONSerializable> {
 	/**
 	 * The neighboring node.
 	 *

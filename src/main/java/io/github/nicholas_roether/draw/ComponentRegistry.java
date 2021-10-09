@@ -19,7 +19,7 @@ import java.util.*;
  * @see WindowEventReceiver
  * @see Drawable
  */
-public class ComponentRegistry implements WindowEventReceiver, Drawable {
+public class ComponentRegistry implements WindowEventReceiver {
 	/**
 	 * The value to use for the parent id in {@code register()} when the registered
 	 * component is a root component, meaning it doesn't have a parent.
@@ -71,7 +71,10 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 */
 	public void register(@NotNull Collection<? extends Component> components, int id) {
 		// build up all child components and let them register theirs in turn
-		components.forEach(component -> component.build(this, document));
+		components.forEach(component -> {
+			component.setup(document);
+			component.build(this);
+		});
 		addComponents(components, id);
 	}
 
@@ -87,21 +90,15 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 		register(List.of(component), id);
 	}
 
-	@Override
-	public void draw(@NotNull Document p) {
-		// Initialize any uninitialized components
-		getComponents().forEach(component -> {
-			if (!component.isInitialized())
-				component.setup(p);
-		});
+	public void draw() {
 		// Call the frame callback for every component
-		getComponents().forEach(component -> component.frame(p));
+		getComponents().forEach(Component::frame);
 		// Check if any components need to be rebuilt
 		checkRebuild();
 		// Draw all components
 		getComponents().forEach(component -> {
-			resetDrawState(p);
-			component.draw(p);
+			resetDrawState(document);
+			component.draw();
 		});
 	}
 
@@ -206,7 +203,7 @@ public class ComponentRegistry implements WindowEventReceiver, Drawable {
 	 */
 	private void rebuild(Component parent) {
 		remove(parent);
-		parent.build(this, document);
+		parent.build(this);
 	}
 
 	/**

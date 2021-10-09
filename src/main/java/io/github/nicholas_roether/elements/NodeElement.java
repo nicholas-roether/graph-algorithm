@@ -2,12 +2,14 @@ package io.github.nicholas_roether.elements;
 
 import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.draw.Element;
+import io.github.nicholas_roether.general.NodeData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NodeElement extends Element {
+	private final NodeData.State state;
 	private final boolean hovering;
 	private final boolean anchor;
 	private final float x;
@@ -17,7 +19,8 @@ public class NodeElement extends Element {
 	private final float textSize;
 	private final float opacity;
 
-	public NodeElement(boolean hovering, boolean anchor, float x, float y, float radius, String message, float textSize, float opacity) {
+	public NodeElement(NodeData.State state, boolean hovering, boolean anchor, float x, float y, float radius, String message, float textSize, float opacity) {
+		this.state = state;
 		this.hovering = hovering;
 		this.anchor = anchor;
 		this.x = x;
@@ -37,8 +40,13 @@ public class NodeElement extends Element {
 			// Otherwise, fill it with white.
 		else p.fill(255, 255, 255, opacity);
 
-		// Have a grey outline of 3px width around the node
-		p.stroke(100, 100, 100, opacity);
+		// Have an outline reflecting the state of 3px width around the node
+		switch (state) {
+			case DEFAULT -> p.stroke(100, 100, 100, opacity);
+			case VISITED -> p.stroke(((int) opacity << 24) + 0xF28526);
+			case CURRENT, CHECKING -> p.stroke(((int) opacity << 24) + 0xF2262D);
+			case FINAL -> p.stroke(((int) opacity << 24) + 0x4FF226);
+		}
 		p.strokeWeight(3);
 
 		// Draw a circle with the node's radius and the set filling and outline

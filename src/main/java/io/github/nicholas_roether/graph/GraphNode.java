@@ -1,6 +1,8 @@
 package io.github.nicholas_roether.graph;
 
+import io.github.nicholas_roether.JSONSerializable;
 import org.jetbrains.annotations.NotNull;
+import processing.data.JSONObject;
 
 import java.util.Objects;
 
@@ -15,7 +17,7 @@ import java.util.Objects;
  *
  * @param <D> The type of the node data.
  */
-public class GraphNode<D> {
+public class GraphNode<D extends JSONSerializable> implements JSONSerializable {
 	/**
 	 * The name of this node. Nodes are considered equal if their names are equal.
 	 */
@@ -54,6 +56,14 @@ public class GraphNode<D> {
 			strBuilder.append("\n}");
 		}
 		return strBuilder.toString();
+	}
+
+	@Override
+	public JSONObject toJSON() {
+		JSONObject obj = new JSONObject();
+		obj.put("name", name);
+		obj.put("data", data.toJSON());
+		return obj;
 	}
 
 	/**

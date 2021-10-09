@@ -1,6 +1,8 @@
 package io.github.nicholas_roether.physics_graph;
 
 import io.github.nicholas_roether.components.NodeComponent;
+import io.github.nicholas_roether.general.EdgeData;
+import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNeighbor;
 import io.github.nicholas_roether.graph.GraphNode;
@@ -11,21 +13,20 @@ import processing.core.PVector;
 /**
  * The physics object behind a NodeComponent.
  */
-public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
+public class NodePhysics implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
-	private static final float REPULSION_CONSTANT = 3000000f;
-
-	/**
-	 * The constant that determines the strength of the attraction between connected nodes.
-	 */
-	private static final float ATTRACTION_CONSTANT = 4f;
+	public static final float REPULSION_CONSTANT = 5000000f;
 
 	/**
 	 * The constant that determines the strength of friction.
 	 */
-	private static final float FRICTION_CONSTANT = 2f;
+	public static final float FRICTION_CONSTANT = 3f;
+
+	public static final float LENGTH_SCALE_FACTOR = 30f;
+
+	public static final float SPRING_STRENGTH_FACTOR = 10f;
 
 	/**
 	 * The radius of a node.
@@ -45,18 +46,18 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	/**
 	 * The node whose position the physics applies to
 	 */
-	private final GraphNode<D> node;
+	private final GraphNode<NodeData> node;
 
 	/**
 	 * The graph the node belongs to
 	 */
-	private final Graph<D, Object> graph;
+	private final Graph<NodeData, EdgeData> graph;
 
 	private float screenWidth = 0;
 
 	private float screenHeight = 0;
 
-	public NodePhysics(GraphNode<D> node, Graph<D, Object> graph) {
+	public NodePhysics(GraphNode<NodeData> node, Graph<NodeData, EdgeData> graph) {
 		this.node = node;
 		this.graph = graph;
 	}
@@ -123,27 +124,13 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 			return;
 		}
 
-		/*
-		The physics more or less follows this differential equation:
-
-		a = -R + A - f * v
-
-		Where:
-			- a is the node's acceleration vector
-			- R is the sum of the acceleration due to repulsion from each node; see getRepulsion()
-			- A is the sum of the acceleration due to attraction to each connected node; see getAttraction()
-			- f is the friction constant
-			- v is the node's velocity vector
-		 */
-
-		// The total acceleration is accumulated in this vector.
 		final PVector acc = new PVector(0, 0);
 
 		boolean collidingWithNode = false;
 		boolean collidingWithVerticalBorder = false;
 		boolean collidingWithHorizontalBorder = false;
 
-		for (GraphNode<D> node : graph.getNodes()) {
+		for (GraphNode<NodeData> node : graph.getNodes()) {
 			final float distance = getDistance(node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(node);
@@ -162,13 +149,15 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 				acc.add(normal.copy().mult(-repulsion));
 			}
 		}
-		for (GraphNeighbor<D, Object> neighbor : graph.getNeighbors(node)) {
+		for (GraphNeighbor<NodeData, EdgeData> neighbor : graph.getNeighbors(node)) {
 			final float distance = getDistance(neighbor.node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(neighbor.node);
-			final float attraction = getAttraction(distance, neighbor.edgeWeight);
-			// Add a vector towards the neighboring node with the appropriate length to the acceleration
-			acc.add(normal.mult(attraction));
+//			final float attraction = getAttraction(distance, neighbor.edgeWeight);
+//			// Add a vector towards the neighboring node with the appropriate length to the acceleration
+//			acc.add(normal.mult(attraction));
+			final float acceleration = getAccelerationTowards(distance, neighbor.edgeWeight);
+			acc.add(normal.mult(acceleration));
 		}
 		acc.add(getFriction()); // Add the acceleration due to friction
 		setAcceleration(acc);
@@ -195,7 +184,7 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	 * @param other The node to get the distance to
 	 * @return the computed distance
 	 */
-	private float getDistance(@NotNull GraphNode<D> other) {
+	private float getDistance(@NotNull GraphNode<NodeData> other) {
 		return getPosition().dist(other.data.getPosition());
 	}
 
@@ -206,8 +195,15 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 	 * @param other The node to get the normal vector to
 	 * @return the computed normal vector
 	 */
-	private PVector getNormalTo(@NotNull GraphNode<D> other) {
+	private PVector getNormalTo(@NotNull GraphNode<NodeData> other) {
 		return other.data.getPosition().copy().sub(getPosition()).normalize();
+	}
+
+	private static float getAccelerationTowards(float distance, double weight) {
+		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
+		final float targetLength = LENGTH_SCALE_FACTOR * minmaxedWeight;
+		final float offsetFromTargetLength = distance - targetLength;
+		return SPRING_STRENGTH_FACTOR * offsetFromTargetLength;
 	}
 
 	/**
@@ -220,29 +216,6 @@ public class NodePhysics<D extends PhysicsNodeData> implements PhysicsObject {
 		if (distance == 0) return 0; // Avoid dividing by 0
 		// The repulsion strength is proportional to the inverse square of the distance.
 		return REPULSION_CONSTANT / (distance * distance);
-	}
-
-	/**
-	 * Gets the acceleration magnitude due to attraction caused by a connected node of the given distance,
-	 * connected by an edge of the given weight.
-	 * <br>
-	 * Edges with higher weights will result in lower attraction, causing the nodes to be further away from each other.
-	 *
-	 * @param distance The distance to the node causing the attraction
-	 * @param weight The weight of the connecting edge
-	 * @return the magnitude of the computed acceleration
-	 */
-	private static float getAttraction(float distance, double weight) {
-		/*
-		In the most basic terms, the attraction is proportional to the distance and inversely proportional to the
-		edge weight.
-
-		The only complication is the fact that the edge weight used in the formula is bounded between 1 and 20; any
-		inputted weights above that will result in the same attraction as a weight of 20, and any weights below in the
-		same as a weight of 1. This is to prevent a too extreme distortion of the graph.
-		 */
-		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
-		return ATTRACTION_CONSTANT * distance / minmaxedWeight;
 	}
 
 	/**

@@ -1,6 +1,9 @@
 package io.github.nicholas_roether.graph;
 
+import io.github.nicholas_roether.JSONSerializable;
 import org.jetbrains.annotations.NotNull;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 import java.util.*;
 
@@ -19,7 +22,7 @@ import java.util.*;
  * @see GraphNode
  * @see GraphEdge
  */
-public class Graph<ND, ED> {
+public class Graph<ND extends JSONSerializable, ED extends JSONSerializable> implements JSONSerializable {
 	private final Set<GraphNode<ND>> nodes;
 	private final List<GraphEdge<ND, ED>> edges;
 
@@ -267,7 +270,7 @@ public class Graph<ND, ED> {
 				neighbor = edge.nodes.getValue0();
 			}
 			if (neighbor != null)
-					neighbors.add(new GraphNeighbor<>(neighbor, edge.weight, edge.data()));
+					neighbors.add(new GraphNeighbor<>(neighbor, edge.weight, edge.data));
 		}
 		return neighbors;
 	}
@@ -317,6 +320,18 @@ public class Graph<ND, ED> {
 	public String toString() {
 		// TODO somehow visualize graphs in the console
 		return super.toString();
+	}
+
+	@Override
+	public JSONObject toJSON() {
+		final JSONObject obj = new JSONObject();
+		final JSONArray nodesArr = new JSONArray();
+		final JSONArray edgesArr = new JSONArray();
+		nodes.forEach(node -> nodesArr.append(node.toJSON()));
+		edges.forEach(edge -> edgesArr.append(edge.toJSON()));
+		obj.put("nodes", nodesArr);
+		obj.put("edges", edgesArr);
+		return obj;
 	}
 
 	private void assertKnownNode(GraphNode<ND> node) {

@@ -16,7 +16,7 @@ public class TextActionButton extends ActionButton {
 	}
 
 	@Override
-	protected void drawLabel(Document p) {
+	protected void drawLabel() {
 		p.fill(255);
 		p.textAlign(CENTER);
 		p.textSize(textSize);
