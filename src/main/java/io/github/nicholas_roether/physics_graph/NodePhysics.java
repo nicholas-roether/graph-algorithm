@@ -17,17 +17,17 @@ public class NodePhysics implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
-	private static final float REPULSION_CONSTANT = 3000000f;
+	public static final float REPULSION_CONSTANT = 3000000f;
 
 	/**
 	 * The constant that determines the strength of the attraction between connected nodes.
 	 */
-	private static final float ATTRACTION_CONSTANT = 4f;
+	public static final float ATTRACTION_CONSTANT = 4f;
 
 	/**
 	 * The constant that determines the strength of friction.
 	 */
-	private static final float FRICTION_CONSTANT = 2f;
+	public static final float FRICTION_CONSTANT = 2f;
 
 	/**
 	 * The radius of a node.

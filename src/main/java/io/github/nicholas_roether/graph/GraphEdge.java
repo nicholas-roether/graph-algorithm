@@ -1,7 +1,10 @@
 package io.github.nicholas_roether.graph;
 
+import io.github.nicholas_roether.JSONSerializable;
 import org.javatuples.Pair;
 import org.jetbrains.annotations.NotNull;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 import java.util.Objects;
 
@@ -15,7 +18,7 @@ import java.util.Objects;
  * @param <ND> The node data type of the node the edge connects
  * @param <D> The type of the custom data of the edge
  */
-public class GraphEdge<ND, D> {
+public class GraphEdge<ND extends JSONSerializable, D extends JSONSerializable> implements JSONSerializable {
 	/**
 	 * The nodes this edge connects.
 	 *
@@ -65,6 +68,18 @@ public class GraphEdge<ND, D> {
 			strBuilder.append("\n}");
 		}
 		return strBuilder.toString();
+	}
+
+	@Override
+	public JSONObject toJSON() {
+		final JSONObject obj = new JSONObject();
+		final JSONArray nodesArr = new JSONArray();
+		nodesArr.append(nodes.getValue0().name);
+		nodesArr.append(nodes.getValue1().name);
+		obj.put("nodes", nodesArr);
+		obj.put("weight", weight);
+		obj.put("data", data.toJSON());
+		return obj;
 	}
 
 	/**

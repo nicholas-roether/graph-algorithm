@@ -1,20 +1,21 @@
 package io.github.nicholas_roether.algorithm;
 
-import io.github.nicholas_roether.general.NodePosition;
+import io.github.nicholas_roether.JSONSerializable;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNeighbor;
 import io.github.nicholas_roether.graph.GraphNode;
+import io.github.nicholas_roether.physics_graph.NodePhysics;
 
 import java.util.*;
 
-public class AStar<ND extends NodePosition, ED> {
-	private static final double ESTIMATE_SCALE_FACTOR = 0.012;
+public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
+	private static final double ESTIMATE_SCALE_FACTOR = NodePhysics.ATTRACTION_CONSTANT / NodePhysics.REPULSION_CONSTANT;
 
 	public final Graph<ND, ED> graph;
 	public final GraphNode<ND> start;
 	public final GraphNode<ND> goal;
 
-	private final TreeSet<GraphNode<ND>> currentNodes = new TreeSet<>(Comparator.comparingDouble(this::getEstimateFor));
+	private final ArrayList<GraphNode<ND>> currentNodes = new ArrayList<>();
 	private final HashMap<GraphNode<ND>, GraphNode<ND>> pathMap = new HashMap<>();
 	private final HashMap<GraphNode<ND>, Double> costMap = new HashMap<>();
 	private final HashMap<GraphNode<ND>, Double> estimateMap = new HashMap<>();
@@ -46,12 +47,13 @@ public class AStar<ND extends NodePosition, ED> {
 
 	public double estimateCostToGoal(GraphNode<ND> node) {
 		final double distance = node.data.getPosition().dist(goal.data.getPosition());
-		return ESTIMATE_SCALE_FACTOR * distance;
+		return ESTIMATE_SCALE_FACTOR * distance * distance * distance;
 	}
 
 	public void step() {
 		if (finished || currentNodes.size() == 0) return;
-		current = currentNodes.first();
+		currentNodes.sort(this::compareNodes);
+		current = currentNodes.get(0);
 		if (current == goal) {
 			finished = true;
 			return;
@@ -65,7 +67,7 @@ public class AStar<ND extends NodePosition, ED> {
 			pathMap.put(neighbor.node, current);
 			costMap.put(neighbor.node, newCost);
 			estimateMap.put(neighbor.node, newCost + estimateCostToGoal(neighbor.node));
-			currentNodes.add(neighbor.node);
+			if (!currentNodes.contains(neighbor.node)) currentNodes.add(neighbor.node);
 		}
 	}
 
@@ -98,9 +100,13 @@ public class AStar<ND extends NodePosition, ED> {
 		return list;
 	}
 
+	private int compareNodes(GraphNode<ND> node1, GraphNode<ND> node2) {
+		if (node1.equals(node2)) return 0;
+		return Double.compare(getEstimateFor(node1), getEstimateFor(node2));
+	}
+
 	// -----------------------------------------------------------------------------------------------------------------
 	// Getters
-
 
 	public boolean isFinished() {
 		return finished;
@@ -110,19 +116,19 @@ public class AStar<ND extends NodePosition, ED> {
 		return current;
 	}
 
-	public TreeSet<GraphNode<ND>> getCurrentNodes() {
-		return currentNodes;
+	public List<GraphNode<ND>> getCurrentNodes() {
+		return Collections.unmodifiableList(currentNodes);
 	}
 
-	public HashMap<GraphNode<ND>, GraphNode<ND>> getPathMap() {
-		return pathMap;
+	public Map<GraphNode<ND>, GraphNode<ND>> getPathMap() {
+		return Collections.unmodifiableMap(pathMap);
 	}
 
-	public HashMap<GraphNode<ND>, Double> getCostMap() {
-		return costMap;
+	public Map<GraphNode<ND>, Double> getCostMap() {
+		return Collections.unmodifiableMap(costMap);
 	}
 
-	public HashMap<GraphNode<ND>, Double> getEstimateMap() {
-		return estimateMap;
+	public Map<GraphNode<ND>, Double> getEstimateMap() {
+		return Collections.unmodifiableMap(estimateMap);
 	}
 }

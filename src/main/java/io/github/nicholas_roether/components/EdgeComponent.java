@@ -7,7 +7,6 @@ import io.github.nicholas_roether.general.EdgeData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphEdge;
 import io.github.nicholas_roether.graph.GraphNode;
-import org.jetbrains.annotations.NotNull;
 import processing.core.PVector;
 
 /**

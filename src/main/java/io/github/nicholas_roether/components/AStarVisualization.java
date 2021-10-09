@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class AStarVisualization extends Component {
-	private static final float STAGE_DURATION = 0.5f;
+	private static final float STAGE_DURATION = 0.6f;
 
 	private final Graph<NodeData, EdgeData> graph;
 	private final GraphNode<NodeData> start;
