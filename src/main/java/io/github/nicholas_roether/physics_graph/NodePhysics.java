@@ -17,17 +17,18 @@ public class NodePhysics implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of the repulsion between nodes.
 	 */
-	public static final float REPULSION_CONSTANT = 3000000f;
-
-	/**
-	 * The constant that determines the strength of the attraction between connected nodes.
-	 */
-	public static final float ATTRACTION_CONSTANT = 4f;
+	public static final float REPULSION_CONSTANT = 5000000f;
 
 	/**
 	 * The constant that determines the strength of friction.
 	 */
 	public static final float FRICTION_CONSTANT = 2f;
+
+	public static final float LENGTH_SCALE_FACTOR = 30f;
+
+	public static final float BASIC_LENGTH = 70f;
+
+	public static final float SPRING_STRENGTH_FACTOR = 10f;
 
 	/**
 	 * The radius of a node.
@@ -125,20 +126,6 @@ public class NodePhysics implements PhysicsObject {
 			return;
 		}
 
-		/*
-		The physics more or less follows this differential equation:
-
-		a = -R + A - f * v
-
-		Where:
-			- a is the node's acceleration vector
-			- R is the sum of the acceleration due to repulsion from each node; see getRepulsion()
-			- A is the sum of the acceleration due to attraction to each connected node; see getAttraction()
-			- f is the friction constant
-			- v is the node's velocity vector
-		 */
-
-		// The total acceleration is accumulated in this vector.
 		final PVector acc = new PVector(0, 0);
 
 		boolean collidingWithNode = false;
@@ -168,9 +155,11 @@ public class NodePhysics implements PhysicsObject {
 			final float distance = getDistance(neighbor.node);
 			if (distance == 0) continue; // Ignore nodes that have 0 distance between them because that breaks the math
 			final PVector normal = getNormalTo(neighbor.node);
-			final float attraction = getAttraction(distance, neighbor.edgeWeight);
-			// Add a vector towards the neighboring node with the appropriate length to the acceleration
-			acc.add(normal.mult(attraction));
+//			final float attraction = getAttraction(distance, neighbor.edgeWeight);
+//			// Add a vector towards the neighboring node with the appropriate length to the acceleration
+//			acc.add(normal.mult(attraction));
+			final float acceleration = getAccelerationTowards(distance, neighbor.edgeWeight);
+			acc.add(normal.mult(acceleration));
 		}
 		acc.add(getFriction()); // Add the acceleration due to friction
 		setAcceleration(acc);
@@ -212,6 +201,13 @@ public class NodePhysics implements PhysicsObject {
 		return other.data.getPosition().copy().sub(getPosition()).normalize();
 	}
 
+	private static float getAccelerationTowards(float distance, double weight) {
+		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
+		final float targetLength = BASIC_LENGTH + LENGTH_SCALE_FACTOR * (float) weight;
+		final float offsetFromTargetLength = distance - targetLength;
+		return SPRING_STRENGTH_FACTOR * offsetFromTargetLength;
+	}
+
 	/**
 	 * Gets the acceleration magnitude due to repulsion caused by a node of the given distance.
 	 *
@@ -223,29 +219,29 @@ public class NodePhysics implements PhysicsObject {
 		// The repulsion strength is proportional to the inverse square of the distance.
 		return REPULSION_CONSTANT / (distance * distance);
 	}
-
-	/**
-	 * Gets the acceleration magnitude due to attraction caused by a connected node of the given distance,
-	 * connected by an edge of the given weight.
-	 * <br>
-	 * Edges with higher weights will result in lower attraction, causing the nodes to be further away from each other.
-	 *
-	 * @param distance The distance to the node causing the attraction
-	 * @param weight The weight of the connecting edge
-	 * @return the magnitude of the computed acceleration
-	 */
-	private static float getAttraction(float distance, double weight) {
-		/*
-		In the most basic terms, the attraction is proportional to the distance and inversely proportional to the
-		edge weight.
-
-		The only complication is the fact that the edge weight used in the formula is bounded between 1 and 20; any
-		inputted weights above that will result in the same attraction as a weight of 20, and any weights below in the
-		same as a weight of 1. This is to prevent a too extreme distortion of the graph.
-		 */
-		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
-		return ATTRACTION_CONSTANT * distance / minmaxedWeight;
-	}
+//
+//	/**
+//	 * Gets the acceleration magnitude due to attraction caused by a connected node of the given distance,
+//	 * connected by an edge of the given weight.
+//	 * <br>
+//	 * Edges with higher weights will result in lower attraction, causing the nodes to be further away from each other.
+//	 *
+//	 * @param distance The distance to the node causing the attraction
+//	 * @param weight The weight of the connecting edge
+//	 * @return the magnitude of the computed acceleration
+//	 */
+//	private static float getAttraction(float distance, double weight) {
+//		/*
+//		In the most basic terms, the attraction is proportional to the distance and inversely proportional to the
+//		edge weight.
+//
+//		The only complication is the fact that the edge weight used in the formula is bounded between 1 and 20; any
+//		inputted weights above that will result in the same attraction as a weight of 20, and any weights below in the
+//		same as a weight of 1. This is to prevent a too extreme distortion of the graph.
+//		 */
+//		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
+//		return ATTRACTION_CONSTANT * distance / minmaxedWeight;
+//	}
 
 	/**
 	 * Gets the acceleration vector due to friction.

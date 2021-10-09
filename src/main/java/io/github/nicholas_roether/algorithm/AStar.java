@@ -9,7 +9,7 @@ import io.github.nicholas_roether.physics_graph.NodePhysics;
 import java.util.*;
 
 public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
-	private static final double ESTIMATE_SCALE_FACTOR = NodePhysics.ATTRACTION_CONSTANT / NodePhysics.REPULSION_CONSTANT;
+//	private static final double ESTIMATE_SCALE_FACTOR = NodePhysics.ATTRACTION_CONSTANT / NodePhysics.REPULSION_CONSTANT;
 
 	public final Graph<ND, ED> graph;
 	public final GraphNode<ND> start;
@@ -47,7 +47,9 @@ public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
 
 	public double estimateCostToGoal(GraphNode<ND> node) {
 		final double distance = node.data.getPosition().dist(goal.data.getPosition());
-		final double estimate = ESTIMATE_SCALE_FACTOR * distance * distance * distance;
+		final double scaleFactor = NodePhysics.LENGTH_SCALE_FACTOR;
+		final double basicLength = NodePhysics.BASIC_LENGTH;
+ 		final double estimate = (distance - basicLength) / scaleFactor;
 		System.out.println("node: " + node.name + "; distance: " + distance + "; estimate: " + estimate);
 		return estimate;
 	}
