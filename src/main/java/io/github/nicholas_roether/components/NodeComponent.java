@@ -298,10 +298,10 @@ public class NodeComponent extends CircularComponent {
 		final float c = on.magSq() - 4 * NODE_RADIUS * NODE_RADIUS;
 
 		final float sqrt = (float) Math.sqrt(b * b - 4 * a * c);
-		if (Float.isNaN(sqrt)) return requestedPos;
 		final float k = (-b - sqrt) / (2 * a);
 
 		final PVector offset = nm.copy().mult(k);
+		if (Float.isNaN(offset.x) || Float.isNaN(offset.y)) return nodePos; // something went wrong
 		return nodePos.copy().add(offset);
 	}
 }
