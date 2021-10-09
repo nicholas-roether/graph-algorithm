@@ -22,11 +22,9 @@ public class NodePhysics implements PhysicsObject {
 	/**
 	 * The constant that determines the strength of friction.
 	 */
-	public static final float FRICTION_CONSTANT = 2f;
+	public static final float FRICTION_CONSTANT = 3f;
 
 	public static final float LENGTH_SCALE_FACTOR = 30f;
-
-	public static final float BASIC_LENGTH = 70f;
 
 	public static final float SPRING_STRENGTH_FACTOR = 10f;
 
@@ -203,7 +201,7 @@ public class NodePhysics implements PhysicsObject {
 
 	private static float getAccelerationTowards(float distance, double weight) {
 		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
-		final float targetLength = BASIC_LENGTH + LENGTH_SCALE_FACTOR * (float) weight;
+		final float targetLength = LENGTH_SCALE_FACTOR * minmaxedWeight;
 		final float offsetFromTargetLength = distance - targetLength;
 		return SPRING_STRENGTH_FACTOR * offsetFromTargetLength;
 	}

@@ -1,0 +1,462 @@
+{
+  "nodes": [
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          200,
+          450
+        ],
+        "velocity": [
+          0,
+          0
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "A"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          232,
+          588
+        ],
+        "velocity": [
+          -5,
+          0
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "B"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          405,
+          317
+        ],
+        "velocity": [
+          0,
+          -27.27272605895996
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "C"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          537,
+          267
+        ],
+        "velocity": [
+          -14.999999046325684,
+          -14.999999046325684
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "D"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          674,
+          206
+        ],
+        "velocity": [
+          29.999998092651367,
+          -59.999996185302734
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "E"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          243,
+          294
+        ],
+        "velocity": [
+          -33.33333206176758,
+          0
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "F"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          504,
+          102
+        ],
+        "velocity": [
+          -10.344827651977539,
+          -10.344827651977539
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "G"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          406,
+          537
+        ],
+        "velocity": [
+          0,
+          14.999999046325684
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "H"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          600,
+          511
+        ],
+        "velocity": [
+          0,
+          5
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "I"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          429,
+          747
+        ],
+        "velocity": [
+          -27.27272605895996,
+          27.27272605895996
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "J"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          619,
+          766
+        ],
+        "velocity": [
+          0,
+          29.999998092651367
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "K"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          814,
+          616
+        ],
+        "velocity": [
+          150,
+          150
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "L"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          759,
+          427
+        ],
+        "velocity": [
+          0,
+          27.27272605895996
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "M"
+    },
+    {
+      "data": {
+        "acceleration": [
+          0,
+          0
+        ],
+        "goal": false,
+        "start": false,
+        "position": [
+          982,
+          269
+        ],
+        "velocity": [
+          0,
+          0
+        ],
+        "state": "DEFAULT"
+      },
+      "name": "Z"
+    }
+  ],
+  "edges": [
+    {
+      "nodes": [
+        "B",
+        "C"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 5
+    },
+    {
+      "nodes": [
+        "D",
+        "E"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 1
+    },
+    {
+      "nodes": [
+        "A",
+        "F"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 3
+    },
+    {
+      "nodes": [
+        "F",
+        "C"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 2
+    },
+    {
+      "nodes": [
+        "F",
+        "G"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 8
+    },
+    {
+      "nodes": [
+        "G",
+        "E"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 3
+    },
+    {
+      "nodes": [
+        "A",
+        "H"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 6
+    },
+    {
+      "nodes": [
+        "H",
+        "I"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 4
+    },
+    {
+      "nodes": [
+        "H",
+        "C"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 2
+    },
+    {
+      "nodes": [
+        "I",
+        "E"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 3
+    },
+    {
+      "nodes": [
+        "B",
+        "J"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 5
+    },
+    {
+      "nodes": [
+        "J",
+        "K"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 2
+    },
+    {
+      "nodes": [
+        "L",
+        "I"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 7
+    },
+    {
+      "nodes": [
+        "L",
+        "Z"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 12
+    },
+    {
+      "nodes": [
+        "K",
+        "L"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 6
+    },
+    {
+      "nodes": [
+        "E",
+        "Z"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 10
+    },
+    {
+      "nodes": [
+        "I",
+        "Z"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 15
+    },
+    {
+      "nodes": [
+        "C",
+        "D"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 1
+    },
+    {
+      "nodes": [
+        "I",
+        "M"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 5
+    },
+    {
+      "nodes": [
+        "L",
+        "M"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 5
+    },
+    {
+      "nodes": [
+        "M",
+        "D"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 2
+    },
+    {
+      "nodes": [
+        "A",
+        "B"
+      ],
+      "data": {"state": "DEFAULT"},
+      "weight": 3
+    }
+  ]
+}
