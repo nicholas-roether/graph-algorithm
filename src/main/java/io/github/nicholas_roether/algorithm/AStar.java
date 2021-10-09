@@ -47,7 +47,9 @@ public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
 
 	public double estimateCostToGoal(GraphNode<ND> node) {
 		final double distance = node.data.getPosition().dist(goal.data.getPosition());
-		return ESTIMATE_SCALE_FACTOR * distance * distance * distance;
+		final double estimate = ESTIMATE_SCALE_FACTOR * distance * distance * distance;
+		System.out.println("node: " + node.name + "; distance: " + distance + "; estimate: " + estimate);
+		return estimate;
 	}
 
 	public void step() {
