@@ -219,29 +219,6 @@ public class NodePhysics implements PhysicsObject {
 		// The repulsion strength is proportional to the inverse square of the distance.
 		return REPULSION_CONSTANT / (distance * distance);
 	}
-//
-//	/**
-//	 * Gets the acceleration magnitude due to attraction caused by a connected node of the given distance,
-//	 * connected by an edge of the given weight.
-//	 * <br>
-//	 * Edges with higher weights will result in lower attraction, causing the nodes to be further away from each other.
-//	 *
-//	 * @param distance The distance to the node causing the attraction
-//	 * @param weight The weight of the connecting edge
-//	 * @return the magnitude of the computed acceleration
-//	 */
-//	private static float getAttraction(float distance, double weight) {
-//		/*
-//		In the most basic terms, the attraction is proportional to the distance and inversely proportional to the
-//		edge weight.
-//
-//		The only complication is the fact that the edge weight used in the formula is bounded between 1 and 20; any
-//		inputted weights above that will result in the same attraction as a weight of 20, and any weights below in the
-//		same as a weight of 1. This is to prevent a too extreme distortion of the graph.
-//		 */
-//		final float minmaxedWeight = (float) Math.min(Math.max(weight, 1.0), 20.0);
-//		return ATTRACTION_CONSTANT * distance / minmaxedWeight;
-//	}
 
 	/**
 	 * Gets the acceleration vector due to friction.
