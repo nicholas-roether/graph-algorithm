@@ -79,5 +79,14 @@ public class PhysicsEngine<O extends PhysicsObject> {
 		object.getVelocity().add(deltaVel);
 		object.getPosition().add(deltaPos);
 		object.postUpdate();
+
+		mendVector(object.getPosition());
+		mendVector(object.getVelocity());
+		mendVector(object.getAcceleration());
+	}
+
+	private static void mendVector(PVector vector) {
+		if (Float.isNaN(vector.x)) vector.x = 0;
+		if (Float.isNaN(vector.y)) vector.y = 0;
 	}
 }
