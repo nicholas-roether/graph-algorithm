@@ -9,8 +9,6 @@ import io.github.nicholas_roether.physics_graph.NodePhysics;
 import java.util.*;
 
 public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
-//	private static final double ESTIMATE_SCALE_FACTOR = NodePhysics.ATTRACTION_CONSTANT / NodePhysics.REPULSION_CONSTANT;
-
 	public final Graph<ND, ED> graph;
 	public final GraphNode<ND> start;
 	public final GraphNode<ND> goal;
