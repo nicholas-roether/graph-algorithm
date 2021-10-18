@@ -5,4 +5,4 @@ and execute the algorithm on it.
 
 ## Releases
 The first, and currently only, release can be found
-[here](https://github.com/nicholas-roether/graph-algorithm/releases/tag/untagged-a996c8a3975e8a802ffe).
+[here](https://github.com/nicholas-roether/graph-algorithm/releases/tag/v1.0.0).
