@@ -7,6 +7,7 @@ import io.github.nicholas_roether.draw.Document;
 import io.github.nicholas_roether.general.GraphWithData;
 import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.GraphNode;
+import processing.core.PImage;
 
 import java.util.List;
 
@@ -42,6 +43,8 @@ The contents of each package are as following:
  * The main class of this app.
  */
 public class App extends Document {
+	private static PImage icon;
+
 	public App() {
 		// create an 800x800 window with the below title
 		super(1280, 900, "A* Algorithm");
@@ -56,6 +59,8 @@ public class App extends Document {
 	@Override
 	protected void init() {
 		frameRate(30);
+		icon = loadImage("app_icon.png");
+		surface.setIcon(icon);
 	}
 
 	@Override
