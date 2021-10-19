@@ -137,7 +137,8 @@ public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
 		The way the algorithm estimates the cost is the following: it takes the positions of both the given node and the
 		goal, which are known, and computes the weight an edge would need to have to be in equilibrium at that distance,
 		assuming no outside forces and no repulsion between nodes (repulsion is ignored because the computation gets
-		very complicated and quite expensive otherwise).
+		very complicated and quite expensive otherwise). Since this heuristic is based on distance, its behavior is
+		close to monotonous (see last paragraph).
 
 		Since the force produced by the edges is calculated precisely in such a way that they, by themselves, reach an
 		equilibrium at a certain factor times their weight, this computation is quite straightforwardly the distance
@@ -145,7 +146,7 @@ public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
 
 		Because the algorithm assumes no repulsion between nodes, it will unfortunately overestimate the cost slightly
 		in some cases, especially if the node checked is directly connected to the goal, which technically makes this
-		heuristic not admissible... However, it is nearly impossible to predict by how much repulsion the node is
+		heuristic not even admissible... However, it is nearly impossible to predict by how much repulsion the node is
 		actually affected, and the only way to get an upper bound I could come up with was to assume that it was
 		repelled directly from the goal by each and every node in the graph, which would result in such an
 		underestimation of the weight that it would effectively render the heuristic useless altogether. Besides, adding

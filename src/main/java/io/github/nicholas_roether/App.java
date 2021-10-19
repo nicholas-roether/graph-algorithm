@@ -10,6 +10,34 @@ import io.github.nicholas_roether.graph.GraphNode;
 
 import java.util.List;
 
+/*
+A Quick guide to the project structure
+------------------------------------------------------------------------------------------------------------------------
+
+This project implements 4 major functionalities:
+- An implementation of a graph data structure, in the graph package
+- An implementation of the A* algorithm, which can be found in the algorithm package
+- A very basic physics engine, which can be found in the physics package, though most complicated calculations are
+  performed elsewhere
+- A simple UI framework build on Processing, in the draw package
+
+It then builds on these functionalities to construct the application.
+
+The contents of each package are as following:
+
+| Package Name  | Description                                                                                        |
+|---------------|----------------------------------------------------------------------------------------------------|
+| algorithm     | The A* implementation.                                                                             |
+| components    | UI components utilising the UI framework implemented in the draw package.                          |
+| draw          | A simple UI framework.                                                                             |
+| elements      | UI elements; recurring draw patterns that don't necessitate being components themselves.           |
+| general       | Classes that in some way combine functionality from multiple other packages.                       |
+| graph         | An implementation of a graph data structure.                                                       |
+| physics       | A very basic physics engine.                                                                       |
+| physics_graph | Classes pertaining the physics calculations of the visual graph elements.                          |
+| utils         | Houses the Utils class that implements various miscellaneous methods that don't fit anywhere else. |
+ */
+
 /**
  * The main class of this app.
  */
@@ -23,11 +51,6 @@ public class App extends Document {
 		final App app = new App();
 		System.setProperty("sun.java2d.uiScale.enabled", "false"); // disable ui scaling to fix blurry graphics on high-dpi screens
 		app.runSketch(args); // start the application
-	}
-
-	@Override
-	protected void create() {
-//		fullScreen();
 	}
 
 	@Override
