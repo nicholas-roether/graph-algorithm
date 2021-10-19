@@ -143,9 +143,15 @@ public class AStar<ND extends AStarNodeData, ED extends JSONSerializable> {
 		equilibrium at a certain factor times their weight, this computation is quite straightforwardly the distance
 		between the node and the goal divided by said factor.
 
-		Because the algorithm assumes no repulsion between nodes, it will usually overestimate the edge weight slightly.
-		This doesn't actually matter though, since usually the given node isn't actually connected directly to the goal
-		anyway, making the cost higher.
+		Because the algorithm assumes no repulsion between nodes, it will unfortunately overestimate the cost slightly
+		in some cases, especially if the node checked is directly connected to the goal, which technically makes this
+		heuristic not admissible... However, it is nearly impossible to predict by how much repulsion the node is
+		actually affected, and the only way to get an upper bound I could come up with was to assume that it was
+		repelled directly from the goal by each and every node in the graph, which would result in such an
+		underestimation of the weight that it would effectively render the heuristic useless altogether. Besides, adding
+		repulsion to the equation would mean solving a non-trivial cubic equation for every neighbor on every step,
+		which is expensive and frankly a mess to implement, so I feel that this is fine for the purposes of this
+		demonstration.
 		 */
 		final double distance = node.data.getPosition().dist(goal.data.getPosition());
 		final double scaleFactor = NodePhysics.LENGTH_SCALE_FACTOR;

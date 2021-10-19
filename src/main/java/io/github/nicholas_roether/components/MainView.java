@@ -36,13 +36,6 @@ public class MainView extends Component {
 
 	@Override
 	protected void init() {
-//		final GraphNode<NodeData> startNode = graph.addNode("A", INITIAL_NODE_INSET, p.height / 2f);
-//		final GraphNode<NodeData> endNode = graph.addNode("Z", p.width - INITIAL_NODE_INSET, p.height / 2f);
-//		final GraphNode<NodeData> centerNode = graph.addNode("B", p.width / 2f, 40);
-//
-//		graph.addEdge(startNode, centerNode, 1f);
-//		graph.addEdge(endNode, centerNode, 1f);
-
 		final List<String> jsonLines = List.of(p.loadStrings("default_graph.json"));
 		final StringBuilder jsonText = new StringBuilder(255);
 		jsonLines.forEach(jsonText::append);
@@ -58,7 +51,7 @@ public class MainView extends Component {
 		editActionSelector = new EditActionSelector(10, 30 + editingButton.height);
 		runningButton = new RunningButton(20 + editingButton.width, 10);
 		final BiFunction<Float, Float, Boolean> bounds = (x, y) -> !editActionSelector.checkInBounds(x, y)
-				&& !editingButton.checkInBounds(x, y);
+				&& !editingButton.checkInBounds(x, y) && !runningButton.checkInBounds(x, y);
 		nodeAdder = new NodeAdder(graph, bounds);
 		edgeAdder = new EdgeAdder(graph, bounds);
 		graphElementDeleter = new GraphElementDeleter(graph, bounds, graphComponent.anchors);

@@ -86,7 +86,9 @@ public class PhysicsEngine<O extends PhysicsObject> {
 	}
 
 	private static void mendVector(PVector vector) {
-		if (Float.isNaN(vector.x)) vector.x = 0;
-		if (Float.isNaN(vector.y)) vector.y = 0;
+		if (Float.isNaN(vector.x))
+			vector.x = 0;
+		if (Float.isNaN(vector.y))
+			vector.y = 0;
 	}
 }

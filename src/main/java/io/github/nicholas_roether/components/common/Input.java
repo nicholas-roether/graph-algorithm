@@ -186,26 +186,46 @@ public class Input extends RectangularComponent {
 		}
 	}
 
+	/**
+	 * Returns the x-offset, in pixels, from the starting point of the text to the point at which the letter at the given
+	 * index starts.
+	 *
+	 * @param index The index to find the offset to
+	 * @return said offset
+	 */
 	private float getOffsetToIndex(int index) {
+		// Make sure the text size is set correctly
 		p.textSize(textSize);
 		float offset = 0;
 		if (!value.isEmpty()) {
-			final String textBeforeIndex = value.substring(0, index);
+			final String textBeforeIndex = value.substring(0, index); // The text up until the given index
 			offset = p.textWidth(textBeforeIndex);
 		}
 		return offset;
 	}
 
+	/**
+	 * Returns the index in the current value for which the x-offset, in pixels, from the start of the text to the
+	 * character starting at the index is the closest to the given offset.
+	 *
+	 * @param offset The offset to find the closest index for
+	 * @return said index
+	 */
 	private int getIndexForOffset(float offset) {
+		// Make sure the text size is set correctly
 		p.textSize(textSize);
 		int bestIndex = -1;
-		float bestDistance = 0;
+		float bestDistance = 0; // The current best distance
+		// Loop through all possible indices from left to right
 		for (int i = 0; i <= value.length(); i++) {
+			// Compute the distance from the point at the current index to the point at the given offset
 			float distance = Math.abs(getOffsetToIndex(i) - offset);
 			if (bestIndex == -1 || distance < bestDistance) {
+				// If the new distance is better than the previous best one or there wasn't one saved yet, update it.
 				bestIndex = i;
 				bestDistance = distance;
 			} else if (distance > bestDistance) {
+				// Otherwise, we've gone past the best distance. Simply return the current best index.
 				break;
 			}
 		}
@@ -264,19 +284,41 @@ public class Input extends RectangularComponent {
 		return cursorIndex != selectionAnchor;
 	}
 
+	/**
+	 * Gets the index in the value at which the selection starts. If there is no selection, this will equal the cursor
+	 * index.
+	 *
+	 * @return The index of the selection start
+	 */
 	public int getSelectionStart() {
 		return Math.min(cursorIndex, selectionAnchor);
 	}
 
+	/**
+	 * Gets the index in the value at which the selection ends. If there is no selection, this will equal the cursor
+	 * index.
+	 *
+	 * @return The index of the selection end.
+	 */
 	public int getSelectionEnd() {
 		return Math.max(cursorIndex, selectionAnchor);
 	}
 
+	/**
+	 * Gets the currently selected text.
+	 *
+	 * @return The selected text as a string; if no text is selected, an empty string is returned
+	 */
 	public String getSelection() {
 		return value.substring(getSelectionStart(), getSelectionEnd());
 	}
 
+	/**
+	 * Selects all text that has been entered.
+	 */
 	public void selectAll() {
+		// Simulate the user positioning the cursor at the start of the text, and then at the end of the text while
+		// holding shift.
 		positionCursorAt(0);
 		positionCursorAt(value.length(), true);
 	}

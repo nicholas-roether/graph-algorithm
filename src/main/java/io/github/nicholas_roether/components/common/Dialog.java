@@ -1,8 +1,6 @@
 package io.github.nicholas_roether.components.common;
 
 import io.github.nicholas_roether.draw.ComponentRegistry;
-import io.github.nicholas_roether.draw.Document;
-import org.jetbrains.annotations.NotNull;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
@@ -14,6 +12,16 @@ import java.util.regex.Pattern;
  * A simple popup that asks for user input.
  */
 public class Dialog extends Popup {
+	/**
+	 * The height of the text box for the prompt (the content of the popup)
+	 */
+	private static final float CONTENT_TEXT_HEIGHT = 23;
+
+	/**
+	 * The padding around the content of the popup
+	 */
+	private static final float CONTENT_PADDING = 15;
+
 	/**
 	 * The content text of the dialog, prompting the user for the input.
 	 */
@@ -76,39 +84,42 @@ public class Dialog extends Popup {
 	 * @param callback The callback to call when the dialog is closed
 	 */
 	public void prompt(Consumer<String> callback) {
+		// Set the current callback to one that accepts the callback as a parameter, and then resets itself.
 		this.callback = () -> {
 			callback.accept(getValue());
 			this.callback = null;
 		};
+		// Show the popup
 		setShowing(true);
 	}
 
 	@Override
 	public void frame() {
 		final String value = getValue();
-		if (value == null) return;
+		if (value == null) return; // If the value is still null, do nothing.
+		// Disable or enable the popup return button depending on if the current value matches the regex for allowed
+		// returns.
 		setDisabled(!allowedReturns.matcher(value).find());
 	}
 
 	@Override
 	public void build(ComponentRegistry registry) {
 		super.build(registry);
-		setDisabled(true);
-		if (input != null) input.setFocused(true);
+		setDisabled(true); // Initially disable the return button
+		if (input != null) input.setFocused(true); // Initially focus the text input
 	}
-
-	private final float contentTextHeight = 23;
-	private final float contentPadding = 15;
 
 	@Override
 	protected Content buildContent() {
-		return new Popup.Content(contentTextHeight + contentPadding + 40) {
+		// The content of the popup consists of the input element and the prompt text above it.
+		return new Popup.Content(CONTENT_TEXT_HEIGHT + CONTENT_PADDING + 40) {
 			@Override
 			public void build(ComponentRegistry registry) {
+				// The input component inside the popup
 				input = new Input(
 						1000,
 						x,
-						y + contentTextHeight + contentPadding,
+						y + CONTENT_TEXT_HEIGHT + CONTENT_PADDING,
 						width,
 						40,
 						allowedValues,
@@ -119,24 +130,28 @@ public class Dialog extends Popup {
 
 			@Override
 			public void draw() {
+				// Draw the prompt text
 				p.fill(255);
-				p.textSize(contentTextHeight * 0.7f);
-				p.text(prompt, x, y, width, contentTextHeight);
+				p.textSize(CONTENT_TEXT_HEIGHT * 0.7f);
+				p.text(prompt, x, y, width, CONTENT_TEXT_HEIGHT);
 			}
 		};
 	}
 
 	@Override
 	protected List<Option> buildOptions() {
+		// The only option on a dialog is the Ok-button.
 		return List.of(new Popup.Option("Ok", 0xFF456990, popup -> {
-			if (callback != null) callback.run();
-			popup.setShowing(false);
+			if (callback != null) callback.run(); // Run the current callback
+			popup.setShowing(false); // Hide the popup
 		}));
 	}
 
 	@Override
 	public void keyTyped(KeyEvent event) {
+		// If enter is pressed, try to return from the dialog.
 		if (event.getKey() == ENTER) {
+			// This is a somewhat terrible hack to simulate a mouse press on the Ok-button.
 			final ActionButton button = buttons.get(0);
 			if (button != null) button.mousePressed(
 					new MouseEvent(
