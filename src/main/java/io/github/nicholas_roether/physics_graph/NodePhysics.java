@@ -37,7 +37,7 @@ public class NodePhysics implements PhysicsObject {
 	public static final float RADIUS = 20;
 
 	/**
-	 * Whether the physics of this node is disabled (for example if the node is being dragged).
+	 * Whether the physics of this node is disabled (for example if the node is an anchor).
 	 */
 	private boolean disabled = false;
 
@@ -121,6 +121,16 @@ public class NodePhysics implements PhysicsObject {
 			setAcceleration(new PVector(0, 0));
 			setVelocity(new PVector(0, 0));
 		}
+	}
+
+	/**
+	 * Gets whether the physics of this node is disabled.
+	 * <br>
+	 *
+	 * @return {@code true} if the physics are disabled.
+	 */
+	public boolean isDisabled() {
+		return disabled;
 	}
 
 	@Override

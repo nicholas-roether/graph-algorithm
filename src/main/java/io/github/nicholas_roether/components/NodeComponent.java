@@ -11,7 +11,6 @@ import io.github.nicholas_roether.general.NodeData;
 import io.github.nicholas_roether.graph.Graph;
 import io.github.nicholas_roether.graph.GraphNode;
 import io.github.nicholas_roether.physics_graph.NodePhysics;
-import org.jetbrains.annotations.NotNull;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -121,7 +120,11 @@ public class NodeComponent extends CircularComponent {
 
 	@Override
 	public void frame() {
-		if (dragging) moveToMouse();
+		if (dragging) {
+			moveToMouse();
+			node.data.setVelocity(new PVector());
+			node.data.setVelocity(new PVector());
+		}
 		if (node.data.getState() == NodeData.State.CHECKING)
 			animation.step(1 / p.frameRate);
 		else animation.restart();
@@ -164,20 +167,11 @@ public class NodeComponent extends CircularComponent {
 	private void moveToMouse() {
 		// Move the node to the mouse if it is being dragged and the new position isn't inside another node
 		// or outside the screen
-		final PVector nodePos = node.data.getPosition();
-		final PVector mousePos = new PVector(p.mouseX, p.mouseY);
-		PVector targetPos = mousePos;
+		PVector targetPos = new PVector(p.mouseX, p.mouseY);
 		if (targetPos.x < NODE_RADIUS) targetPos.x = NODE_RADIUS;
 		if (targetPos.x > screenWidth - NODE_RADIUS) targetPos.x = screenWidth - NODE_RADIUS;
 		if (targetPos.y < NODE_RADIUS) targetPos.y = NODE_RADIUS;
 		if (targetPos.y > screenHeight - NODE_RADIUS) targetPos.y = screenHeight - NODE_RADIUS;
-		for (GraphNode<NodeData> other : graph.getNodes()) {
-			if (other.equals(node)) continue;
-			final float distanceToMouse = mousePos.dist(other.data.getPosition());
-			if (distanceToMouse < 2 * NODE_RADIUS) {
-				targetPos = closestPointToOtherNode(targetPos, nodePos, other.data.getPosition());
-			}
-		}
 		node.data.setPosition(targetPos);
 	}
 
@@ -203,9 +197,8 @@ public class NodeComponent extends CircularComponent {
 	@Override
 	public void mousePressedInBounds(MouseEvent event) {
 		if (event.getButton() == LEFT && draggingEnabled) {
-			// The node has started to be dragged; disable its physics
+			// The node has started to be dragged
 			dragging = true;
-			physics.setDisabled(true);
 		}
 	}
 
@@ -214,14 +207,20 @@ public class NodeComponent extends CircularComponent {
 		// The left button is still being pressed; ignore the event.
 		if (event.getButton() == LEFT) return;
 
-		// Enable the physics if they were disabled because the node was being dragged,
-		// unless the node is an anchor
-		physics.setDisabled(anchor);
-
-		// If the node used to be dragged and there is a mouse velocity tracked, set the node's
-		// velocity according to MOUSE_VEL_TRANSLATION
-		if (dragging && mouseVelocity != null) {
-			physics.setVelocity(mouseVelocity.copy().mult(MOUSE_VEL_TRANSLATION));
+		if (dragging) {
+			// If the node used to be dragged, make sure it doesn't land inside another node.
+			for (GraphNode<NodeData> other : graph.getNodes()) {
+				if (other.equals(node)) continue;
+				final PVector offset = node.data.getPosition().copy().sub(other.data.getPosition());
+				final float distance = offset.mag();
+				if (distance < 2 * NODE_RADIUS) {
+					PVector delta = offset.copy().mult(2 * NODE_RADIUS / distance - 1);
+					node.data.getPosition().add(delta);
+				}
+			}
+			// If the node used to be dragged and there is a mouse velocity tracked, set the node's
+			// velocity according to MOUSE_VEL_TRANSLATION
+			if(mouseVelocity != null) physics.setVelocity(mouseVelocity.copy().mult(MOUSE_VEL_TRANSLATION));
 		}
 
 		// The node is no longer being dragged (if it was in the first place)
@@ -260,6 +259,7 @@ public class NodeComponent extends CircularComponent {
 		return physics.getPosition().y;
 	}
 
+
 	public boolean isDraggingEnabled() {
 		return draggingEnabled;
 	}
@@ -291,14 +291,17 @@ public class NodeComponent extends CircularComponent {
 		explanatory geogebra file (the same one I used to come up with the formula).
 		 */
 		final PVector nm = requestedPos.copy().sub(nodePos);
-		final PVector on = otherPos.copy().sub(nodePos);
+		final PVector on = nodePos.copy().sub(otherPos);
 
 		final float a = nm.magSq();
-		final float b = -2 * nm.dot(on);
-		final float c = on.magSq() - 4 * RADIUS * RADIUS;
+		final float b = 2 * on.dot(nm);
+		final float c = on.magSq() - 4 * NODE_RADIUS * NODE_RADIUS;
 
 		final float sqrt = (float) Math.sqrt(b * b - 4 * a * c);
 		final float k = (-b - sqrt) / (2 * a);
+
+		System.out.println("a: " + a + "; b: " + b + "; c: " + c);
+		System.out.println("sqrt: " + sqrt + "; k: " + k);
 
 		final PVector offset = nm.copy().mult(k);
 		if (Float.isNaN(offset.x) || Float.isNaN(offset.y)) return nodePos; // something went wrong
